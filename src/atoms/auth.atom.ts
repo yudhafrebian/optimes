@@ -1,11 +1,4 @@
-
 import { atom } from "jotai";
-import { UserRole } from "@/interface/user.interface";
+import { IUser } from "@/interface/user.interface";
 
-export type AuthUser = {
-  id: number;
-  username: string;
-  role: UserRole;
-};
-
-export const authAtom = atom<AuthUser | null>(null);
+export const authAtom = atom<IUser | null>(null);

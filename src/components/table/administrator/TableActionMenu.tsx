@@ -7,17 +7,15 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
+  Box,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import PersonOffIcon from "@mui/icons-material/PersonOff";
 import PersonIcon from "@mui/icons-material/Person";
 import LockResetIcon from "@mui/icons-material/LockReset";
 import DeleteIcon from "@mui/icons-material/Delete";
-import InfoIcon from '@mui/icons-material/Info';
+import InfoIcon from "@mui/icons-material/Info";
 import { UserRowData } from "./types";
-
-
-
 
 interface TableActionMenuProps {
   anchorEl: HTMLElement | null;
@@ -25,6 +23,10 @@ interface TableActionMenuProps {
   onClose: () => void;
   onEdit: (row: UserRowData) => void;
   onDisable: (row: UserRowData) => void;
+  onSuspend: (row: UserRowData) => void;
+  onReset: (row: UserRowData) => void;
+  onReactivate: (row: UserRowData) => void;
+  onDelete: (row: UserRowData) => void;
 }
 
 const TableActionMenu: React.FC<TableActionMenuProps> = ({
@@ -33,8 +35,15 @@ const TableActionMenu: React.FC<TableActionMenuProps> = ({
   onClose,
   onEdit,
   onDisable,
+  onSuspend,
+  onReset,
+  onReactivate,
+  onDelete,
 }) => {
   const open = Boolean(anchorEl);
+  const status = activeRow?.status?.toLowerCase();
+  const isDisabled = status === "disabled";
+  const isActive = status === "active";
 
   return (
     <Menu
@@ -44,43 +53,36 @@ const TableActionMenu: React.FC<TableActionMenuProps> = ({
       transformOrigin={{ horizontal: "right", vertical: "top" }}
       anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
     >
-      <MenuItem
-        onClick={() => {
-          console.log("Account Detail Clicked", activeRow)
-          onClose();
-        }}
-      >
-        <ListItemIcon>
-          <InfoIcon fontSize="small" color="primary" />
-        </ListItemIcon>
-        <ListItemText>Account Detail</ListItemText>
-      </MenuItem>
+      {!isDisabled && (
+        <Box>
+          <MenuItem
+            onClick={() => {
+              if (activeRow) onEdit(activeRow);
+              onClose();
+            }}
+          >
+            <ListItemIcon>
+              <EditIcon fontSize="small" color="primary" />
+            </ListItemIcon>
+            <ListItemText>Edit Role</ListItemText>
+          </MenuItem>
 
-      <MenuItem
-        onClick={() => {
-          if (activeRow) onEdit(activeRow);
-          onClose();
-        }}
-      >
-        <ListItemIcon>
-          <EditIcon fontSize="small" color="primary" />
-        </ListItemIcon>
-        <ListItemText>Edit Role</ListItemText>
-      </MenuItem>
+          <MenuItem
+            onClick={() => {
+              if (activeRow) onReset(activeRow);
+              onClose();
+            }}
+          >
+            <ListItemIcon>
+              <LockResetIcon fontSize="small" color="secondary" />
+            </ListItemIcon>
+            <ListItemText>Reset Password</ListItemText>
+          </MenuItem>
+          <Divider />
+        </Box>
+      )}
 
-      <MenuItem
-        onClick={() => {
-          console.log("Reset Password clicked", activeRow);
-          onClose();
-        }}
-      >
-        <ListItemIcon>
-          <LockResetIcon fontSize="small" color="secondary" />
-        </ListItemIcon>
-        <ListItemText>Reset Password</ListItemText>
-      </MenuItem>
-
-      {activeRow?.status === "Active" ? (
+      {!isDisabled ? (
         <MenuItem
           sx={{ color: "error.main" }}
           onClick={() => {
@@ -97,22 +99,21 @@ const TableActionMenu: React.FC<TableActionMenuProps> = ({
         <MenuItem
           sx={{ color: "success.main" }}
           onClick={() => {
-            // Anda bisa menambahkan onEnable jika fungsinya berbeda
-            if (activeRow) onDisable(activeRow);
+            if (activeRow) onReactivate(activeRow);
             onClose();
           }}
         >
           <ListItemIcon>
             <PersonIcon fontSize="small" color="success" />
           </ListItemIcon>
-          <ListItemText>Enable Account</ListItemText>
+          <ListItemText>Reactivate Account</ListItemText>
         </MenuItem>
       )}
-   
+
       <MenuItem
         sx={{ color: "error.main" }}
         onClick={() => {
-          console.log("Delete Account clicked", activeRow);
+          if (activeRow) onDelete(activeRow);
           onClose();
         }}
       >

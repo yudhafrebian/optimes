@@ -18,9 +18,10 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
-import RestartAltIcon from "@mui/icons-material/RestartAlt"
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import GenericModal from "@/components/modal/GenericModal";
 import SuccessRegistrationView from "@/components/view/SuccessRegistrationView";
 import { Dayjs } from "dayjs";
@@ -37,6 +38,7 @@ interface EnhancedTableToolbarProps {
   onFilterStatus: (status: string) => void;
   onFilterDate: (start: Dayjs | null, end: Dayjs | null) => void;
   onRefresh: () => void;
+  onDelete: () => void;
 }
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
@@ -51,6 +53,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     startDate,
     endDate,
     onFilterDate,
+    onDelete,
   } = props;
   const [open, setOpen] = useState<boolean>(false);
   const [step, setStep] = useState<"form" | "success">("form");
@@ -174,7 +177,6 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
                 >
                   <MenuItem value="All">All Status</MenuItem>
                   <MenuItem value="active">Active</MenuItem>
-                  <MenuItem value="inactive">Inactive</MenuItem>
                   <MenuItem value="disabled">Disabled</MenuItem>
                 </Select>
               </FormControl>
@@ -203,7 +205,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
                 <Tooltip title="Reset Filters">
                   <IconButton
                     onClick={handleReset}
-                    color="error" // Memberikan warna agar kontras
+                    color="error"
                     sx={{
                       bgcolor: (theme) => alpha(theme.palette.error.main, 0.1),
                       "&:hover": {
@@ -216,6 +218,19 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
                   </IconButton>
                 </Tooltip>
               )}
+
+              <Tooltip title="Refresh Data">
+                <IconButton
+                  onClick={onRefresh}
+                  color="primary"
+                  sx={{
+                    border: "1px solid",
+                    borderColor: "divider",
+                  }}
+                >
+                  <RefreshIcon />
+                </IconButton>
+              </Tooltip>
               <Button
                 variant="contained"
                 startIcon={<AddIcon />}
@@ -229,7 +244,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
       )}
       {numSelected > 0 && (
         <Tooltip title="Delete">
-          <IconButton>
+          <IconButton onClick={onDelete}>
             <DeleteIcon />
           </IconButton>
         </Tooltip>

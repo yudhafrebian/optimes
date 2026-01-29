@@ -1,18 +1,17 @@
 "use client";
+const fetcher = (url: string) => apiClient.get(url).then((res) => res.data);
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
-import { LinearProgress } from "@mui/material";
+import { Divider, LinearProgress, Typography } from "@mui/material";
 import { IUser } from "@/interface/user.interface";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { apiClient } from "@/utils/apiHelper";
 import EnhancedTableToolbar from "./EnhancedTableToolbar";
 import EnhancedTableHead from "./EnhancedTableHead";
@@ -25,6 +24,12 @@ import TableActionMenu from "./TableActionMenu";
 import EditForm from "@/form/EditForm";
 import { UserRowData } from "./types";
 import dayjs, { Dayjs } from "dayjs";
+import GenericChips from "@/components/core/GenericChips";
+import ResetPasswordAdminForm from "@/form/ResetPasswordAdminForm";
+import WarningIcon from "@mui/icons-material/Warning";
+import SuccessResetPasswordView from "@/components/view/SuccessResetPasswordView";
+import useSwr from "swr";
+import DisableForm from "@/form/DisableForm";
 
 function createData(
   id: string,
@@ -36,7 +41,7 @@ function createData(
     | "maintenance_administrator"
     | "maintenance",
   status: string,
-  password_status: "normal" | "temporary" | "expired",
+  password_status: "Normal" | "Temporary" | "Expired",
   last_login: string,
   created_date: string,
   full_name: string,
@@ -78,25 +83,64 @@ function getComparator<Key extends keyof any>(
 }
 
 export default function AccountTableManagement() {
-  const [order, setOrder] = React.useState<Order>("asc");
-  const [orderBy, setOrderBy] =
-    React.useState<keyof UserRowData>("created_date");
-  const [selected, setSelected] = React.useState<readonly string[]>([]);
-  const [page, setPage] = React.useState<number>(0);
-  const [dense, setDense] = React.useState<boolean>(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState<number>(5);
-  const [rows, setRows] = useState<UserRowData[]>([]);
+  const [order, setOrder] = useState<Order>("asc");
+  const [orderBy, setOrderBy] = useState<keyof UserRowData>("created_date");
+  const [selected, setSelected] = useState<readonly string[]>([]);
+  const [page, setPage] = useState<number>(0);
+  const [dense, setDense] = useState<boolean>(false);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(5);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [activeRow, setActiveRow] = useState<UserRowData | null>(null);
-  const [openEditModal, setOpenEditModal] = useState<boolean>(false);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
-  const [editData, setEditData] = useState<UserRowData | null>(null);
+  const [modalType, setModalType] = useState<
+    | "edit"
+    | "suspend"
+    | "delete"
+    | "disable"
+    | "reset"
+    | "reactivate"
+    | "bulk-delete"
+    | null
+  >(null);
+  const [step, setStep] = useState<"form" | "success">("form");
   const [loading, setLoading] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [roleFilter, setRoleFilter] = useState<string>("All");
   const [statusFilter, setStatusFilter] = useState<string>("All");
   const [startDate, setStartDate] = useState<Dayjs | null>(null);
   const [endDate, setEndDate] = useState<Dayjs | null>(null);
+  const [resetResult, setResetResult] = useState<any>(null);
+
+  const {
+    data: users,
+    error,
+    mutate,
+    isValidating,
+    isLoading,
+  } = useSwr<IUser[]>("/user/all", fetcher, {
+    refreshInterval: 5000,
+    revalidateOnFocus: false,
+    keepPreviousData: true,
+  });
+
+  const rows = useMemo(() => {
+    if (!users || !Array.isArray(users)) {
+      return [];
+    }
+    console.log(users);
+
+    return users.map((user) =>
+      createData(
+        user.id?.toString() || "",
+        user.username || "",
+        user.role,
+        user.status,
+        user.security.password_status,
+        user.account_info.last_login || "-",
+        "2026-01-22T08:00:00.000Z",
+        user.full_name || "",
+      ),
+    );
+  }, [users]);
 
   const showSnackbar = useSnackbar();
 
@@ -110,7 +154,22 @@ export default function AccountTableManagement() {
 
   const handleCloseMenu = () => {
     setAnchorEl(null);
+  };
+
+  const closeAll = () => {
+    setModalType(null);
     setActiveRow(null);
+    setStep("form");
+    setResetResult(null);
+  };
+
+  const handleAction = (
+    type: "edit" | "suspend" | "delete" | "disable" | "reset" | "reactivate",
+    row: UserRowData,
+  ) => {
+    setAnchorEl(null);
+    setModalType(type);
+    setActiveRow(row);
   };
 
   const filteredRows = useMemo(() => {
@@ -119,65 +178,94 @@ export default function AccountTableManagement() {
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
       const matchesRole = roleFilter === "All" || row.role === roleFilter;
-      const matchesStatus = statusFilter === "All" || row.status === statusFilter;
+      const matchesStatus =
+        statusFilter === "All" || row.status === statusFilter;
 
       const rowDate = dayjs(row.created_date);
 
-      const isAfterStart = startDate 
-        ? rowDate.isAfter(startDate.startOf('day')) || rowDate.isSame(startDate.startOf('day')) 
+      const isAfterStart = startDate
+        ? rowDate.isAfter(startDate.startOf("day")) ||
+          rowDate.isSame(startDate.startOf("day"))
         : true;
 
-      const isBeforeEnd = endDate 
-        ? rowDate.isBefore(endDate.endOf('day')) || rowDate.isSame(endDate.endOf('day')) 
+      const isBeforeEnd = endDate
+        ? rowDate.isBefore(endDate.endOf("day")) ||
+          rowDate.isSame(endDate.endOf("day"))
         : true;
 
-      return matchesSearch && matchesRole && matchesStatus && isAfterStart && isBeforeEnd;
+      return (
+        matchesSearch &&
+        matchesRole &&
+        matchesStatus &&
+        isAfterStart &&
+        isBeforeEnd
+      );
     });
   }, [rows, searchQuery, roleFilter, statusFilter, startDate, endDate]);
 
-  const fetchUsers = async () => {
+  const handleReactivateUser = async (id: string) => {
     try {
       setLoading(true);
-      const res = await apiClient.get("/user/all");
-      const users: IUser[] = res.data;
-      console.log("Fetched users:", users);
-      const tableRows = users.map((user) =>
-        createData(
-          user.id.toString(),
-          user.username,
-          user.role,
-          user.status,
-          user.password_status,
-          user.last_login,
-          user.created_date,
-          user.full_name,
-        ),
+      // await apiClient.patch(`/user/reactivate/`, { id });
+      showSnackbar("User reactivated successfully", "success");
+      closeAll();
+      mutate();
+    } catch (error) {
+      showSnackbar("Failed to reactivate user", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    const selectedUsersData = rows.filter((row) => selected.includes(row.id));
+
+    const hasActiveUser = selectedUsersData.some(
+      (user) => user.status !== "disabled",
+    );
+
+    if (hasActiveUser) {
+      showSnackbar(
+        "Some users are not disabled, you need to disable them first",
+        "error",
       );
-      setRows(tableRows);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
+      return;
     }
-  };
 
-  const handleDisableUser = async (id: string) => {
     try {
       setLoading(true);
-      await apiClient.patch(`/user/disable/`, { id });
-      showSnackbar("User status updated successfully", "success");
-      setOpenDeleteDialog(false);
-      fetchUsers();
+      // await apiClient.post(`/user/bulk-delete`, { ids: selected });
+
+      showSnackbar(`${selected.length} users deleted successfully`, "success");
+      setSelected([]);
+      closeAll();
+      mutate();
     } catch (error) {
-      showSnackbar("Failed to update user status", "error");
+      showSnackbar("Failed to delete users", "error");
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+  const handleDeleteUser = async (id: string, status: string) => {
+    try {
+      setLoading(true);
+      if (status !== "disabled") {
+        showSnackbar(
+          "User is not disabled, you need to disable the user first",
+          "error",
+        );
+        return;
+      }
+      // await apiClient.delete(`/user/delete/${id}`);
+      showSnackbar("User deleted successfully", "success");
+      closeAll();
+      mutate();
+    } catch (error) {
+      showSnackbar("Failed to delete user", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -242,7 +330,7 @@ export default function AccountTableManagement() {
         <Paper sx={{ width: "100%", mb: 2, boxShadow: 3, overflow: "hidden" }}>
           <EnhancedTableToolbar
             numSelected={selected.length}
-            onRefresh={fetchUsers}
+            onRefresh={mutate}
             roleFilter={roleFilter}
             statusFilter={statusFilter}
             startDate={startDate}
@@ -259,6 +347,7 @@ export default function AccountTableManagement() {
               setEndDate(end);
               setPage(0);
             }}
+            onDelete={() => setModalType("bulk-delete")}
           />
           <Box sx={{ height: 4 }}>{loading && <LinearProgress />}</Box>
           <TableContainer sx={{ overflowX: "auto", whiteSpace: "nowrap" }}>
@@ -276,7 +365,7 @@ export default function AccountTableManagement() {
                 rowCount={rows.length}
               />
               <TableBody>
-                {loading ? (
+                {(isLoading && rows.length === 0) || loading ? (
                   <TableRowSkeleton rows={rowsPerPage} />
                 ) : (
                   visibleRows.map((row, index) => (
@@ -289,12 +378,6 @@ export default function AccountTableManagement() {
                       onOpenMenu={handleOpenMenu}
                     />
                   ))
-                )}
-
-                {!loading && emptyRows > 0 && (
-                  <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
-                    <TableCell colSpan={6} />
-                  </TableRow>
                 )}
               </TableBody>
             </Table>
@@ -319,42 +402,178 @@ export default function AccountTableManagement() {
         anchorEl={anchorEl}
         activeRow={activeRow}
         onClose={handleCloseMenu}
-        onEdit={(row) => {
-          setEditData(row);
-          setOpenEditModal(true);
-        }}
-        onDisable={(row) => {
-          setOpenDeleteDialog(true);
-        }}
+        onEdit={(row) => handleAction("edit", row)}
+        onSuspend={(row) => handleAction("suspend", row)}
+        onDisable={(row) => handleAction("disable", row)}
+        onReset={(row) => handleAction("reset", row)}
+        onReactivate={(row) => handleAction("reactivate", row)}
+        onDelete={(row) => handleAction("delete", row)}
       />
 
       <GenericDialog
-        open={openDeleteDialog}
-        onClose={() => setOpenDeleteDialog(false)}
-        title="Disable Account"
-        content="Are you sure you want to disable this account?"
+        open={
+          modalType === "disable" ||
+          modalType === "delete" ||
+          modalType === "reactivate" ||
+          modalType === "bulk-delete"
+        }
+        onClose={closeAll}
+        title={
+          modalType === "disable"
+            ? "Disable Account"
+            : modalType === "reactivate"
+              ? "Reactivate Account"
+              : modalType === "bulk-delete"
+                ? "Delete Accounts"
+                : "Delete Account"
+        }
+        content={
+          modalType === "reactivate"
+            ? "Are you sure you want to reactivate this user?"
+            : modalType === "bulk-delete"
+              ? `Are you sure you want to delete ${selected.length} users?`
+              : "Are you sure you want to delete this user?"
+        }
+        subContent={
+          modalType === "delete"
+            ? "This user will be deleted permanently!"
+            : modalType === "bulk-delete"
+              ? "These users will be deleted permanently"
+              : ""
+        }
         negativeText="Cancel"
-        positiveText="Disable"
-        onConfirm={() => activeRow && handleDisableUser(activeRow.id)}
-        onRefresh={fetchUsers}
+        positiveText={
+          modalType === "reactivate"
+            ? "Reactivate"
+            : modalType === "bulk-delete"
+              ? "Delete Selected"
+              : "Delete"
+        }
+        onConfirm={() => {
+          if (modalType === "bulk-delete") {
+            handleBulkDelete();
+            return;
+          }
+
+          if (!activeRow) return;
+          if (modalType === "reactivate") handleReactivateUser(activeRow.id);
+          if (modalType === "delete")
+            handleDeleteUser(activeRow.id, activeRow.status);
+        }}
+        onRefresh={mutate}
       />
 
-      {editData && (
-        <GenericModal
-          open={openEditModal}
-          onClose={() => setOpenEditModal(false)}
-          title="Edit Role"
-        >
-          <EditForm
-            data={editData}
-            onCancel={handleCloseMenu}
-            onSuccess={() => {
-              setOpenEditModal(false);
-              fetchUsers();
-            }}
-          />
-        </GenericModal>
-      )}
+      <GenericModal
+        open={
+          modalType === "edit" ||
+          modalType === "disable" ||
+          modalType === "reset"
+        }
+        onClose={closeAll}
+        title={
+          modalType === "edit"
+            ? "Edit Role"
+            : modalType === "reset"
+              ? "Reset Password"
+              : "Disable Account"
+        }
+      >
+        {activeRow && (
+          <>
+            {modalType === "edit" ? (
+              <>
+                <Box
+                  sx={{ mb: 2, display: "flex", alignItems: "center", gap: 1 }}
+                >
+                  <Typography>Current Role: </Typography>
+                  <GenericChips value={activeRow.role} variant="filled" />
+                </Box>
+                <EditForm
+                  data={activeRow}
+                  onCancel={closeAll}
+                  onSuccess={() => {
+                    mutate();
+                    closeAll();
+                  }}
+                />
+              </>
+            ) : modalType === "disable" ? (
+              <>
+                <Box sx={{ mb: 2 }}>
+                  <Typography>
+                    Username: <strong>{activeRow.username}</strong>
+                  </Typography>
+                  <Typography>
+                    Full Name: <strong>{activeRow.full_name}</strong>
+                  </Typography>
+                </Box>
+                <DisableForm
+                  data={activeRow}
+                  onCancel={closeAll}
+                  onSuccess={() => {
+                    mutate();
+                    closeAll();
+                  }}
+                />
+              </>
+            ) : (
+              <>
+                {step === "form" ? (
+                  <>
+                    <Box sx={{ mb: 2 }}>
+                      <Typography>
+                        Username: <strong>{activeRow.username}</strong>
+                      </Typography>
+                      <Typography>
+                        Full Name: <strong>{activeRow.full_name}</strong>
+                      </Typography>
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      >
+                        <Typography>Role:</Typography>
+                        <GenericChips value={activeRow.role} variant="filled" />
+                      </Box>
+                    </Box>
+                    <Divider sx={{ mb: 2 }} />
+                    <Box
+                      sx={{
+                        mb: 2,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                      }}
+                    >
+                      <WarningIcon color="warning" fontSize="large" />
+                      <Typography
+                        sx={{ my: 4 }}
+                        fontSize={18}
+                        align="center"
+                        color="warning.light"
+                      >
+                        This will generate a new temporary password!
+                      </Typography>
+                    </Box>
+
+                    <ResetPasswordAdminForm
+                      onCancel={closeAll}
+                      onSuccess={(formValues) => {
+                        mutate();
+                        setResetResult({ ...activeRow, ...formValues });
+                        setStep("success");
+                      }}
+                    />
+                  </>
+                ) : (
+                  <SuccessResetPasswordView
+                    data={resetResult}
+                    onClose={closeAll}
+                  />
+                )}
+              </>
+            )}
+          </>
+        )}
+      </GenericModal>
     </>
   );
 }

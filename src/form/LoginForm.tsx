@@ -1,5 +1,5 @@
 "use client";
-
+import Cookies from "js-cookie";
 import { Button, Grid, TextField, Typography } from "@mui/material";
 import { Form, Formik, FormikProps } from "formik";
 import { loginValidationSchema } from "./validation/auth.validation";
@@ -16,25 +16,51 @@ const LoginForm = () => {
 
   const setAuth = useSetAtom(authAtom);
   const router = useRouter();
+  
 
-  const onSubmit = async (values: IAuthLogin) => {
+  const onSubmit = async (values: IAuthLogin, actions: any) => {
     try {
       setLoading(true);
       setErrorMessage(null);
       const res = await apiClient.post("/auth/login", values);
-      const role = res.data.role;
 
-      setAuth({ id: res.data.id, username: res.data.username, role });
-      router.replace(`/dashboard/${role}`);
+      const { role, id, security } = res.data;
+
+      setAuth({
+        id: id,
+        username: res.data.username,
+        role: role,
+        full_name: res.data.full_name,
+        site: res.data.site,
+        area: res.data.area,
+        status: res.data.status,
+        security: {
+          must_change_password: security.must_change_password,
+          password_status: security.password_status,
+          password_expiry_time: security.password_expiry_time,
+          password_last_changed: security.password_last_changed,
+        },
+        account_info: {
+          account_expiry_date: res.data.account_info.account_expiry_date,
+          account_type: res.data.account_info.account_type,
+          last_login: res.data.account_info.last_login,
+        },
+      });
+
+      if (security.must_change_password) {
+        router.replace("/change-password");
+      } else {
+        router.replace(`/dashboard/${role}`);
+        Cookies.set("userId", id, { expires: 1 });
+        Cookies.set("userRole", role, { expires: 1 });
+      }
+      
     } catch (error: any) {
+      setErrorMessage(error.response?.data?.message || "Login failed");
       console.log(error);
-      setErrorMessage(
-        error.response?.data?.message || "An unexpected error occurred",
-      );
+      actions.setFieldValue("password", "");
     } finally {
-      setTimeout(() => {
-        setLoading(false);
-      }, 3000);
+      setLoading(false);
     }
   };
 

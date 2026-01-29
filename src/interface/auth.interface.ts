@@ -13,7 +13,8 @@ export interface IAuthRegister {
   role: UserRole | "";
   area: string;
   site: string;
-  employment_type: "full_time" | "temporary" | "";
+  account_type: "permanent" | "temporary" | "";
+  account_expiry_date: Date | null;
   password_expiry_date: Date
   must_change_password: boolean
   created_date: Date

@@ -44,13 +44,14 @@ const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
         full_name: values.full_name,
         area: values.area,
         site: values.site,
-        employment_type: values.employment_type,
+        account_type: values.account_type,
+        account_expiry_date: values.account_expiry_date,
         password_status: values.password_status,
         role: values.role,
         password: values.password,
         password_expiry_date: values.password_expiry_date,
         must_change_password: values.must_change_password,
-        created_date: values.created_date
+        created_date: values.created_date,
       };
 
       await apiClient.post("/auth/register", payload);
@@ -73,13 +74,14 @@ const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
         full_name: "",
         area: "",
         site: "",
-        employment_type: "",
+        account_type: "",
+        account_expiry_date: new Date(),
         password_status: "temporary",
         role: "",
         password: "",
         password_expiry_date: new Date(),
         must_change_password: true,
-        created_date: new Date(), 
+        created_date: new Date(),
       }}
       validationSchema={registerValidationSchema}
       onSubmit={onSubmit}
@@ -191,40 +193,77 @@ const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
                   )}
                 </FormControl>
               </Grid>
-
-              <Grid size={12}>
-                <FormControl
-                  fullWidth
-                  error={touched.role && Boolean(errors.role)}
-                >
-                  <InputLabel id="employment-type-label">
-                    Employment Type
-                  </InputLabel>
-                  <Select
-                    labelId="employment-type-label"
-                    id="employment_type"
-                    name="employment_type"
-                    value={values.employment_type}
-                    label="Employment Type"
-                    onChange={handleChange}
+              <Grid container size={12} spacing={2}>
+                <Grid size={6}>
+                  <FormControl
+                    fullWidth
+                    error={touched.role && Boolean(errors.role)}
                   >
-                    <MenuItem value="full_time">Full Time</MenuItem>
-                    <MenuItem value="temporary">Temporary</MenuItem>
-                  </Select>
-                  {touched.employment_type && errors.employment_type && (
-                    <Typography
-                      variant="caption"
-                      color="error"
-                      sx={{ ml: 2, mt: 0.5 }}
+                    <InputLabel id="account_type-label">
+                      Account Type
+                    </InputLabel>
+                    <Select
+                      labelId="account_type-label"
+                      id="account_type"
+                      name="account_type"
+                      value={values.account_type}
+                      label="Employment Type"
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setFieldValue("account_type", value);
+
+                        if (value === "permanent") {
+                          setFieldValue("account_expiry_date", null);
+                        }
+                      }}
                     >
-                      {errors.employment_type}
-                    </Typography>
-                  )}
-                </FormControl>
+                      <MenuItem value="permanent">Permanent</MenuItem>
+                      <MenuItem value="temporary">Temporary</MenuItem>
+                    </Select>
+                    {touched.account_type && errors.account_type && (
+                      <Typography
+                        variant="caption"
+                        color="error"
+                        sx={{ ml: 2, mt: 0.5 }}
+                      >
+                        {errors.account_type}
+                      </Typography>
+                    )}
+                  </FormControl>
+                </Grid>
+                <Grid size={6}>
+                  <DateTimePicker
+                  ampm={false}
+                    disabled={
+                      values.account_type === "permanent" ||
+                      !values.account_type
+                    }
+                    label="Account Expiration Date"
+                    value={values.account_expiry_date ? dayjs(values.account_expiry_date) : null}
+                    onChange={(value) =>
+                      setFieldValue(
+                        "account_expiry_date",
+                        value ? value.toDate() : null,
+                      )
+                    }
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        error:
+                          touched.account_expiry_date &&
+                          Boolean(errors.account_expiry_date),
+                        helperText:
+                          touched.account_expiry_date &&
+                          (errors.account_expiry_date as string),
+                      },
+                    }}
+                  />
+                </Grid>
               </Grid>
 
               <Grid size={12}>
                 <DateTimePicker
+                  ampm={false}
                   label="Password Expiration Date"
                   value={dayjs(values.password_expiry_date)}
                   onChange={(value) =>

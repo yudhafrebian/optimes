@@ -14,8 +14,8 @@ export const registerValidationSchema = Yup.object().shape({
     .required("Full name is required"),
   area: Yup.string().required("Area is required"),
   site: Yup.string().required("Site is required"),
-  employment_type: Yup.string()
-    .oneOf(["full_time", "temporary"])
+  account_type: Yup.string()
+    .oneOf(["permanent", "temporary"])
     .required("Employment type is required"),
   password: Yup.string().required("Password is required"),
   password_status: Yup.string()

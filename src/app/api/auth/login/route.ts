@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { readUsers } from "@/lib/userStore";
 
 export async function POST(req: Request) {
@@ -17,18 +16,24 @@ export async function POST(req: Request) {
     );
   }
 
-  (await cookies()).set("userId", String(user.id), {
-    httpOnly: true,
-    path: "/",
-  });
-  (await cookies()).set("userRole", String(user.role), {
-    httpOnly: false,
-    path: "/",
-  });
-
-  return NextResponse.json({
+return NextResponse.json({
     id: user.id,
     username: user.username,
+    full_name: user.full_name,
     role: user.role,
+    site: user.site,
+    area: user.area,
+    security: {
+      must_change_password: user.must_change_password,
+      password_status: user.password_status,
+      password_expiry_time: user.password_expiry_time,
+      password_last_changed: user.password_last_changed,
+      last_failed_login_time: user.last_failed_login_time
+    },
+    account_info: {
+      account_type: user.account_type,
+      last_login: user.last_login_time,
+      account_expiry_date: user.account_expiry_date
+    }
   });
 }

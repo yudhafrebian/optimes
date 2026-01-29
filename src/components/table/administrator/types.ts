@@ -3,7 +3,7 @@ export interface UserRowData {
   username: string;
   status: string;
   role: "administrator" | "operator" | "ppic" | "maintenance_administrator" | "maintenance";
-  password_status: "normal" | "temporary" | "expired";
+  password_status: "Normal" | "Temporary" | "Expired";
   last_login: string;
   created_date: string;
   full_name: string;

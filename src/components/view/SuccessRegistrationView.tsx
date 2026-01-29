@@ -1,18 +1,31 @@
 import { useSnackbar } from "@/hooks/useSnackbar";
 import { Box, Button, Typography } from "@mui/material";
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import copy from "copy-to-clipboard";
 import dayjs from "dayjs";
 
 const SuccessRegistrationView = ({ data, onClose }: { data: any, onClose: () => void }) => {
     const showSnackbar = useSnackbar();
 
-    const handleCopyPassword = () => {
-      navigator.clipboard.writeText(data.password);
-      showSnackbar("Password copied to clipboard!");
+const handleCopyPassword = () => {
+  if (data?.password) {
+    const isCopySuccess = copy(data.password);
+    if (isCopySuccess) {
+      showSnackbar("Password copied to clipboard!", "success");
+    } else {
+      showSnackbar("Failed to copy", "error");
     }
+  }
+};
   return (
     <Box>
       <Typography variant="body2">Username: <strong>{data.username}</strong></Typography>
       <Typography variant="body2">Full Name: <strong>{data.full_name}</strong></Typography>
+      <Typography variant="body2">Account Type: <strong>{data.account_type}</strong></Typography>
+      <Typography variant="body2">Valid Until: <strong>{data.account_expiry_date ? dayjs(data.account_expiry_date).format('YYYY-MM-DD') : 'N/A'}</strong></Typography>
+      <Typography variant="body2">Area: <strong>{data.area}</strong></Typography>
+      <Typography variant="body2">Site: <strong>{data.site}</strong></Typography>
+
       
       <Box sx={{ 
         bgcolor: '#f5f5f5', 
@@ -38,11 +51,11 @@ const SuccessRegistrationView = ({ data, onClose }: { data: any, onClose: () => 
       </ul>
 
       <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
-        <Button fullWidth variant="outlined" onClick={handleCopyPassword}>
-          Copy Password
-        </Button>
-        <Button fullWidth variant="contained" onClick={onClose}>
+        <Button fullWidth variant="outlined" color="error" onClick={onClose}>
           Close
+        </Button>
+        <Button fullWidth variant="contained" onClick={handleCopyPassword} startIcon={<ContentCopyIcon />}>
+          Copy Password
         </Button>
       </Box>
     </Box>

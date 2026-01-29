@@ -20,7 +20,8 @@ interface StatusChipProps {
 
 const defaultColorMap: Record<string, ChipColor> = {
   active: "success",
-  disabled: "warning",
+  suspended: "warning",
+  disabled: "error",
 
   administrator: "primary",
   operator: "secondary",

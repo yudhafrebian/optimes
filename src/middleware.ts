@@ -13,12 +13,19 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL(`/dashboard/${role}`, req.url));
   }
 
-  if (pathname.startsWith("/dashboard") && role) {
-    const allowedPath = `/dashboard/${role}`;
-    if (!pathname.startsWith(allowedPath)) {
-      return NextResponse.redirect(new URL(allowedPath, req.url));
+  if (pathname.startsWith("/dashboard/")) {
+    const segments = pathname.split("/");
+    const pathRole = segments[2]; 
+
+    if (role && pathRole && pathRole !== role) {
+      return NextResponse.redirect(new URL(`/dashboard/${role}`, req.url));
     }
   }
 
   return NextResponse.next();
 }
+
+// Tambahkan config agar middleware tidak berjalan di setiap file statis (image/css)
+export const config = {
+  matcher: ['/dashboard/:path*', '/auth/:path*'],
+};

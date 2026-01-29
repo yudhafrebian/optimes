@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Typography,
 } from "@mui/material";
 import * as React from "react";
 
@@ -12,6 +13,7 @@ interface IGenericDialogProps {
   open: boolean;
   title: string;
   content: string;
+  subContent?: string;
   negativeText?: string;
   positiveText?: string;
   onConfirm: () => void;
@@ -29,9 +31,8 @@ const GenericDialog: React.FunctionComponent<IGenericDialogProps> = (props) => {
     >
       <DialogTitle id="generic-dialog-title">{props.title}</DialogTitle>
       <DialogContent>
-        <DialogContentText id="generic-dialog-description">
-          {props.content}
-        </DialogContentText>
+        <Typography variant="body1">{props.content}</Typography>
+        {props.subContent && <Typography variant="body2" color="warning">{props.subContent}</Typography>}
       </DialogContent>
       <DialogActions>
         <Button
@@ -39,7 +40,6 @@ const GenericDialog: React.FunctionComponent<IGenericDialogProps> = (props) => {
           color="error"
           onClick={() => {
             props.onClose();
-            props.onRefresh();
           }}
         >
           {props.negativeText || "Cancel"}

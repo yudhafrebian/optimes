@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 export async function PATCH(req: Request) {
   try {
     const body = await req.json();
-    const { id } = body;
+    const { id, reason } = body; // Tangkap reason jika ingin disimpan
 
     if (!id) {
       return NextResponse.json(
@@ -14,22 +14,29 @@ export async function PATCH(req: Request) {
     }
 
     const users = readUsers();
-    const index = users.findIndex((u: any) => u.id === Number(id));
-    
+
+    // Gunakan == agar lebih fleksibel terhadap tipe data string/number,
+    // atau pastikan tipe datanya sama.
+    const index = users.findIndex((u: any) => String(u.id) === String(id));
+
     if (index === -1) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
+    // Update status. Pastikan "Disabled" sesuai dengan filter di frontend
     users[index] = {
       ...users[index],
-      status: "Disabled",
+      status: "disabled", // Gunakan lowercase jika frontend kamu pakai .toLowerCase()
+      disable_reason: reason, // Simpan alasannya
     };
+
+    // PENTING: Jangan lupa simpan kembali ke file/store jika kamu menggunakan file system
+    // writeUsers(users);
 
     return NextResponse.json({
       message: "User disabled successfully",
       data: users[index],
     });
-
   } catch (error) {
     console.log("DISABLE USER ERROR:", error);
     return NextResponse.json(

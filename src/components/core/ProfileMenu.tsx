@@ -9,6 +9,7 @@ import {
   Typography,
   Box,
 } from "@mui/material";
+import Cookies from "js-cookie";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
 import { useState } from "react";
@@ -16,9 +17,11 @@ import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
 import { authAtom } from "@/atoms/auth.atom";
 import ProfileMenuSekeleton from "../skeleton/ProfileMenuSkeleton";
+import GenericDialog from "../dialog/GenericDialog";
 
 export function ProfileMenu() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
   const router = useRouter();
   const [auth, setAuth] = useAtom(authAtom);
 
@@ -33,7 +36,9 @@ export function ProfileMenu() {
   };
 
   const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
+    // await fetch("/api/auth/logout", { method: "POST" });
+    Cookies.remove("userId");
+    Cookies.remove("userRole");
     setAuth(null); // bersihkan auth atom
     handleClose();
     router.replace("/auth/login");
@@ -100,7 +105,7 @@ export function ProfileMenu() {
         <MenuItem
           onClick={() => {
             handleClose();
-            router.push("/profile");
+            router.push(`profile`);
           }}
         >
           <ListItemIcon>
@@ -109,13 +114,15 @@ export function ProfileMenu() {
           Profile
         </MenuItem>
 
-        <MenuItem onClick={handleLogout} sx={{ color: "error.main" }}>
+        <MenuItem onClick={() => setOpenDialog(true)} sx={{ color: "error.main" }}>
           <ListItemIcon>
             <LogoutIcon fontSize="small" color="error"/>
           </ListItemIcon>
           Logout
         </MenuItem>
       </Menu>
+
+      <GenericDialog open={openDialog} positiveText="Logout" onClose={() => setOpenDialog(false)} title="Logout" content="Are you sure you want to logout?" onConfirm={handleLogout} onRefresh={() => {}} />
     </>
   );
 }
