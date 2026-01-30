@@ -40,9 +40,9 @@ const TableActionMenu: React.FC<TableActionMenuProps> = ({
   onDelete,
 }) => {
   const open = Boolean(anchorEl);
-  const lifecycle = activeRow?.lifecycle?.toLowerCase();
-  const isDisabled = lifecycle === "disabled";
-  const isActive = lifecycle === "active";
+  const status = activeRow?.status?.toLowerCase();
+  const isDisabled = status === "disabled";
+  const isActive = status === "active";
 
   return (
     <Menu

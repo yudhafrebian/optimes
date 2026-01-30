@@ -19,7 +19,7 @@
   },
   {
     "id": 2,
-    "status": "active",
+    "status": "disabled",
     "username": "budi.operator",
     "full_name": "Budi Santoso",
     "area": "AREA-01",
@@ -37,7 +37,7 @@
   },
   {
     "id": 3,
-    "status": "disabled",
+    "status": "active",
     "username": "siti.ppic",
     "full_name": "Siti Aminah",
     "area": "AREA-02",
@@ -49,7 +49,7 @@
     "password_status": "normal",
     "password_expiry_time": null,
     "password_last_changed": "2026-01-24T09:15:00.000Z",
-    "must_change_password": false,
+    "must_change_password": true,
     "last_login": "2026-01-27T08:45:10.000Z",
     "last_failed_login_time": null
   },
@@ -63,11 +63,11 @@
     "account_type": "permanent",
     "account_expiry_date": null,
     "role": "maintenance",
-    "password": "Maintenance_5536427",
+    "password": "123456",
     "password_status": "normal",
     "password_expiry_time": null,
     "password_last_changed": "2026-01-25T10:00:00.000Z",
-    "must_change_password": false,
+    "must_change_password": true,
     "last_login": "2026-01-27T08:00:00.000Z",
     "last_failed_login_time": "2026-01-27T07:55:00.000Z"
   },

@@ -13,25 +13,22 @@ interface Data {
   username: string;
   full_name: string;
   role: string;
-  lifecycle: string;
-  account_type: string;
-  account_expiry_date: string;
-  password_last_changed: string;
-  password_expiry_time: string;
-  must_change_password: boolean;
+  status: string;
+  password_status: "normal" | "temporary" | "expired";
   last_login: string;
+  created_date: string;
 }
 
 type Order = "asc" | "desc";
 type ColumnId = keyof Data | "actions";
 
 interface EnhancedTableProps {
-  numSelected: number;
+  numSelected?: number;
   onRequestSort: (
     event: React.MouseEvent<unknown>,
     property: keyof Data,
   ) => void;
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onSelectAllClick?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
   orderBy: keyof Data;
   rowCount: number;
@@ -45,6 +42,12 @@ interface HeadCell {
 }
 
 const headCells: readonly HeadCell[] = [
+  {
+    id: "id",
+    numeric: false,
+    disablePadding: true,
+    label: "Employee ID",
+  },
   {
     id: "full_name",
     numeric: false,
@@ -64,46 +67,28 @@ const headCells: readonly HeadCell[] = [
     label: "Role",
   },
   {
-    id: "lifecycle",
+    id: "status",
     numeric: true,
     disablePadding: false,
-    label: "Lifecycle",
+    label: "Status",
   },
   {
-    id: "account_type",
+    id: "password_status",
     numeric: true,
     disablePadding: false,
-    label: "Account Type",
-  },
-  {
-    id: "account_expiry_date",
-    numeric: true,
-    disablePadding: false,
-    label: "Account Expiry Date",
-  },
-  {
-    id: "password_last_changed",
-    numeric: true,
-    disablePadding: false,
-    label: "Password Last Changed",
-  },
-  {
-    id: "password_expiry_time",
-    numeric: true,
-    disablePadding: false,
-    label: "Password Expiry Time",
-  },
-  {
-    id: "must_change_password",
-    numeric: true,
-    disablePadding: false,
-    label: "Must Change Password",
+    label: "Password Status",
   },
   {
     id: "last_login",
     numeric: true,
     disablePadding: false,
     label: "Last Login",
+  },
+  {
+    id: "created_date",
+    numeric: true,
+    disablePadding: false,
+    label: "Created Date",
   },
   {
     id: "actions",
@@ -132,27 +117,6 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   return (
     <TableHead>
       <TableRow>
-        <TableCell
-          padding="checkbox"
-          sx={{
-            fontWeight: 700,
-            fontSize: "0.875rem",
-            bgcolor: "#F8F9FA", // Warna abu-abu muda yang modern
-            color: "#475569", // Warna teks slate
-            borderBottom: "2px solid #E2E8F0", // Garis bawah lebih tegas
-            py: 2, // Padding vertikal agar header lebih lega
-          }}
-        >
-          <Checkbox
-            color="primary"
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-            inputProps={{
-              "aria-label": "select all desserts",
-            }}
-          />
-        </TableCell>
         {headCells.map((headCell) => {
           const isAction = headCell.id === "actions";
 

@@ -1,5 +1,5 @@
 "use client";
-const fetcher = (url: string) => apiClient.get(url).then((res) => res.data);
+
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
@@ -22,7 +22,6 @@ import { useSnackbar } from "@/hooks/useSnackbar";
 import UserTableRow from "./UserTableRow";
 import TableActionMenu from "./TableActionMenu";
 import EditForm from "@/form/EditForm";
-import { UserRowData } from "./types";
 import dayjs, { Dayjs } from "dayjs";
 import GenericChips from "@/components/core/GenericChips";
 import ResetPasswordAdminForm from "@/form/ResetPasswordAdminForm";
@@ -30,31 +29,29 @@ import WarningIcon from "@mui/icons-material/Warning";
 import SuccessResetPasswordView from "@/components/view/SuccessResetPasswordView";
 import useSwr from "swr";
 import DisableForm from "@/form/DisableForm";
+import { UserRowData } from "@/interface/row-table.interface";
+import { accountsApi } from "@/lib/api";
+import { AccountResponseDto } from "@/api-client";
 
-function createData(
-  id: string,
-  username: string,
-  role:
-    | "administrator"
-    | "operator"
-    | "ppic"
-    | "maintenance_administrator"
-    | "maintenance",
-  status: string,
-  password_status: "Normal" | "Temporary" | "Expired",
-  last_login: string,
-  created_date: string,
-  full_name: string,
-): UserRowData {
+const fetcher = () =>
+  accountsApi.accountControllerGetAll().then((res) => {
+    return res.data;
+  });
+
+function createData(user: AccountResponseDto): UserRowData {
+  console.log(user);
   return {
-    id,
-    username,
-    status,
-    role,
-    password_status,
-    last_login,
-    created_date,
-    full_name,
+    id: user.id,
+    username: user.username,
+    full_name: user.full_name,
+    lifecycle: user.account_lifecycle.label,
+    role: user.account_role?.label || "-",
+    account_expiry_date: user.account_expiry_date || "-",
+    account_type: user.account_type.label,
+    password_last_changed: user.password_last_changed || "-",
+    password_expiry_time: user.password_expiry_time || "-",
+    must_change_password: user.must_change_password,
+    last_login: user.last_login_time || "-",
   };
 }
 
@@ -73,10 +70,7 @@ type Order = "asc" | "desc";
 function getComparator<Key extends keyof any>(
   order: Order,
   orderBy: Key,
-): (
-  a: { [key in Key]: number | string },
-  b: { [key in Key]: number | string },
-) => number {
+): (a: { [key in Key]: any }, b: { [key in Key]: any }) => number {
   return order === "desc"
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
@@ -84,7 +78,7 @@ function getComparator<Key extends keyof any>(
 
 export default function AccountTableManagement() {
   const [order, setOrder] = useState<Order>("asc");
-  const [orderBy, setOrderBy] = useState<keyof UserRowData>("created_date");
+  const [orderBy, setOrderBy] = useState<keyof UserRowData>("full_name");
   const [selected, setSelected] = useState<readonly string[]>([]);
   const [page, setPage] = useState<number>(0);
   const [dense, setDense] = useState<boolean>(false);
@@ -105,41 +99,29 @@ export default function AccountTableManagement() {
   const [loading, setLoading] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [roleFilter, setRoleFilter] = useState<string>("All");
-  const [statusFilter, setStatusFilter] = useState<string>("All");
-  const [startDate, setStartDate] = useState<Dayjs | null>(null);
-  const [endDate, setEndDate] = useState<Dayjs | null>(null);
+  const [lifecycleFilter, setLifecycleFilter] = useState<string>("All");
+  const [typeFilter, setTypeFilter] = useState<string>("All");
   const [resetResult, setResetResult] = useState<any>(null);
 
   const {
     data: users,
-    error,
     mutate,
-    isValidating,
     isLoading,
-  } = useSwr<IUser[]>("/user/all", fetcher, {
+    error,
+  } = useSwr<AccountResponseDto[]>("api/accounts", fetcher, {
     refreshInterval: 5000,
     revalidateOnFocus: false,
-    keepPreviousData: true,
+    onError: (err) => {
+      console.log(err);
+    },
   });
 
   const rows = useMemo(() => {
+    // Cek apakah users ada DAN merupakan sebuah Array
     if (!users || !Array.isArray(users)) {
       return [];
     }
-    console.log(users);
-
-    return users.map((user) =>
-      createData(
-        user.id?.toString() || "",
-        user.username || "",
-        user.role,
-        user.status,
-        user.security.password_status,
-        user.account_info.last_login || "-",
-        "2026-01-22T08:00:00.000Z",
-        user.full_name || "",
-      ),
-    );
+    return users.map((user) => createData(user));
   }, [users]);
 
   const showSnackbar = useSnackbar();
@@ -178,30 +160,14 @@ export default function AccountTableManagement() {
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
       const matchesRole = roleFilter === "All" || row.role === roleFilter;
-      const matchesStatus =
-        statusFilter === "All" || row.status === statusFilter;
+      const matchesLifecycle =
+        lifecycleFilter === "All" || row.lifecycle === lifecycleFilter;
+      const matchesType =
+        typeFilter === "All" || row.account_type === typeFilter;
 
-      const rowDate = dayjs(row.created_date);
-
-      const isAfterStart = startDate
-        ? rowDate.isAfter(startDate.startOf("day")) ||
-          rowDate.isSame(startDate.startOf("day"))
-        : true;
-
-      const isBeforeEnd = endDate
-        ? rowDate.isBefore(endDate.endOf("day")) ||
-          rowDate.isSame(endDate.endOf("day"))
-        : true;
-
-      return (
-        matchesSearch &&
-        matchesRole &&
-        matchesStatus &&
-        isAfterStart &&
-        isBeforeEnd
-      );
+      return matchesSearch && matchesRole && matchesLifecycle && matchesType;
     });
-  }, [rows, searchQuery, roleFilter, statusFilter, startDate, endDate]);
+  }, [rows, searchQuery, roleFilter, lifecycleFilter, typeFilter]);
 
   const handleReactivateUser = async (id: string) => {
     try {
@@ -221,7 +187,7 @@ export default function AccountTableManagement() {
     const selectedUsersData = rows.filter((row) => selected.includes(row.id));
 
     const hasActiveUser = selectedUsersData.some(
-      (user) => user.status !== "disabled",
+      (user) => user.lifecycle !== "disabled",
     );
 
     if (hasActiveUser) {
@@ -234,7 +200,9 @@ export default function AccountTableManagement() {
 
     try {
       setLoading(true);
-      // await apiClient.post(`/user/bulk-delete`, { ids: selected });
+      await Promise.all(
+        selected.map((id) => accountsApi.accountControllerDelete(id)),
+      );
 
       showSnackbar(`${selected.length} users deleted successfully`, "success");
       setSelected([]);
@@ -256,7 +224,7 @@ export default function AccountTableManagement() {
         );
         return;
       }
-      // await apiClient.delete(`/user/delete/${id}`);
+      await accountsApi.accountControllerDelete(id);
       showSnackbar("User deleted successfully", "success");
       closeAll();
       mutate();
@@ -332,20 +300,17 @@ export default function AccountTableManagement() {
             numSelected={selected.length}
             onRefresh={mutate}
             roleFilter={roleFilter}
-            statusFilter={statusFilter}
-            startDate={startDate}
+            lifecycleFilter={lifecycleFilter}
+            typeFilter={typeFilter}
             onSearch={(val) => setSearchQuery(val)}
             onFilterRole={(role) => {
               setRoleFilter(role), setPage(0);
             }}
-            onFilterStatus={(status) => {
-              setStatusFilter(status), setPage(0);
+            onFilterLifecycle={(status) => {
+              setLifecycleFilter(status), setPage(0);
             }}
-            endDate={endDate}
-            onFilterDate={(start, end) => {
-              setStartDate(start);
-              setEndDate(end);
-              setPage(0);
+            onFilterType={(type) => {
+              setTypeFilter(type), setPage(0);
             }}
             onDelete={() => setModalType("bulk-delete")}
           />
@@ -458,7 +423,7 @@ export default function AccountTableManagement() {
           if (!activeRow) return;
           if (modalType === "reactivate") handleReactivateUser(activeRow.id);
           if (modalType === "delete")
-            handleDeleteUser(activeRow.id, activeRow.status);
+            handleDeleteUser(activeRow.id, activeRow.lifecycle);
         }}
         onRefresh={mutate}
       />

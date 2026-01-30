@@ -24,7 +24,7 @@ interface IEditFormProps {
   data: {
     id: string;
     username: string;
-    role: UserRole;
+    role: string;
   };
   onSuccess: () => void;
   onCancel: () => void;

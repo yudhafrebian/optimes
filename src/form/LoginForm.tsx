@@ -9,6 +9,7 @@ import { useState } from "react";
 import { useSetAtom } from "jotai";
 import { authAtom } from "@/atoms/auth.atom";
 import { useRouter } from "next/navigation";
+import { useSnackbar } from "@/hooks/useSnackbar";
 
 const LoginForm = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -16,9 +17,9 @@ const LoginForm = () => {
 
   const setAuth = useSetAtom(authAtom);
   const router = useRouter();
-  
+  const showSnackbar = useSnackbar();
 
-  const onSubmit = async (values: IAuthLogin, actions: any) => {
+  const onSubmit = async (values: IAuthLogin) => {
     try {
       setLoading(true);
       setErrorMessage(null);
@@ -53,12 +54,13 @@ const LoginForm = () => {
         router.replace(`/dashboard/${role}`);
         Cookies.set("userId", id, { expires: 1 });
         Cookies.set("userRole", role, { expires: 1 });
+        showSnackbar(`Login successful, welcome ${res.data.full_name}`, "success");
       }
       
     } catch (error: any) {
       setErrorMessage(error.response?.data?.message || "Login failed");
       console.log(error);
-      actions.setFieldValue("password", "");
+      showSnackbar(error.response?.data?.message || "Login failed", "error");
     } finally {
       setLoading(false);
     }

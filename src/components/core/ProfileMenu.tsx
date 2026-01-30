@@ -105,7 +105,7 @@ export function ProfileMenu() {
         <MenuItem
           onClick={() => {
             handleClose();
-            router.push(`profile`);
+            router.push(`/dashboard/${auth?.role}/profile`);
           }}
         >
           <ListItemIcon>

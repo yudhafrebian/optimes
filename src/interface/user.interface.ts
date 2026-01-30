@@ -9,7 +9,7 @@ export interface IUser {
   id: string | number;
   username: string;
   full_name: string;
-  role: UserRole;
+  role: string;
   area: string;
   site: string;
   
@@ -32,7 +32,7 @@ export interface IUser {
 
 
 export interface IEditUser {
-  role: UserRole;
+  role: string;
 }
 
 export interface IDisableUser {

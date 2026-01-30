@@ -12,16 +12,9 @@ export const registerValidationSchema = Yup.object().shape({
   full_name: Yup.string()
     .min(2, "Full name must be at least 2 characters")
     .required("Full name is required"),
-  area: Yup.string().required("Area is required"),
-  site: Yup.string().required("Site is required"),
   account_type: Yup.string()
-    .oneOf(["permanent", "temporary"])
     .required("Employment type is required"),
   password: Yup.string().required("Password is required"),
-  password_status: Yup.string()
-    .oneOf(["normal", "temporary", "expired"])
-    .required("Password status is required"),
-  role: Yup.string()
-    .oneOf(["administrator", "operator", "ppic", "maintenance_administrator", "maintenance"])
+  account_role: Yup.string()
     .required("Role is required"),
 });

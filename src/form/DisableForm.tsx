@@ -7,7 +7,8 @@ import { useState } from "react";
 import { useSnackbar } from "@/hooks/useSnackbar";
 import { IDisableUser } from "@/interface/user.interface";
 import { disableValidationSchema } from "./validation/user.validation";
-import { UserRowData } from "@/components/table/administrator/types";
+import { UserRowData } from "@/interface/row-table.interface";
+import { accountsApi } from "@/lib/api";
 
 interface IDisableFormProps {
   data: UserRowData;
@@ -31,7 +32,7 @@ const DisableForm = ({ onSuccess, onCancel, data }: IDisableFormProps) => {
         reason: values.reason,
       };
 
-      await apiClient.patch(`/user/disable`, payload);
+      await accountsApi.accountControllerDisable(payload.id);
 
       onSuccess(payload);
       showSnackbar("User disabled successful", "success");

@@ -3,8 +3,8 @@ import * as React from "react";
 import { TableRow, TableCell, Checkbox, IconButton, Chip } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import GenericChips from "@/components/core/GenericChips";
-import { UserRowData } from "./types";
 import dayjs from "dayjs";
+import { UserRowData } from "@/interface/row-table.interface";
 
 interface UserTableRowProps {
   row: UserRowData;
@@ -42,23 +42,37 @@ const UserTableRow: React.FC<UserTableRowProps> = ({
           inputProps={{ "aria-labelledby": labelId }}
         />
       </TableCell>
-
-      <TableCell component="th" id={labelId} scope="row" padding="normal" sx={{minWidth:150}}>
-        {row.id}
-      </TableCell>
-      <TableCell component="th" id={labelId} scope="row" padding="none" sx={{minWidth:250}}>
+      <TableCell
+        component="th"
+        id={labelId}
+        scope="row"
+        padding="none"
+        sx={{ minWidth: 250 }}
+      >
         {row.full_name}
       </TableCell>
-      <TableCell component="th" id={labelId} scope="row" padding="none" sx={{minWidth:200}}>
+      <TableCell
+        component="th"
+        id={labelId}
+        scope="row"
+        padding="none"
+        sx={{ minWidth: 200 }}
+      >
         {row.username}
       </TableCell>
 
-      <TableCell component="th" scope="row" padding="none" align="left" sx={{minWidth:200}}>
+      <TableCell
+        component="th"
+        scope="row"
+        padding="none"
+        align="left"
+        sx={{ minWidth: 200 }}
+      >
         <GenericChips value={row.role} variant="filled" />
       </TableCell>
 
       <TableCell component="th" scope="row" padding="none" align="left">
-        <GenericChips value={row.status} />
+        <GenericChips value={row.lifecycle} />
       </TableCell>
       <TableCell
         component="th"
@@ -67,13 +81,59 @@ const UserTableRow: React.FC<UserTableRowProps> = ({
         align="left"
         sx={{ textTransform: "capitalize", minWidth: 200 }}
       >
-        {row.password_status}
+        {row.account_type}
       </TableCell>
-      <TableCell component="th" scope="row" padding="none" align="left" sx={{minWidth:150}}>
-        {dayjs(row.last_login).format("DD/MM/YYYY HH:mm")}
+      <TableCell
+        component="th"
+        scope="row"
+        padding="normal"
+        align="left"
+        sx={{ textTransform: "capitalize", minWidth: 200 }}
+      >
+        {dayjs(row.account_expiry_date).isValid()
+          ? dayjs(row.account_expiry_date).format("HH:mm:ss - DD/MM/YYYY")
+          : "-"}
       </TableCell>
-      <TableCell component="th" scope="row" padding="none" align="center">
-        {dayjs(row.created_date).format("DD/MM/YYYY")}
+      <TableCell
+        component="th"
+        scope="row"
+        padding="normal"
+        align="left"
+        sx={{ textTransform: "capitalize", minWidth: 200 }}
+      >
+        {dayjs(row.password_last_changed).isValid()
+          ? dayjs(row.password_last_changed).format("HH:mm:ss - DD/MM/YYYY")
+          : "-"}
+      </TableCell>
+      <TableCell
+        component="th"
+        scope="row"
+        padding="normal"
+        align="left"
+        sx={{ textTransform: "capitalize", minWidth: 200 }}
+      >
+        {row.password_expiry_time}
+      </TableCell>
+      <TableCell
+        component="th"
+        scope="row"
+        padding="normal"
+        align="left"
+        sx={{ textTransform: "capitalize", minWidth: 200 }}
+      >
+        {row.must_change_password ? "Yes" : "No"}
+      </TableCell>
+
+      <TableCell
+        component="th"
+        scope="row"
+        padding="none"
+        align="left"
+        sx={{ minWidth: 150 }}
+      >
+        {dayjs(row.last_login).isValid()
+          ? dayjs(row.last_login).format("HH:mm:ss - DD/MM/YYYY")
+          : "-"}
       </TableCell>
 
       <TableCell align="center" sx={{ width: 50 }}>

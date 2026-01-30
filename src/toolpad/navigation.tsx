@@ -1,12 +1,13 @@
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
+import AssessmentIcon from '@mui/icons-material/Assessment';
 export const navigationByRole = {
   administrator: [
     // { segment: "dashboard/administrator", title: "Dashboard", icon: <DashboardIcon /> },
     {
       segment: "dashboard/administrator/account-management",
       title: "Account Management",
-      icon: <ManageAccountsIcon />
+      icon: <ManageAccountsIcon />,
     },
   ],
   operator: [
@@ -19,5 +20,17 @@ export const navigationByRole = {
       title: "Jobs",
     },
   ],
-  ppic: [{ segment: "dashboard/ppic", title: "Dashboard" }],
+  ppic: [
+    {
+      segment: "dashboard/ppic/job-management",
+      title: "Job Management",
+      icon: <AssignmentIcon />,
+    },
+    {
+      segment: "dashboard/ppic/job-reports",
+      title: "Job Reports",
+      icon: <AssessmentIcon />,
+      
+    },
+  ],
 };

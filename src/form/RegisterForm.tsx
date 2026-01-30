@@ -22,6 +22,8 @@ import { randomPassword } from "@/utils/passwordGenerator";
 import { useSnackbar } from "@/hooks/useSnackbar";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs";
+import { CreateAccountDto, LookupResponseDto } from "@/api-client";
+import { accountsApi, lookupApi } from "@/lib/api";
 
 interface IRegisterFormProps {
   onSuccess: (data: any) => void;
@@ -31,32 +33,27 @@ interface IRegisterFormProps {
 const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [role, setRole] = useState<LookupResponseDto[]>([]);
+  const [accountType, setAccountType] = useState<LookupResponseDto[]>([]);
+
+  const fetchSelector = async () => {
+    const role = await lookupApi.lookupControllerFindAll("ACCOUNT_ROLE");
+    const accountType = await lookupApi.lookupControllerFindAll("ACCOUNT_TYPE");
+    setRole(role.data);
+    setAccountType(accountType.data);
+  };
 
   const showSnackbar = useSnackbar();
 
-  const onSubmit = async (values: IAuthRegister) => {
+  const onSubmit = async (values: CreateAccountDto) => {
     try {
       setLoading(true);
       setErrorMessage(null);
+      console.log(values);
 
-      const payload = {
-        username: values.username,
-        full_name: values.full_name,
-        area: values.area,
-        site: values.site,
-        account_type: values.account_type,
-        account_expiry_date: values.account_expiry_date,
-        password_status: values.password_status,
-        role: values.role,
-        password: values.password,
-        password_expiry_date: values.password_expiry_date,
-        must_change_password: values.must_change_password,
-        created_date: values.created_date,
-      };
+      // const res = await accountsApi.accountControllerCreate(values);
 
-      await apiClient.post("/auth/register", payload);
-
-      onSuccess(payload);
+      // onSuccess(res);
       showSnackbar("Registration successful", "success");
     } catch (error: any) {
       setErrorMessage(
@@ -67,26 +64,25 @@ const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
     }
   };
 
+  useEffect(() => {
+    fetchSelector();
+  }, []);
+
   return (
-    <Formik<IAuthRegister>
+    <Formik<CreateAccountDto>
       initialValues={{
         username: "",
         full_name: "",
-        area: "",
-        site: "",
-        account_type: "",
-        account_expiry_date: new Date(),
-        password_status: "temporary",
-        role: "",
-        password: "",
-        password_expiry_date: new Date(),
-        must_change_password: true,
-        created_date: new Date(),
+        phone_number: "",
+        email: "",
+        account_type: 0,
+        account_role: 0,
+        account_expiry_date: "",
       }}
       validationSchema={registerValidationSchema}
       onSubmit={onSubmit}
     >
-      {(props: FormikProps<IAuthRegister>) => {
+      {(props: FormikProps<CreateAccountDto>) => {
         const {
           values,
           errors,
@@ -133,29 +129,29 @@ const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
               <Grid container size={12} spacing={2}>
                 <Grid size={6}>
                   <TextField
-                    id="area"
-                    name="area"
-                    label="Area"
+                    id="phone_number"
+                    name="phone_number"
+                    label="Phone Number"
                     fullWidth
-                    value={values.area}
+                    value={values.phone_number}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    error={touched.area && Boolean(errors.area)}
-                    helperText={touched.area && errors.area}
+                    error={touched.phone_number && Boolean(errors.phone_number)}
+                    helperText={touched.phone_number && errors.phone_number}
                   />
                 </Grid>
 
                 <Grid size={6}>
                   <TextField
-                    id="site"
-                    name="site"
-                    label="Site"
+                    id="email"
+                    name="email"
+                    label="email"
                     fullWidth
-                    value={values.site}
+                    value={values.email}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    error={touched.site && Boolean(errors.site)}
-                    helperText={touched.site && errors.site}
+                    error={touched.email && Boolean(errors.email)}
+                    helperText={touched.email && errors.email}
                   />
                 </Grid>
               </Grid>
@@ -163,32 +159,30 @@ const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
               <Grid size={12}>
                 <FormControl
                   fullWidth
-                  error={touched.role && Boolean(errors.role)}
+                  error={touched.account_role && Boolean(errors.account_role)}
                 >
-                  <InputLabel id="role-label">Role</InputLabel>
+                  <InputLabel id="account_role-label">Role</InputLabel>
                   <Select
-                    labelId="role-label"
-                    id="role"
-                    name="role"
-                    value={values.role}
+                    labelId="account_role-label"
+                    id="account_role"
+                    name="account_role"
+                    value={values.account_role}
                     label="Role"
                     onChange={handleChange}
                   >
-                    <MenuItem value="operator">Operator</MenuItem>
-                    <MenuItem value="ppic">PPIC</MenuItem>
-                    <MenuItem value="maintenance">Maintenance</MenuItem>
-                    <MenuItem value="administrator">Administrator</MenuItem>
-                    <MenuItem value="maintenance_administrator">
-                      Maintenance Administrator
-                    </MenuItem>
+                    {role.map((item) => (
+                      <MenuItem key={item.id} value={item.id}>
+                        {item.label}
+                      </MenuItem>
+                    ))}
                   </Select>
-                  {touched.role && errors.role && (
+                  {touched.account_role && errors.account_role && (
                     <Typography
                       variant="caption"
                       color="error"
                       sx={{ ml: 2, mt: 0.5 }}
                     >
-                      {errors.role}
+                      {errors.account_role}
                     </Typography>
                   )}
                 </FormControl>
@@ -197,7 +191,7 @@ const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
                 <Grid size={6}>
                   <FormControl
                     fullWidth
-                    error={touched.role && Boolean(errors.role)}
+                    error={touched.account_type && Boolean(errors.account_type)}
                   >
                     <InputLabel id="account_type-label">
                       Account Type
@@ -207,18 +201,21 @@ const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
                       id="account_type"
                       name="account_type"
                       value={values.account_type}
-                      label="Employment Type"
+                      label="Account Type"
                       onChange={(e) => {
                         const value = e.target.value;
                         setFieldValue("account_type", value);
 
-                        if (value === "permanent") {
+                        if (value === 6) {
                           setFieldValue("account_expiry_date", null);
                         }
                       }}
                     >
-                      <MenuItem value="permanent">Permanent</MenuItem>
-                      <MenuItem value="temporary">Temporary</MenuItem>
+                      {accountType.map((item) => (
+                        <MenuItem key={item.id} value={item.id}>
+                          {item.label}
+                        </MenuItem>
+                      ))}
                     </Select>
                     {touched.account_type && errors.account_type && (
                       <Typography
@@ -235,7 +232,7 @@ const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
                   <DateTimePicker
                   ampm={false}
                     disabled={
-                      values.account_type === "permanent" ||
+                      values.account_type === 6 ||
                       !values.account_type
                     }
                     label="Account Expiration Date"
@@ -259,31 +256,6 @@ const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
                     }}
                   />
                 </Grid>
-              </Grid>
-
-              <Grid size={12}>
-                <DateTimePicker
-                  ampm={false}
-                  label="Password Expiration Date"
-                  value={dayjs(values.password_expiry_date)}
-                  onChange={(value) =>
-                    setFieldValue(
-                      "password_expiry_date",
-                      value ? value.toDate() : null,
-                    )
-                  }
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      error:
-                        touched.password_expiry_date &&
-                        Boolean(errors.password_expiry_date),
-                      helperText:
-                        touched.password_expiry_date &&
-                        (errors.password_expiry_date as string),
-                    },
-                  }}
-                />
               </Grid>
 
               {errorMessage && (

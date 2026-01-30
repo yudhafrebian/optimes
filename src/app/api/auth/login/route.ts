@@ -16,6 +16,13 @@ export async function POST(req: Request) {
     );
   }
 
+  if(user.status !== "active") {
+    return NextResponse.json(
+      { message: "Your account is disabled, please contact your administrator" },
+      { status: 401 }
+    );
+  }
+
 return NextResponse.json({
     id: user.id,
     username: user.username,

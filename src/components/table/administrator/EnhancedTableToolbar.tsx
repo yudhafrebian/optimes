@@ -26,17 +26,18 @@ import GenericModal from "@/components/modal/GenericModal";
 import SuccessRegistrationView from "@/components/view/SuccessRegistrationView";
 import { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { lookupApi } from "@/lib/api";
+import { LookupResponseDto } from "@/api-client";
 
 interface EnhancedTableToolbarProps {
   numSelected: number;
   roleFilter: string;
-  statusFilter: string;
-  startDate: Dayjs | null;
-  endDate: Dayjs | null;
+  lifecycleFilter: string;
+  typeFilter: string;
   onSearch: (value: string) => void;
   onFilterRole: (role: string) => void;
-  onFilterStatus: (status: string) => void;
-  onFilterDate: (start: Dayjs | null, end: Dayjs | null) => void;
+  onFilterLifecycle: (lifecycle: string) => void;
+  onFilterType: (type: string) => void;
   onRefresh: () => void;
   onDelete: () => void;
 }
@@ -45,20 +46,35 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const {
     numSelected,
     onRefresh,
-    onFilterRole,
     onSearch,
     roleFilter,
-    statusFilter,
-    onFilterStatus,
-    startDate,
-    endDate,
-    onFilterDate,
+    lifecycleFilter,
+    typeFilter,
+    onFilterRole,
+    onFilterLifecycle,
+    onFilterType,
     onDelete,
   } = props;
   const [open, setOpen] = useState<boolean>(false);
   const [step, setStep] = useState<"form" | "success">("form");
   const [userData, setUserData] = useState<any>({});
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [roles, setRoles] = useState<LookupResponseDto[]>([]);
+  const [lifecycle, setLifecycle] = useState<LookupResponseDto[]>([]);
+  const [type, setType] = useState<LookupResponseDto[]>([]);
+
+  const fetchFilter = async () => {
+    try {
+      const roles =await lookupApi.lookupControllerFindAll("ACCOUNT_ROLE");
+      const lifecycle =await lookupApi.lookupControllerFindAll("ACCOUNT_LIFECYCLE");
+      const type =await lookupApi.lookupControllerFindAll("ACCOUNT_TYPE");
+      setRoles(roles.data);
+      setLifecycle(lifecycle.data);
+      setType(type.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const handleOpen = () => {
     setStep("form");
@@ -77,14 +93,13 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 
   const isFiltered =
     roleFilter !== "All" ||
-    statusFilter !== "All" ||
-    startDate !== null ||
-    endDate !== null;
+    lifecycleFilter !== "All" ||
+    typeFilter !== "All";
 
   const handleReset = () => {
     onFilterRole("All");
-    onFilterStatus("All");
-    onFilterDate(null, null);
+    onFilterLifecycle("All");
+    onFilterType("All");
     onSearch("");
   };
   useEffect(() => {
@@ -93,6 +108,10 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     }, 500);
     return () => clearTimeout(delayDebounceFn);
   }, [searchTerm, onSearch]);
+
+  useEffect(() => {
+    fetchFilter();
+  }, []);
 
   return (
     <Toolbar
@@ -157,50 +176,54 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
                   onChange={(e) => onFilterRole(e.target.value)}
                 >
                   <MenuItem value="All">All Roles</MenuItem>
-                  <MenuItem value="operator">Operator</MenuItem>
-                  <MenuItem value="ppic">PPIC</MenuItem>
-                  <MenuItem value="maintenance">Maintenance</MenuItem>
-                  <MenuItem value="administrator">Administrator</MenuItem>
-                  <MenuItem value="maintenance_administrator">
-                    Maintenance Administrator
-                  </MenuItem>
+                  {roles.map((role) => (
+                    <MenuItem key={role.code} value={role.label}>
+                      {role.label}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
 
               <FormControl size="small" sx={{ minWidth: "150px" }}>
-                <InputLabel id="filter-status-label">Status</InputLabel>
+                <InputLabel id="filter-lifecycle-label">Lifecycle</InputLabel>
                 <Select
-                  labelId="filter-status-label"
-                  label="Status"
-                  value={statusFilter}
-                  onChange={(e) => onFilterStatus(e.target.value)}
+                  labelId="filter-lifecycle-label"
+                  label="Lifecycle"
+                  value={lifecycleFilter}
+                  onChange={(e) => onFilterLifecycle(e.target.value)}
                 >
-                  <MenuItem value="All">All Status</MenuItem>
-                  <MenuItem value="active">Active</MenuItem>
-                  <MenuItem value="disabled">Disabled</MenuItem>
+                  <MenuItem value="All">All Lifecycle</MenuItem>
+                  {lifecycle.map((lifecycle) => (
+                    <MenuItem
+                      key={lifecycle.code}
+                      value={lifecycle.label}
+                    >
+                      {lifecycle.label}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
 
-              <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-                <DatePicker
-                  label="Start Date"
-                  value={startDate}
-                  onChange={(newValue) => onFilterDate(newValue, endDate)}
-                  slotProps={{
-                    textField: { size: "small", sx: { width: 170 } },
-                  }}
-                />
-                <Typography variant="body2">to</Typography>
-                <DatePicker
-                  label="End Date"
-                  value={endDate}
-                  minDate={startDate || undefined}
-                  onChange={(newValue) => onFilterDate(startDate, newValue)}
-                  slotProps={{
-                    textField: { size: "small", sx: { width: 170 } },
-                  }}
-                />
-              </Box>
+              <FormControl size="small" sx={{ minWidth: "150px" }}>
+                <InputLabel id="filter-type-label">Account Type</InputLabel>
+                <Select
+                  labelId="filter-type-label"
+                  label="Account Type"
+                  value={typeFilter}
+                  onChange={(e) => onFilterType(e.target.value)}
+                >
+                  <MenuItem value="All">All Type</MenuItem>
+                  {type.map((type) => (
+                    <MenuItem
+                      key={type.code}
+                      value={type.label}
+                    >
+                      {type.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
               {isFiltered && (
                 <Tooltip title="Reset Filters">
                   <IconButton
