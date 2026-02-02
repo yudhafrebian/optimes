@@ -1,6 +1,17 @@
 "use client";
 
-import { Box, Button, Grid, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  FormControl,
+  Grid,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  OutlinedInput,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { Form, Formik, FormikHelpers, FormikProps } from "formik";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
@@ -13,69 +24,73 @@ import { useSnackbar } from "@/hooks/useSnackbar";
 import * as Yup from "yup";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
-
-const getCriteria = (password: string) => [
-  { label: "Min. 12 Character", valid: password.length >= 12 },
-  { label: "Min. 1 Uppercase (A-Z)", valid: /[A-Z]/.test(password) },
-  { label: "Min. 1 Lowercase (a-z)", valid: /[a-z]/.test(password) },
-  { label: "Min. 1 Number (0-9)", valid: /[0-9]/.test(password) },
-  { label: "Min. 1 Symbol (@$!%*?&#_)", valid: /[@$!%*?&#_]/.test(password) },
-];
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { accountsApi } from "@/lib/api";
+import { ChangePasswordDto } from "@/api-client";
+import { getCriteria } from "@/lib/criteria";
 
 const ResetPassword = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [auth, setAuth] = useAtom(authAtom);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showNewPassword, setShowNewPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
 
   const showSnackbar = useSnackbar();
   const pathname = usePathname();
   const router = useRouter();
+  console.log(auth?.account_role?.label.toLowerCase());
 
   const isForceChange = pathname === "/change-password";
 
-  console.log(isForceChange)
   const dynamicValidationSchema = Yup.object().shape({
-    old_password: isForceChange 
-      ? Yup.string().notRequired() 
+    currentPassword: isForceChange
+      ? Yup.string().notRequired()
       : Yup.string().required("Old Password is required"),
-    new_password: Yup.string()
+    newPassword: Yup.string()
       .min(12, "New Password must be at least 12 characters")
       .matches(/[A-Z]/, "Must contain at least one uppercase letter")
       .matches(/[a-z]/, "Must contain at least one lowercase letter")
       .matches(/[0-9]/, "Must contain at least one number")
       .matches(/[@$!%*?&#_]/, "Must contain at least one special character")
-      .notOneOf([Yup.ref("old_password")], "New password cannot be the same as old")
+      .notOneOf(
+        [Yup.ref("currentPassword")],
+        "New password cannot be the same as old",
+      )
       .required("New Password is required"),
     confirm_password: Yup.string()
-      .oneOf([Yup.ref("new_password")], "Passwords must match")
+      .oneOf([Yup.ref("newPassword")], "Passwords must match")
       .required("Confirm Password is required"),
   });
 
- const onSubmit = async (values: IChangePassword, actions: FormikHelpers<IChangePassword>) => {
+  const onSubmit = async (
+    values: ChangePasswordDto,
+    actions: FormikHelpers<IChangePassword>,
+  ) => {
     try {
       setLoading(true);
-      // await apiClient.post("/auth/change-password", values);
-
+      if (!auth?.id) throw new Error("User ID is required");
+      await accountsApi.accountControllerChangePassword(auth.id, {
+        currentPassword: values.currentPassword,
+        newPassword: values.newPassword,
+      });
       showSnackbar("Password updated successfully", "success");
-      
+
       if (auth) {
         setAuth({
           ...auth,
-          security: {
-            ...auth.security,
-            must_change_password: false
-          }
+          must_change_password: false,
         });
       }
 
       actions.resetForm();
 
       if (isForceChange) {
-        Cookies.set("userId", String(auth?.id));
-        Cookies.set("userRole", String(auth?.role));
-        router.replace(`/dashboard/${auth?.role}`);
+        router.replace(`/dashboard/${auth?.account_role?.label.toLowerCase()}`);
       }
-
     } catch (error: any) {
       setErrorMessage(error.response.data.message);
       showSnackbar(error.response.data.message, "error");
@@ -87,8 +102,8 @@ const ResetPassword = () => {
   return (
     <Formik
       initialValues={{
-        old_password: "",
-        new_password: "",
+        currentPassword: "",
+        newPassword: "",
         confirm_password: "",
       }}
       validateOnMount
@@ -102,40 +117,80 @@ const ResetPassword = () => {
       {(props: FormikProps<IChangePassword>) => {
         const { values, errors, touched, handleBlur, handleChange } = props;
 
-        const criteria = getCriteria(props.values.new_password);
+        const criteria = getCriteria(props.values.newPassword);
         return (
           <Form>
             <Grid container spacing={2} marginTop={1}>
               {!isForceChange && (
                 <Grid size={12}>
-                  <TextField
-                    id="old_password"
-                    name="old_password"
-                    label="Old Password"
-                    type="password"
+                  <FormControl
                     fullWidth
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.old_password}
-                    error={touched.old_password && !!errors.old_password}
-                    helperText={touched.old_password && errors.old_password}
-                  />
+                    variant="outlined"
+                    error={touched.currentPassword && !!errors.currentPassword}
+                  >
+                    <InputLabel htmlFor="currentPassword">Old Password</InputLabel>
+                    <OutlinedInput
+                      id="currentPassword"
+                      name="currentPassword"
+                      label="Old Password"
+                      type={showPassword ? "text" : "password"}
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      value={values.currentPassword}
+                      error={touched.currentPassword && !!errors.currentPassword}
+                      endAdornment={
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowPassword(!showPassword)}
+                            edge="end"
+                          >
+                            {showPassword ? <Visibility /> : <VisibilityOff />}
+                          </IconButton>
+                        </InputAdornment>
+                      }
+                    />
+                  </FormControl>
+                  {touched.currentPassword && errors.currentPassword && (
+                    <Typography variant="body2" color="error">
+                      {errors.currentPassword}
+                    </Typography>
+                  )}
                 </Grid>
               )}
 
               <Grid size={12}>
-                <TextField
-                  id="new_password"
-                  label="New Password"
-                  type="password"
-                  required
+                <FormControl
                   fullWidth
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={props.values.new_password}
-                  error={touched.new_password && !!errors.new_password}
-                  helperText={touched.new_password && errors.new_password}
-                />
+                  variant="outlined"
+                  error={touched.newPassword && !!errors.newPassword}
+                >
+                  <InputLabel htmlFor="newPassword">New Password</InputLabel>
+                  <OutlinedInput
+                    id="newPassword"
+                    name="newPassword"
+                    label="New Password"
+                    type={showNewPassword ? "text" : "password"}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.newPassword}
+                    error={touched.newPassword && !!errors.newPassword}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowNewPassword(!showNewPassword)}
+                          edge="end"
+                        >
+                          {showNewPassword ? <Visibility /> : <VisibilityOff />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                  />
+                </FormControl>
+                {touched.newPassword && errors.newPassword && (
+                  <Typography variant="body2" color="error">
+                    {errors.newPassword}
+                  </Typography>
+                )}
               </Grid>
 
               <Grid size={12}>
@@ -187,20 +242,48 @@ const ResetPassword = () => {
               </Grid>
 
               <Grid size={12}>
-                <TextField
-                  id="confirm_password"
-                  label="Confirm Password"
-                  type="password"
-                  required
+                <FormControl
                   fullWidth
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={props.values.confirm_password}
+                  variant="outlined"
                   error={touched.confirm_password && !!errors.confirm_password}
-                  helperText={
-                    touched.confirm_password && errors.confirm_password
-                  }
-                />
+                >
+                  <InputLabel htmlFor="confirm_password">
+                    Confirm Password
+                  </InputLabel>
+                  <OutlinedInput
+                    id="confirm_password"
+                    name="confirm_password"
+                    label="Confirm Password"
+                    type={showConfirmPassword ? "text" : "password"}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.confirm_password}
+                    error={
+                      touched.confirm_password && !!errors.confirm_password
+                    }
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() =>
+                            setShowConfirmPassword(!showConfirmPassword)
+                          }
+                          edge="end"
+                        >
+                          {showConfirmPassword ? (
+                            <Visibility />
+                          ) : (
+                            <VisibilityOff />
+                          )}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                  />
+                </FormControl>
+                {touched.confirm_password && errors.confirm_password && (
+                  <Typography variant="body2" color="error">
+                    {errors.confirm_password}
+                  </Typography>
+                )}
               </Grid>
               {errorMessage && (
                 <Grid size={12}>

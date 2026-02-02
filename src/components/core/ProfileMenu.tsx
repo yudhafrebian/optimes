@@ -18,6 +18,7 @@ import { useAtom } from "jotai";
 import { authAtom } from "@/atoms/auth.atom";
 import ProfileMenuSekeleton from "../skeleton/ProfileMenuSkeleton";
 import GenericDialog from "../dialog/GenericDialog";
+import { accountsApi } from "@/lib/api";
 
 export function ProfileMenu() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -36,10 +37,8 @@ export function ProfileMenu() {
   };
 
   const handleLogout = async () => {
-    // await fetch("/api/auth/logout", { method: "POST" });
-    Cookies.remove("userId");
-    Cookies.remove("userRole");
-    setAuth(null); // bersihkan auth atom
+    await accountsApi.accountControllerLogout();
+    setAuth(null);
     handleClose();
     router.replace("/auth/login");
   };
@@ -79,7 +78,7 @@ export function ProfileMenu() {
             variant="caption"
             sx={{ color: "text.secondary", display: "block" }}
           >
-            {auth.role}
+            {auth.account_role?.label || ""}
           </Typography>
         </Box>
 
@@ -105,7 +104,7 @@ export function ProfileMenu() {
         <MenuItem
           onClick={() => {
             handleClose();
-            router.push(`/dashboard/${auth?.role}/profile`);
+            router.push(`/dashboard/${auth?.account_role?.label.toLowerCase()}/profile`);
           }}
         >
           <ListItemIcon>

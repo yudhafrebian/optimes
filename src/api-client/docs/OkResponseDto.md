@@ -1,23 +1,19 @@
-# UserDto
+# OkResponseDto
 
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**id** | **number** |  | [default to undefined]
-**email** | **string** |  | [default to undefined]
-**name** | **string** |  | [optional] [default to undefined]
+**ok** | **boolean** |  | [default to undefined]
 
 ## Example
 
 ```typescript
-import { UserDto } from './api';
+import { OkResponseDto } from './api';
 
-const instance: UserDto = {
-    id,
-    email,
-    name,
+const instance: OkResponseDto = {
+    ok,
 };
 ```
 

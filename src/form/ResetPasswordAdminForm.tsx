@@ -13,13 +13,16 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs";
 import { IResetPasswordAdmin } from "@/interface/user.interface";
 import { resetPasswordAdminValidationSchema } from "./validation/user.validation";
+import { accountsApi } from "@/lib/api";
+import { UserRowData } from "@/interface/row-table.interface";
 
 interface ISuspendFormProps {
+  data: UserRowData;
   onSuccess: (data: any) => void;
   onCancel: () => void;
 }
 
-const ResetPasswordAdminForm = ({ onSuccess, onCancel }: ISuspendFormProps) => {
+const ResetPasswordAdminForm = ({ onSuccess, onCancel, data }: ISuspendFormProps) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -30,15 +33,13 @@ const ResetPasswordAdminForm = ({ onSuccess, onCancel }: ISuspendFormProps) => {
       setLoading(true);
       setErrorMessage(null);
 
-      const payload = {
-        password: values.password,
-        password_status: values.password_status,
-        password_expiry_date: values.password_expiry_date,
-      };
+      const res = await accountsApi.accountControllerResetPassword(data.id, {
+        password_expiry_time: values.password_expiry_time,
+      });
 
-      //   await apiClient.post("/auth/register", payload);
+      console.log(res);
 
-      onSuccess(payload);
+      onSuccess(res.data);
       showSnackbar("Reset Password successful", "success");
     } catch (error: any) {
       setErrorMessage(
@@ -52,9 +53,7 @@ const ResetPasswordAdminForm = ({ onSuccess, onCancel }: ISuspendFormProps) => {
   return (
     <Formik<IResetPasswordAdmin>
       initialValues={{
-        password: "",
-        password_status: "temporary",
-        password_expiry_date: new Date(),
+        password_expiry_time:"",
       }}
       validationSchema={resetPasswordAdminValidationSchema}
       onSubmit={onSubmit}
@@ -80,11 +79,11 @@ const ResetPasswordAdminForm = ({ onSuccess, onCancel }: ISuspendFormProps) => {
               <Grid size={12}>
                 <DateTimePicker
                   ampm={false}
-                  label="Password Expiration Date"
-                  value={dayjs(values.password_expiry_date)}
+                  label="Password Expiration Time"
+                  value={dayjs(values.password_expiry_time)}
                   onChange={(value) =>
                     setFieldValue(
-                      "password_expiry_date",
+                      "password_expiry_time",
                       value ? value.toDate() : null,
                     )
                   }
@@ -92,11 +91,11 @@ const ResetPasswordAdminForm = ({ onSuccess, onCancel }: ISuspendFormProps) => {
                     textField: {
                       fullWidth: true,
                       error:
-                        touched.password_expiry_date &&
-                        Boolean(errors.password_expiry_date),
+                        touched.password_expiry_time &&
+                        Boolean(errors.password_expiry_time),
                       helperText:
-                        touched.password_expiry_date &&
-                        (errors.password_expiry_date as string),
+                        touched.password_expiry_time &&
+                        (errors.password_expiry_time as string),
                     },
                   }}
                 />

@@ -45,7 +45,7 @@ const ProfileView: React.FunctionComponent<IProfileViewProps> = (props) => {
   return (
     <>
       <Card sx={{ mb: 2 }}>
-        <CardContent sx={{display:"flex", gap:4}}>
+        <CardContent sx={{ display: "flex", gap: 4 }}>
           <Avatar
             sx={{
               width: 100,
@@ -57,14 +57,18 @@ const ProfileView: React.FunctionComponent<IProfileViewProps> = (props) => {
           >
             {auth?.username?.charAt(0).toUpperCase()}
           </Avatar>
-          <Box sx={{display:"flex", flexDirection:"column", gap:1}}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
             <Typography variant="h5" fontWeight={600}>
               {auth?.full_name}
             </Typography>
-            <Typography variant="body1" fontWeight={500}>{auth?.username}</Typography>
-            <Box sx={{display:"flex", gap:2}}>
-              <GenericChips value={auth?.status || ""} variant="outlined" />
-              <Typography color="#6B7280" variant="body2">Employee ID: {auth?.id}</Typography>
+            <Typography variant="body1" fontWeight={500}>
+              {auth.email || auth.username}
+            </Typography>
+            <Box>
+              <GenericChips
+                value={auth?.account_lifecycle.label || ""}
+                variant="outlined"
+              />
             </Box>
           </Box>
         </CardContent>
@@ -82,34 +86,37 @@ const ProfileView: React.FunctionComponent<IProfileViewProps> = (props) => {
             <CardContent>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 <Box>
-                  <Typography color="#6B7280">EMPLOYEE ID</Typography>
-                  <Typography fontWeight={"600"}>{auth?.id}</Typography>
-                </Box>
-                <Box>
                   <Typography color="#6B7280">FULL NAME</Typography>
                   <Typography fontWeight={"600"}>{auth?.full_name}</Typography>
                 </Box>
                 <Box>
                   <Typography color="#6B7280">USERNAME</Typography>
-                  <Typography fontWeight={"600"}>{auth?.username}</Typography>
+                  <Typography fontWeight={"600"}>{auth.username}</Typography>
+                </Box>
+                <Box>
+                  <Typography color="#6B7280">EMAIL</Typography>
+                  <Typography fontWeight={"600"}>
+                    {auth.email || "N/A"}
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography color="#6B7280">PHONE</Typography>
+                  <Typography fontWeight={"600"}>
+                    {auth.phone_number || "N/A"}
+                  </Typography>
                 </Box>
                 <Box>
                   <Typography color="#6B7280">ROLE</Typography>
-                  <GenericChips value={auth?.role || ""} variant="filled" />
+                  <GenericChips
+                    value={auth?.account_role?.label || ""}
+                    variant="filled"
+                  />
                 </Box>
                 <Box>
                   <Typography color="#6B7280">ACCOUNT TYPE</Typography>
                   <Typography fontWeight={"600"}>
-                    {auth?.account_info.account_type}
+                    {auth.account_type.label}
                   </Typography>
-                </Box>
-                <Box>
-                  <Typography color="#6B7280">AREA</Typography>
-                  <Typography fontWeight={"600"}>{auth?.area}</Typography>
-                </Box>
-                <Box>
-                  <Typography color="#6B7280">SITE</Typography>
-                  <Typography fontWeight={"600"}>{auth?.site}</Typography>
                 </Box>
               </Box>
             </CardContent>
@@ -129,23 +136,14 @@ const ProfileView: React.FunctionComponent<IProfileViewProps> = (props) => {
                 <Box>
                   <Typography color="#6B7280">PASSWORD LAST CHANGED</Typography>
                   <Typography fontWeight={"600"}>
-                    {formatDate(auth?.security?.password_last_changed)}
-                  </Typography>
-                </Box>
-                <Box>
-                  <Typography color="#6B7280">PASSWORD STATUS</Typography>
-                  <Typography
-                    fontWeight={"600"}
-                    sx={{ textTransform: "capitalize" }}
-                  >
-                    {auth?.security?.password_status}
+                    {formatDate(auth.password_last_changed)}
                   </Typography>
                 </Box>
                 <Box>
                   <Typography color="#6B7280">PASSWORD EXPIRY TIME</Typography>
                   <Typography fontWeight={"600"}>
-                    {auth?.security?.password_expiry_time
-                      ? dayjs(auth?.security?.password_expiry_time).format(
+                    {auth.password_expiry_time
+                      ? dayjs(auth.password_expiry_time).format(
                           "HH:mm - DD/MM/YYYY",
                         )
                       : "N/A"}
@@ -154,21 +152,9 @@ const ProfileView: React.FunctionComponent<IProfileViewProps> = (props) => {
                 <Box>
                   <Typography color="#6B7280">MUST CHANGE PASSWORD</Typography>
                   <GenericChips
-                    value={auth?.security?.must_change_password ? "YES" : "NO"}
+                    value={auth.must_change_password ? "YES" : "NO"}
                     variant="filled"
                   />
-                </Box>
-                <Box>
-                  <Typography color="#6B7280">
-                    LAST FAILED LOGIN TIME
-                  </Typography>
-                  <Typography fontWeight={"600"}>
-                    {auth?.security.last_failed_login_time
-                      ? dayjs(auth?.security.last_failed_login_time).format(
-                          "HH:mm:ss - DD/MM/YYYY",
-                        )
-                      : "N/A"}
-                  </Typography>
                 </Box>
               </Box>
             </CardContent>
@@ -189,18 +175,21 @@ const ProfileView: React.FunctionComponent<IProfileViewProps> = (props) => {
                 <Box>
                   <Typography color="#6B7280">LAST LOGIN TIME</Typography>
                   <Typography fontWeight={"600"}>
-                    {formatDate(auth?.account_info.last_login)}
+                    {formatDate(auth.last_login_time)}
                   </Typography>
                 </Box>
                 <Box>
                   <Typography color="#6B7280">ACCOUNT STATUS</Typography>
-                  <GenericChips value={auth?.status || ""} variant="outlined" />
+                  <GenericChips
+                    value={auth.account_lifecycle.label || ""}
+                    variant="outlined"
+                  />
                 </Box>
                 <Box>
                   <Typography color="#6B7280">ACCOUNT EXPIRY DATE</Typography>
                   <Typography fontWeight={"600"}>
-                    {auth?.security?.password_expiry_time
-                      ? dayjs(auth?.security?.password_expiry_time).format(
+                    {auth.password_expiry_time
+                      ? dayjs(auth.password_expiry_time).format(
                           "HH:mm:ss - DD/MM/YYYY",
                         )
                       : "N/A"}

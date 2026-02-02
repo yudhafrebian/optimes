@@ -112,7 +112,9 @@ const UserTableRow: React.FC<UserTableRowProps> = ({
         align="left"
         sx={{ textTransform: "capitalize", minWidth: 200 }}
       >
-        {row.password_expiry_time}
+        {dayjs(row.password_expiry_time).isValid()
+          ? dayjs(row.password_expiry_time).format("HH:mm:ss - DD/MM/YYYY")
+          : "-"}
       </TableCell>
       <TableCell
         component="th"

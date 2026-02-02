@@ -65,16 +65,17 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 
   const fetchFilter = async () => {
     try {
-      const roles =await lookupApi.lookupControllerFindAll("ACCOUNT_ROLE");
-      const lifecycle =await lookupApi.lookupControllerFindAll("ACCOUNT_LIFECYCLE");
-      const type =await lookupApi.lookupControllerFindAll("ACCOUNT_TYPE");
+      const roles = await lookupApi.lookupControllerFindAll("ACCOUNT_ROLE");
+      const lifecycle =
+        await lookupApi.lookupControllerFindAll("ACCOUNT_LIFECYCLE");
+      const type = await lookupApi.lookupControllerFindAll("ACCOUNT_TYPE");
       setRoles(roles.data);
       setLifecycle(lifecycle.data);
       setType(type.data);
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const handleOpen = () => {
     setStep("form");
@@ -92,9 +93,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   };
 
   const isFiltered =
-    roleFilter !== "All" ||
-    lifecycleFilter !== "All" ||
-    typeFilter !== "All";
+    roleFilter !== "All" || lifecycleFilter !== "All" || typeFilter !== "All";
 
   const handleReset = () => {
     onFilterRole("All");
@@ -194,10 +193,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
                 >
                   <MenuItem value="All">All Lifecycle</MenuItem>
                   {lifecycle.map((lifecycle) => (
-                    <MenuItem
-                      key={lifecycle.code}
-                      value={lifecycle.label}
-                    >
+                    <MenuItem key={lifecycle.code} value={lifecycle.label}>
                       {lifecycle.label}
                     </MenuItem>
                   ))}
@@ -214,10 +210,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
                 >
                   <MenuItem value="All">All Type</MenuItem>
                   {type.map((type) => (
-                    <MenuItem
-                      key={type.code}
-                      value={type.label}
-                    >
+                    <MenuItem key={type.code} value={type.label}>
                       {type.label}
                     </MenuItem>
                   ))}

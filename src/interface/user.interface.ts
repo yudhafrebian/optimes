@@ -32,7 +32,7 @@ export interface IUser {
 
 
 export interface IEditUser {
-  role: string;
+  roleLookupId: number;
 }
 
 export interface IDisableUser {
@@ -41,13 +41,11 @@ export interface IDisableUser {
 }
 
 export interface IChangePassword {
-  old_password: string;
-  new_password: string;
+  currentPassword: string;
+  newPassword: string;
   confirm_password: string;
 }
 
 export interface IResetPasswordAdmin {
-  password: string;
-  password_status: "normal" | "temporary" | "expired";
-  password_expiry_date: Date;
+  password_expiry_time: string;
 }

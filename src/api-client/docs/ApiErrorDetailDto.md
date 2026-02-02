@@ -1,19 +1,21 @@
-# EditRoleDto
+# ApiErrorDetailDto
 
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**roleLookupId** | **string** |  | [default to undefined]
+**field** | **string** |  | [default to undefined]
+**message** | **string** |  | [default to undefined]
 
 ## Example
 
 ```typescript
-import { EditRoleDto } from './api';
+import { ApiErrorDetailDto } from './api';
 
-const instance: EditRoleDto = {
-    roleLookupId,
+const instance: ApiErrorDetailDto = {
+    field,
+    message,
 };
 ```
 

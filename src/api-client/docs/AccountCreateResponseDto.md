@@ -1,19 +1,19 @@
-# AccountControllerCreate201Response
+# AccountCreateResponseDto
 
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**account** | [**AccountResponseDto**](AccountResponseDto.md) |  | [optional] [default to undefined]
-**initial_password** | **string** |  | [optional] [default to undefined]
+**account** | [**AccountResponseDto**](AccountResponseDto.md) |  | [default to undefined]
+**initial_password** | **string** |  | [default to undefined]
 
 ## Example
 
 ```typescript
-import { AccountControllerCreate201Response } from './api';
+import { AccountCreateResponseDto } from './api';
 
-const instance: AccountControllerCreate201Response = {
+const instance: AccountCreateResponseDto = {
     account,
     initial_password,
 };

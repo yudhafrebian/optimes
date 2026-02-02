@@ -13,6 +13,7 @@ Name | Type | Description | Notes
 **account_type** | **number** | Lookup id for account_type (int). If WITH_EXPIRATION, account_expiry_date is required. | [default to undefined]
 **account_role** | **number** | Lookup id for account_role (int) | [default to undefined]
 **account_expiry_date** | **string** | Required if account_type is WITH_EXPIRATION. Must be null for PERMANENT. | [optional] [default to undefined]
+**password_expiry_time** | **string** |  | [optional] [default to undefined]
 
 ## Example
 
@@ -28,6 +29,7 @@ const instance: CreateAccountDto = {
     account_type,
     account_role,
     account_expiry_date,
+    password_expiry_time,
 };
 ```
 

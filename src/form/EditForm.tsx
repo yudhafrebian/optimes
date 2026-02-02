@@ -11,14 +11,13 @@ import {
   Typography,
 } from "@mui/material";
 import { Form, Formik, FormikProps } from "formik";
-import { loginValidationSchema } from "./validation/auth.validation";
-import { IAuthRegister } from "@/interface/auth.interface";
-import { apiClient } from "@/utils/apiHelper";
 import { useEffect, useState } from "react";
-import { randomPassword } from "@/utils/passwordGenerator";
-import { IEditUser, UserRole } from "@/interface/user.interface";
 import { editValidationSchema } from "./validation/user.validation";
 import { useSnackbar } from "@/hooks/useSnackbar";
+import { accountsApi, lookupApi } from "@/lib/api";
+import { EditRoleDto, LookupResponseDto } from "@/api-client";
+import { useAtom } from "jotai";
+import { authAtom } from "@/atoms/auth.atom";
 
 interface IEditFormProps {
   data: {
@@ -33,17 +32,53 @@ interface IEditFormProps {
 const EditForm = ({ data, onSuccess, onCancel }: IEditFormProps) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [roles, setRoles] = useState<LookupResponseDto[]>([]);
+  const [roleId, setRoleId] = useState<string>("");
+
+  const auth = useAtom(authAtom);
 
   const showSnackbar = useSnackbar();
 
-  const onSubmit = async (values: IEditUser) => {
+  const fetchRoles = async () => {
+    try {
+      const res = await lookupApi.lookupControllerFindAll("ACCOUNT_ROLE");
+      setRoles(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchId = async () => {
+    try {
+      const res = await accountsApi.accountControllerGetById(data.id);
+      setRoleId(String(res.data.account_role?.id));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const onSubmit = async (values: EditRoleDto) => {
     try {
       setLoading(true);
       setErrorMessage(null);
-      const res = await apiClient.patch("/user/edit", {
-        id: data.id,
-        role: values.role,
+      
+      if(auth[0]?.id === data.id) {
+        showSnackbar("Cannot Change Role of Yourself", "error");
+        return;
+      }
+      if (roleId === "9") {
+        showSnackbar("Cannot Change Role of Administrator", "error");
+        return;
+      }
+
+
+
+      const response = await accountsApi.accountControllerEditRole(data.id, {
+        roleLookupId: values.roleLookupId,
       });
+
+      console.log(response);
+
       onSuccess();
       showSnackbar("User updated successfully", "success");
     } catch (error: any) {
@@ -58,16 +93,21 @@ const EditForm = ({ data, onSuccess, onCancel }: IEditFormProps) => {
     }
   };
 
+  useEffect(() => {
+    fetchRoles();
+    fetchId();
+  }, []);
+
   return (
     <Formik
       enableReinitialize
       initialValues={{
-        role: data.role,
+        roleLookupId: roleId || "",
       }}
       validationSchema={editValidationSchema}
       onSubmit={onSubmit}
     >
-      {(props: FormikProps<IEditUser>) => {
+      {(props: FormikProps<EditRoleDto>) => {
         const { errors, touched, values, handleBlur, handleChange } = props;
 
         return (
@@ -76,25 +116,24 @@ const EditForm = ({ data, onSuccess, onCancel }: IEditFormProps) => {
               <Grid size={12}>
                 <FormControl
                   fullWidth
-                  error={touched.role && Boolean(errors.role)}
+                  error={touched.roleLookupId && Boolean(errors.roleLookupId)}
                 >
-                  <InputLabel id="role-label">Role</InputLabel>
+                  <InputLabel id="roleLookupId-label">Role</InputLabel>
                   <Select
-                    labelId="role-label"
-                    id="role"
-                    name="role"
-                    value={values.role}
+                    labelId="roleLookupId-label"
+                    id="roleLookupId"
+                    name="roleLookupId"
+                    value={values.roleLookupId}
                     label="Role"
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    disabled={!roleId && roles.length === 0}
                   >
-                    <MenuItem value="operator">Operator</MenuItem>
-                    <MenuItem value="ppic">PPIC</MenuItem>
-                    <MenuItem value="maintenance">Maintenance</MenuItem>
-                    <MenuItem value="administrator">Administrator</MenuItem>
-                    <MenuItem value="maintenance_administrator">
-                      Maintenance Administrator
-                    </MenuItem>
+                    {roles.map((role) => (
+                      <MenuItem key={role.id} value={role.id}>
+                        {role.label}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </Grid>

@@ -3,19 +3,20 @@ import { Box, Button, Typography } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import copy from "copy-to-clipboard";
 import dayjs from "dayjs";
+import { AccountResetPasswordResponseDto } from "@/api-client";
 
 const SuccessResetPasswordView = ({
   data,
   onClose,
 }: {
-  data: any;
+  data: AccountResetPasswordResponseDto;
   onClose: () => void;
 }) => {
   const showSnackbar = useSnackbar();
 
 const handleCopyPassword = () => {
-  if (data?.password) {
-    const isCopySuccess = copy(data.password);
+  if (data?.initial_password) {
+    const isCopySuccess = copy(data.initial_password);
     if (isCopySuccess) {
       showSnackbar("Password copied to clipboard!", "success");
     } else {
@@ -24,36 +25,13 @@ const handleCopyPassword = () => {
   }
 };
 
-  // Fungsi cadangan (fallback) menggunakan textarea tersembunyi
-  const fallbackCopyTextToClipboard = (text: string) => {
-    const textArea = document.createElement("textarea");
-    textArea.value = text;
-
-    // Pastikan tidak terlihat oleh user
-    textArea.style.position = "fixed";
-    textArea.style.left = "-999999px";
-    textArea.style.top = "-999999px";
-    document.body.appendChild(textArea);
-
-    textArea.focus();
-    textArea.select();
-
-    try {
-      document.execCommand("copy");
-      showSnackbar("Password copied to clipboard!", "success");
-    } catch (err) {
-      showSnackbar("Failed to copy password", "error");
-    }
-
-    document.body.removeChild(textArea);
-  };
   return (
     <Box>
       <Typography variant="body2">
-        Username: <strong>{data.username}</strong>
+        Username: <strong>{data.account.username}</strong>
       </Typography>
       <Typography variant="body2">
-        Full Name: <strong>{data.full_name}</strong>
+        Full Name: <strong>{data.account.full_name}</strong>
       </Typography>
 
       <Box
@@ -73,11 +51,11 @@ const handleCopyPassword = () => {
           variant="h5"
           sx={{ letterSpacing: 2, fontWeight: "bold", my: 1 }}
         >
-          {data.password}
+          {data.initial_password}
         </Typography>
         <Typography variant="caption" color="error">
           Expires at:{" "}
-          {dayjs(data.password_expiry_date).format("YYYY-MM-DD HH:mm")}
+          {dayjs(data.account.password_expiry_time).format("YYYY-MM-DD HH:mm")}
         </Typography>
       </Box>
 
@@ -91,7 +69,6 @@ const handleCopyPassword = () => {
           User <b>MUST</b> change password on login
         </li>
         <li>Old password is now Invalid</li>
-        <li>User has been logged out automatically</li>
       </ul>
 
       <Box sx={{ display: "flex", gap: 2, mt: 3 }}>

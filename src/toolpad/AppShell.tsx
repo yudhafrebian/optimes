@@ -15,6 +15,7 @@ import { navigationByRole } from "./navigation";
 import { GlobalSnackbar } from "@/components/core/GlobalSnackbar";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { accountsApi } from "@/lib/api";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const [auth, setAuth] = useAtom(authAtom);
@@ -24,30 +25,50 @@ export function AppShell({ children }: { children: ReactNode }) {
     const checkAuth = async () => {
       try {
         if (!auth) {
-          const res = await apiClient.get("/auth/me");
+          const res = await accountsApi.accountControllerValidate();
           setAuth({
             id: res.data.id,
             username: res.data.username,
-            role: res.data.role,
             full_name: res.data.full_name,
-            site: res.data.site,
-            area: res.data.area,
-            status: res.data.status,
-            security: {
-              must_change_password: res.data.security.must_change_password,
-              password_status: res.data.security.password_status,
-              password_expiry_time: res.data.security.password_expiry_time,
-              password_last_changed: res.data.security.password_last_changed,
-              last_failed_login_time: res.data.security.last_failed_login_time,
+            email: res.data.email,
+            phone_number: res.data.phone_number,
+            account_role: {
+              code: res.data.account_role?.code || "",
+              label: res.data.account_role?.label || "",
+              description: res.data.account_role?.description || "",
+              id: res.data.account_role?.id || 0,
+              lookup_type: res.data.account_role?.lookup_type || "",
+              sort_order: res.data.account_role?.sort_order || 0,
+              is_active: res.data.account_role?.is_active || false,
             },
-            account_info: {
-              account_type: res.data.account_info.account_type,
-              account_expiry_date: res.data.account_info.account_expiry_date,
-              last_login: res.data.account_info.last_login,
+            account_type: {
+              code: res.data.account_type?.code || "",
+              label: res.data.account_type?.label || "",
+              description: res.data.account_type?.description || "",
+              id: res.data.account_type?.id || 0,
+              lookup_type: res.data.account_type?.lookup_type || "",
+              sort_order: res.data.account_type?.sort_order || 0,
+              is_active: res.data.account_type?.is_active || false,
             },
+            account_lifecycle: {
+              code: res.data.account_lifecycle?.code || "",
+              label: res.data.account_lifecycle?.label || "",
+              description: res.data.account_lifecycle?.description || "",
+              id: res.data.account_lifecycle?.id || 0,
+              lookup_type: res.data.account_lifecycle?.lookup_type || "",
+              sort_order: res.data.account_lifecycle?.sort_order || 0,
+              is_active: res.data.account_lifecycle?.is_active || false,
+            },
+            account_expiry_date: res.data.account_expiry_date,
+            password_last_changed: res.data.password_last_changed,
+            password_expiry_time: res.data.password_expiry_time,
+            must_change_password: res.data.must_change_password,
+            last_login_time: res.data.last_login_time,
           });
         }
-      } catch (error) {}
+      } catch (error) {
+        console.error(error);
+      }
     };
     checkAuth();
   }, [pathname, auth, setAuth]);

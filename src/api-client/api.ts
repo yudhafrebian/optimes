@@ -23,9 +23,224 @@ import type { RequestArgs } from './base';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError, operationServerMap } from './base';
 
-export interface AccountControllerCreate201Response {
-    'account'?: AccountResponseDto;
-    'initial_password'?: string;
+export interface AccountChangePasswordResponseDto {
+    'id': string;
+    'username': string;
+    'full_name': string;
+    'phone_number'?: string;
+    'email'?: string;
+    'attribute'?: object;
+    /**
+     * Populated lookup object for account_lifecycle
+     */
+    'account_lifecycle': LookupResponseDto;
+    /**
+     * Populated lookup object for account_type
+     */
+    'account_type': LookupResponseDto;
+    /**
+     * Populated lookup object for account_role
+     */
+    'account_role'?: LookupResponseDto;
+    'account_expiry_date'?: string;
+    'password_last_changed'?: string;
+    'password_expiry_time'?: string;
+    'must_change_password': boolean;
+    'last_login_time'?: string;
+}
+export interface AccountCreateResponseDto {
+    'account': AccountResponseDto;
+    'initial_password': string;
+}
+export interface AccountDashboardResponseDto {
+    'total': number;
+    'active': number;
+    'disabled': number;
+    'created': number;
+    'expired': number;
+    'deleted': number;
+    'other': number;
+    'generated_at': string;
+}
+export interface AccountDeleteResponseDto {
+    'id': string;
+    'username': string;
+    'full_name': string;
+    'phone_number'?: string;
+    'email'?: string;
+    'attribute'?: object;
+    /**
+     * Populated lookup object for account_lifecycle
+     */
+    'account_lifecycle': LookupResponseDto;
+    /**
+     * Populated lookup object for account_type
+     */
+    'account_type': LookupResponseDto;
+    /**
+     * Populated lookup object for account_role
+     */
+    'account_role'?: LookupResponseDto;
+    'account_expiry_date'?: string;
+    'password_last_changed'?: string;
+    'password_expiry_time'?: string;
+    'must_change_password': boolean;
+    'last_login_time'?: string;
+}
+export interface AccountEditResponseDto {
+    'id': string;
+    'username': string;
+    'full_name': string;
+    'phone_number'?: string;
+    'email'?: string;
+    'attribute'?: object;
+    /**
+     * Populated lookup object for account_lifecycle
+     */
+    'account_lifecycle': LookupResponseDto;
+    /**
+     * Populated lookup object for account_type
+     */
+    'account_type': LookupResponseDto;
+    /**
+     * Populated lookup object for account_role
+     */
+    'account_role'?: LookupResponseDto;
+    'account_expiry_date'?: string;
+    'password_last_changed'?: string;
+    'password_expiry_time'?: string;
+    'must_change_password': boolean;
+    'last_login_time'?: string;
+}
+export interface AccountEditRoleResponseDto {
+    'id': string;
+    'username': string;
+    'full_name': string;
+    'phone_number'?: string;
+    'email'?: string;
+    'attribute'?: object;
+    /**
+     * Populated lookup object for account_lifecycle
+     */
+    'account_lifecycle': LookupResponseDto;
+    /**
+     * Populated lookup object for account_type
+     */
+    'account_type': LookupResponseDto;
+    /**
+     * Populated lookup object for account_role
+     */
+    'account_role'?: LookupResponseDto;
+    'account_expiry_date'?: string;
+    'password_last_changed'?: string;
+    'password_expiry_time'?: string;
+    'must_change_password': boolean;
+    'last_login_time'?: string;
+}
+export interface AccountGetResponseDto {
+    'id': string;
+    'username': string;
+    'full_name': string;
+    'phone_number'?: string;
+    'email'?: string;
+    'attribute'?: object;
+    /**
+     * Populated lookup object for account_lifecycle
+     */
+    'account_lifecycle': LookupResponseDto;
+    /**
+     * Populated lookup object for account_type
+     */
+    'account_type': LookupResponseDto;
+    /**
+     * Populated lookup object for account_role
+     */
+    'account_role'?: LookupResponseDto;
+    'account_expiry_date'?: string;
+    'password_last_changed'?: string;
+    'password_expiry_time'?: string;
+    'must_change_password': boolean;
+    'last_login_time'?: string;
+}
+export interface AccountLifecycleResponseDto {
+    'id': string;
+    'username': string;
+    'full_name': string;
+    'phone_number'?: string;
+    'email'?: string;
+    'attribute'?: object;
+    /**
+     * Populated lookup object for account_lifecycle
+     */
+    'account_lifecycle': LookupResponseDto;
+    /**
+     * Populated lookup object for account_type
+     */
+    'account_type': LookupResponseDto;
+    /**
+     * Populated lookup object for account_role
+     */
+    'account_role'?: LookupResponseDto;
+    'account_expiry_date'?: string;
+    'password_last_changed'?: string;
+    'password_expiry_time'?: string;
+    'must_change_password': boolean;
+    'last_login_time'?: string;
+}
+export interface AccountListResponseDto {
+    'id': string;
+    'username': string;
+    'full_name': string;
+    'phone_number'?: string;
+    'email'?: string;
+    'attribute'?: object;
+    /**
+     * Populated lookup object for account_lifecycle
+     */
+    'account_lifecycle': LookupResponseDto;
+    /**
+     * Populated lookup object for account_type
+     */
+    'account_type': LookupResponseDto;
+    /**
+     * Populated lookup object for account_role
+     */
+    'account_role'?: LookupResponseDto;
+    'account_expiry_date'?: string;
+    'password_last_changed'?: string;
+    'password_expiry_time'?: string;
+    'must_change_password': boolean;
+    'last_login_time'?: string;
+}
+export interface AccountLoginResponseDto {
+    'id': string;
+    'username': string;
+    'full_name': string;
+    'phone_number'?: string;
+    'email'?: string;
+    'attribute'?: object;
+    /**
+     * Populated lookup object for account_lifecycle
+     */
+    'account_lifecycle': LookupResponseDto;
+    /**
+     * Populated lookup object for account_type
+     */
+    'account_type': LookupResponseDto;
+    /**
+     * Populated lookup object for account_role
+     */
+    'account_role'?: LookupResponseDto;
+    'account_expiry_date'?: string;
+    'password_last_changed'?: string;
+    'password_expiry_time'?: string;
+    'must_change_password': boolean;
+    'last_login_time'?: string;
+}
+export interface AccountResetPasswordResponseDto {
+    'account': AccountResponseDto;
+    'initial_password': string;
+    'expires_in_days': number;
 }
 export interface AccountResponseDto {
     'id': string;
@@ -52,6 +267,57 @@ export interface AccountResponseDto {
     'must_change_password': boolean;
     'last_login_time'?: string;
 }
+export interface AccountValidateResponseDto {
+    'id': string;
+    'username': string;
+    'full_name': string;
+    'phone_number'?: string;
+    'email'?: string;
+    'attribute'?: object;
+    /**
+     * Populated lookup object for account_lifecycle
+     */
+    'account_lifecycle': LookupResponseDto;
+    /**
+     * Populated lookup object for account_type
+     */
+    'account_type': LookupResponseDto;
+    /**
+     * Populated lookup object for account_role
+     */
+    'account_role'?: LookupResponseDto;
+    'account_expiry_date'?: string;
+    'password_last_changed'?: string;
+    'password_expiry_time'?: string;
+    'must_change_password': boolean;
+    'last_login_time'?: string;
+}
+export interface ApiErrorDetailDto {
+    'field': string;
+    'message': string;
+}
+export interface ApiErrorResponseDto {
+    'statusCode': number;
+    'error': string;
+    'message': object;
+    'details'?: Array<ApiErrorDetailDto>;
+    'path'?: string;
+}
+export interface ApiNotFoundResponseDto {
+    'statusCode': number;
+    'error': string;
+    'message': object;
+}
+export interface ChangePasswordDto {
+    /**
+     * Current password for validation
+     */
+    'currentPassword': string;
+    /**
+     * Password complexity: min 12 chars, upper/lower/number/symbol. Regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[@$!%*?&#^()_+-=[]{}|;:,.<>])[A-Za-zd@$!%*?&#^()_+-=[]{}|;:,.<>]{12,}$
+     */
+    'newPassword': string;
+}
 export interface CreateAccountDto {
     /**
      * Username rules: unique, lowercase, alphanumeric + underscore, length 4–20, regex ^[a-z][a-z0-9_]{3,19}$
@@ -73,6 +339,7 @@ export interface CreateAccountDto {
      * Required if account_type is WITH_EXPIRATION. Must be null for PERMANENT.
      */
     'account_expiry_date'?: string;
+    'password_expiry_time'?: string;
 }
 export interface CreateLookupDto {
     'lookup_type': string;
@@ -83,11 +350,18 @@ export interface CreateLookupDto {
     'is_active'?: boolean;
     'attribute'?: object;
 }
-export interface EditRoleDto {
+export interface EditAccountDto {
     /**
-     * Lookup id for account_role (number or string)
+     * Username rules: unique, lowercase, alphanumeric + underscore, length 4–20, regex ^[a-z][a-z0-9_]{3,19}$
      */
-    'roleLookupId': object;
+    'username'?: string;
+    'full_name'?: string;
+    'phone_number'?: string | null;
+    'email'?: string | null;
+    'attribute'?: object | null;
+}
+export interface EditRoleDto {
+    'roleLookupId': string;
 }
 export interface LoginDto {
     'username': string;
@@ -106,11 +380,14 @@ export interface LookupResponseDto {
     'is_active': boolean;
     'attribute'?: object;
 }
+export interface OkResponseDto {
+    'ok': boolean;
+}
 export interface ResetPasswordDto {
     /**
-     * Password complexity: min 12 chars, upper/lower/number/symbol. Regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[@$!%*?&#^()_+-=[]{}|;:,.<>])[A-Za-zd@$!%*?&#^()_+-=[]{}|;:,.<>]{12,}$
+     * Password expiry time (ISO). Can be set by system/admin.
      */
-    'newPassword': string;
+    'password_expiry_time': string;
 }
 export interface UpdateLookupDto {
     'lookup_type'?: string;
@@ -127,6 +404,45 @@ export interface UpdateLookupDto {
  */
 export const AccountsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
+        /**
+         * New password must follow SOP. password_expiry_time is set to 3 months from now.
+         * @summary Change password (user-defined)
+         * @param {string} id Account ID (UUID)
+         * @param {ChangePasswordDto} changePasswordDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        accountControllerChangePassword: async (id: string, changePasswordDto: ChangePasswordDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('accountControllerChangePassword', 'id', id)
+            // verify required parameter 'changePasswordDto' is not null or undefined
+            assertParamExists('accountControllerChangePassword', 'changePasswordDto', changePasswordDto)
+            const localVarPath = `/api/accounts/{id}/change-password`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(changePasswordDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
         /**
          * Account is always created with lifecycle = CREATED, must_change_password = true, password_last_changed = null. Initial password is generated by system.
          * @summary Create account
@@ -165,7 +481,7 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
         /**
          * 
          * @summary Soft delete account (mark DELETED)
-         * @param {string} id 
+         * @param {string} id Account ID (UUID)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -185,6 +501,7 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -198,7 +515,7 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
         /**
          * 
          * @summary Disable account
-         * @param {string} id 
+         * @param {string} id Account ID (UUID)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -218,10 +535,50 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Edit account (username, full_name, phone_number, email, attribute)
+         * @param {string} id Account ID (UUID)
+         * @param {EditAccountDto} editAccountDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        accountControllerEditAccount: async (id: string, editAccountDto: EditAccountDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('accountControllerEditAccount', 'id', id)
+            // verify required parameter 'editAccountDto' is not null or undefined
+            assertParamExists('accountControllerEditAccount', 'editAccountDto', editAccountDto)
+            const localVarPath = `/api/accounts/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(editAccountDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -255,6 +612,7 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             const localVarQueryParameter = {} as any;
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -269,7 +627,7 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
         /**
          * 
          * @summary Enable account
-         * @param {string} id 
+         * @param {string} id Account ID (UUID)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -289,6 +647,7 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -341,6 +700,36 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             assertParamExists('accountControllerGetById', 'id', id)
             const localVarPath = `/api/accounts/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Account dashboard summary
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        accountControllerGetDashboard: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/accounts/dashboard`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -417,6 +806,7 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -428,9 +818,9 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * If lifecycle=CREATED and password change succeeds, lifecycle becomes ACTIVE; must_change_password=false; password_last_changed set.
-         * @summary Reset password (admin or self)
-         * @param {string} id 
+         * System generates a new password and sets password_expiry_time. Response includes the new password and expiry info.
+         * @summary Reset password (system-generated)
+         * @param {string} id Account ID (UUID)
          * @param {ResetPasswordDto} resetPasswordDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -454,6 +844,7 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             const localVarQueryParameter = {} as any;
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -505,13 +896,27 @@ export const AccountsApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = AccountsApiAxiosParamCreator(configuration)
     return {
         /**
+         * New password must follow SOP. password_expiry_time is set to 3 months from now.
+         * @summary Change password (user-defined)
+         * @param {string} id Account ID (UUID)
+         * @param {ChangePasswordDto} changePasswordDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async accountControllerChangePassword(id: string, changePasswordDto: ChangePasswordDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountChangePasswordResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.accountControllerChangePassword(id, changePasswordDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AccountsApi.accountControllerChangePassword']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
          * Account is always created with lifecycle = CREATED, must_change_password = true, password_last_changed = null. Initial password is generated by system.
          * @summary Create account
          * @param {CreateAccountDto} createAccountDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async accountControllerCreate(createAccountDto: CreateAccountDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountControllerCreate201Response>> {
+        async accountControllerCreate(createAccountDto: CreateAccountDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountCreateResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.accountControllerCreate(createAccountDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AccountsApi.accountControllerCreate']?.[localVarOperationServerIndex]?.url;
@@ -520,11 +925,11 @@ export const AccountsApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Soft delete account (mark DELETED)
-         * @param {string} id 
+         * @param {string} id Account ID (UUID)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async accountControllerDelete(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async accountControllerDelete(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountDeleteResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.accountControllerDelete(id, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AccountsApi.accountControllerDelete']?.[localVarOperationServerIndex]?.url;
@@ -533,14 +938,28 @@ export const AccountsApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Disable account
-         * @param {string} id 
+         * @param {string} id Account ID (UUID)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async accountControllerDisable(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async accountControllerDisable(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountLifecycleResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.accountControllerDisable(id, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AccountsApi.accountControllerDisable']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Edit account (username, full_name, phone_number, email, attribute)
+         * @param {string} id Account ID (UUID)
+         * @param {EditAccountDto} editAccountDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async accountControllerEditAccount(id: string, editAccountDto: EditAccountDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountEditResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.accountControllerEditAccount(id, editAccountDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AccountsApi.accountControllerEditAccount']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -551,7 +970,7 @@ export const AccountsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async accountControllerEditRole(id: string, editRoleDto: EditRoleDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async accountControllerEditRole(id: string, editRoleDto: EditRoleDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountEditRoleResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.accountControllerEditRole(id, editRoleDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AccountsApi.accountControllerEditRole']?.[localVarOperationServerIndex]?.url;
@@ -560,11 +979,11 @@ export const AccountsApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Enable account
-         * @param {string} id 
+         * @param {string} id Account ID (UUID)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async accountControllerEnable(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async accountControllerEnable(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountLifecycleResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.accountControllerEnable(id, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AccountsApi.accountControllerEnable']?.[localVarOperationServerIndex]?.url;
@@ -576,7 +995,7 @@ export const AccountsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async accountControllerGetAll(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AccountResponseDto>>> {
+        async accountControllerGetAll(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AccountListResponseDto>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.accountControllerGetAll(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AccountsApi.accountControllerGetAll']?.[localVarOperationServerIndex]?.url;
@@ -589,10 +1008,22 @@ export const AccountsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async accountControllerGetById(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountResponseDto>> {
+        async accountControllerGetById(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountGetResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.accountControllerGetById(id, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AccountsApi.accountControllerGetById']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Account dashboard summary
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async accountControllerGetDashboard(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountDashboardResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.accountControllerGetDashboard(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AccountsApi.accountControllerGetDashboard']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -602,7 +1033,7 @@ export const AccountsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async accountControllerLogin(loginDto: LoginDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountResponseDto>> {
+        async accountControllerLogin(loginDto: LoginDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountLoginResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.accountControllerLogin(loginDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AccountsApi.accountControllerLogin']?.[localVarOperationServerIndex]?.url;
@@ -614,21 +1045,21 @@ export const AccountsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async accountControllerLogout(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async accountControllerLogout(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OkResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.accountControllerLogout(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AccountsApi.accountControllerLogout']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * If lifecycle=CREATED and password change succeeds, lifecycle becomes ACTIVE; must_change_password=false; password_last_changed set.
-         * @summary Reset password (admin or self)
-         * @param {string} id 
+         * System generates a new password and sets password_expiry_time. Response includes the new password and expiry info.
+         * @summary Reset password (system-generated)
+         * @param {string} id Account ID (UUID)
          * @param {ResetPasswordDto} resetPasswordDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async accountControllerResetPassword(id: string, resetPasswordDto: ResetPasswordDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async accountControllerResetPassword(id: string, resetPasswordDto: ResetPasswordDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountResetPasswordResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.accountControllerResetPassword(id, resetPasswordDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AccountsApi.accountControllerResetPassword']?.[localVarOperationServerIndex]?.url;
@@ -640,7 +1071,7 @@ export const AccountsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async accountControllerValidate(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountResponseDto>> {
+        async accountControllerValidate(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountValidateResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.accountControllerValidate(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AccountsApi.accountControllerValidate']?.[localVarOperationServerIndex]?.url;
@@ -656,34 +1087,56 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
     const localVarFp = AccountsApiFp(configuration)
     return {
         /**
+         * New password must follow SOP. password_expiry_time is set to 3 months from now.
+         * @summary Change password (user-defined)
+         * @param {string} id Account ID (UUID)
+         * @param {ChangePasswordDto} changePasswordDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        accountControllerChangePassword(id: string, changePasswordDto: ChangePasswordDto, options?: RawAxiosRequestConfig): AxiosPromise<AccountChangePasswordResponseDto> {
+            return localVarFp.accountControllerChangePassword(id, changePasswordDto, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Account is always created with lifecycle = CREATED, must_change_password = true, password_last_changed = null. Initial password is generated by system.
          * @summary Create account
          * @param {CreateAccountDto} createAccountDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        accountControllerCreate(createAccountDto: CreateAccountDto, options?: RawAxiosRequestConfig): AxiosPromise<AccountControllerCreate201Response> {
+        accountControllerCreate(createAccountDto: CreateAccountDto, options?: RawAxiosRequestConfig): AxiosPromise<AccountCreateResponseDto> {
             return localVarFp.accountControllerCreate(createAccountDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Soft delete account (mark DELETED)
-         * @param {string} id 
+         * @param {string} id Account ID (UUID)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        accountControllerDelete(id: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+        accountControllerDelete(id: string, options?: RawAxiosRequestConfig): AxiosPromise<AccountDeleteResponseDto> {
             return localVarFp.accountControllerDelete(id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Disable account
-         * @param {string} id 
+         * @param {string} id Account ID (UUID)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        accountControllerDisable(id: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+        accountControllerDisable(id: string, options?: RawAxiosRequestConfig): AxiosPromise<AccountLifecycleResponseDto> {
             return localVarFp.accountControllerDisable(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Edit account (username, full_name, phone_number, email, attribute)
+         * @param {string} id Account ID (UUID)
+         * @param {EditAccountDto} editAccountDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        accountControllerEditAccount(id: string, editAccountDto: EditAccountDto, options?: RawAxiosRequestConfig): AxiosPromise<AccountEditResponseDto> {
+            return localVarFp.accountControllerEditAccount(id, editAccountDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -693,17 +1146,17 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        accountControllerEditRole(id: string, editRoleDto: EditRoleDto, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+        accountControllerEditRole(id: string, editRoleDto: EditRoleDto, options?: RawAxiosRequestConfig): AxiosPromise<AccountEditRoleResponseDto> {
             return localVarFp.accountControllerEditRole(id, editRoleDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Enable account
-         * @param {string} id 
+         * @param {string} id Account ID (UUID)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        accountControllerEnable(id: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+        accountControllerEnable(id: string, options?: RawAxiosRequestConfig): AxiosPromise<AccountLifecycleResponseDto> {
             return localVarFp.accountControllerEnable(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -712,7 +1165,7 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        accountControllerGetAll(options?: RawAxiosRequestConfig): AxiosPromise<Array<AccountResponseDto>> {
+        accountControllerGetAll(options?: RawAxiosRequestConfig): AxiosPromise<Array<AccountListResponseDto>> {
             return localVarFp.accountControllerGetAll(options).then((request) => request(axios, basePath));
         },
         /**
@@ -722,8 +1175,17 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        accountControllerGetById(id: string, options?: RawAxiosRequestConfig): AxiosPromise<AccountResponseDto> {
+        accountControllerGetById(id: string, options?: RawAxiosRequestConfig): AxiosPromise<AccountGetResponseDto> {
             return localVarFp.accountControllerGetById(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Account dashboard summary
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        accountControllerGetDashboard(options?: RawAxiosRequestConfig): AxiosPromise<AccountDashboardResponseDto> {
+            return localVarFp.accountControllerGetDashboard(options).then((request) => request(axios, basePath));
         },
         /**
          * If lifecycle=CREATED, response is 200 with must_change_password=true. DISABLED/EXPIRED => 403. DELETED => 404.
@@ -732,7 +1194,7 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        accountControllerLogin(loginDto: LoginDto, options?: RawAxiosRequestConfig): AxiosPromise<AccountResponseDto> {
+        accountControllerLogin(loginDto: LoginDto, options?: RawAxiosRequestConfig): AxiosPromise<AccountLoginResponseDto> {
             return localVarFp.accountControllerLogin(loginDto, options).then((request) => request(axios, basePath));
         },
         /**
@@ -741,18 +1203,18 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        accountControllerLogout(options?: RawAxiosRequestConfig): AxiosPromise<void> {
+        accountControllerLogout(options?: RawAxiosRequestConfig): AxiosPromise<OkResponseDto> {
             return localVarFp.accountControllerLogout(options).then((request) => request(axios, basePath));
         },
         /**
-         * If lifecycle=CREATED and password change succeeds, lifecycle becomes ACTIVE; must_change_password=false; password_last_changed set.
-         * @summary Reset password (admin or self)
-         * @param {string} id 
+         * System generates a new password and sets password_expiry_time. Response includes the new password and expiry info.
+         * @summary Reset password (system-generated)
+         * @param {string} id Account ID (UUID)
          * @param {ResetPasswordDto} resetPasswordDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        accountControllerResetPassword(id: string, resetPasswordDto: ResetPasswordDto, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+        accountControllerResetPassword(id: string, resetPasswordDto: ResetPasswordDto, options?: RawAxiosRequestConfig): AxiosPromise<AccountResetPasswordResponseDto> {
             return localVarFp.accountControllerResetPassword(id, resetPasswordDto, options).then((request) => request(axios, basePath));
         },
         /**
@@ -761,7 +1223,7 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        accountControllerValidate(options?: RawAxiosRequestConfig): AxiosPromise<AccountResponseDto> {
+        accountControllerValidate(options?: RawAxiosRequestConfig): AxiosPromise<AccountValidateResponseDto> {
             return localVarFp.accountControllerValidate(options).then((request) => request(axios, basePath));
         },
     };
@@ -771,6 +1233,18 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
  * AccountsApi - object-oriented interface
  */
 export class AccountsApi extends BaseAPI {
+    /**
+     * New password must follow SOP. password_expiry_time is set to 3 months from now.
+     * @summary Change password (user-defined)
+     * @param {string} id Account ID (UUID)
+     * @param {ChangePasswordDto} changePasswordDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public accountControllerChangePassword(id: string, changePasswordDto: ChangePasswordDto, options?: RawAxiosRequestConfig) {
+        return AccountsApiFp(this.configuration).accountControllerChangePassword(id, changePasswordDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * Account is always created with lifecycle = CREATED, must_change_password = true, password_last_changed = null. Initial password is generated by system.
      * @summary Create account
@@ -785,7 +1259,7 @@ export class AccountsApi extends BaseAPI {
     /**
      * 
      * @summary Soft delete account (mark DELETED)
-     * @param {string} id 
+     * @param {string} id Account ID (UUID)
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -796,12 +1270,24 @@ export class AccountsApi extends BaseAPI {
     /**
      * 
      * @summary Disable account
-     * @param {string} id 
+     * @param {string} id Account ID (UUID)
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     public accountControllerDisable(id: string, options?: RawAxiosRequestConfig) {
         return AccountsApiFp(this.configuration).accountControllerDisable(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Edit account (username, full_name, phone_number, email, attribute)
+     * @param {string} id Account ID (UUID)
+     * @param {EditAccountDto} editAccountDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public accountControllerEditAccount(id: string, editAccountDto: EditAccountDto, options?: RawAxiosRequestConfig) {
+        return AccountsApiFp(this.configuration).accountControllerEditAccount(id, editAccountDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -819,7 +1305,7 @@ export class AccountsApi extends BaseAPI {
     /**
      * 
      * @summary Enable account
-     * @param {string} id 
+     * @param {string} id Account ID (UUID)
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -849,6 +1335,16 @@ export class AccountsApi extends BaseAPI {
     }
 
     /**
+     * 
+     * @summary Account dashboard summary
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public accountControllerGetDashboard(options?: RawAxiosRequestConfig) {
+        return AccountsApiFp(this.configuration).accountControllerGetDashboard(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * If lifecycle=CREATED, response is 200 with must_change_password=true. DISABLED/EXPIRED => 403. DELETED => 404.
      * @summary Login (sets cookie accountId)
      * @param {LoginDto} loginDto 
@@ -870,9 +1366,9 @@ export class AccountsApi extends BaseAPI {
     }
 
     /**
-     * If lifecycle=CREATED and password change succeeds, lifecycle becomes ACTIVE; must_change_password=false; password_last_changed set.
-     * @summary Reset password (admin or self)
-     * @param {string} id 
+     * System generates a new password and sets password_expiry_time. Response includes the new password and expiry info.
+     * @summary Reset password (system-generated)
+     * @param {string} id Account ID (UUID)
      * @param {ResetPasswordDto} resetPasswordDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}

@@ -1,6 +1,17 @@
 "use client";
 import Cookies from "js-cookie";
-import { Button, Grid, TextField, Typography } from "@mui/material";
+import {
+  Button,
+  FilledInput,
+  FormControl,
+  Grid,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  OutlinedInput,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { Form, Formik, FormikProps } from "formik";
 import { loginValidationSchema } from "./validation/auth.validation";
 import { IAuthLogin } from "@/interface/auth.interface";
@@ -10,53 +21,81 @@ import { useSetAtom } from "jotai";
 import { authAtom } from "@/atoms/auth.atom";
 import { useRouter } from "next/navigation";
 import { useSnackbar } from "@/hooks/useSnackbar";
+import PersonIcon from "@mui/icons-material/Person";
+import LockIcon from "@mui/icons-material/Lock";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { accountsApi } from "@/lib/api";
+import { LoginDto } from "@/api-client";
 
 const LoginForm = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const setAuth = useSetAtom(authAtom);
   const router = useRouter();
   const showSnackbar = useSnackbar();
 
-  const onSubmit = async (values: IAuthLogin) => {
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const onSubmit = async (values: LoginDto) => {
     try {
       setLoading(true);
       setErrorMessage(null);
-      const res = await apiClient.post("/auth/login", values);
-
-      const { role, id, security } = res.data;
+      const res = await accountsApi.accountControllerLogin(values);
 
       setAuth({
-        id: id,
+        id: res.data.id,
         username: res.data.username,
-        role: role,
         full_name: res.data.full_name,
-        site: res.data.site,
-        area: res.data.area,
-        status: res.data.status,
-        security: {
-          must_change_password: security.must_change_password,
-          password_status: security.password_status,
-          password_expiry_time: security.password_expiry_time,
-          password_last_changed: security.password_last_changed,
+        email: res.data.email,
+        phone_number: res.data.phone_number,
+        account_role: {
+          code: res.data.account_role?.code || "",
+          label: res.data.account_role?.label || "",
+          description: res.data.account_role?.description || "",
+          id: res.data.account_role?.id || 0,
+          lookup_type: res.data.account_role?.lookup_type || "",
+          sort_order: res.data.account_role?.sort_order || 0,
+          is_active: res.data.account_role?.is_active || false,
         },
-        account_info: {
-          account_expiry_date: res.data.account_info.account_expiry_date,
-          account_type: res.data.account_info.account_type,
-          last_login: res.data.account_info.last_login,
+        account_type: {
+          code: res.data.account_type?.code || "",
+          label: res.data.account_type?.label || "",
+          description: res.data.account_type?.description || "",
+          id: res.data.account_type?.id || 0,
+          lookup_type: res.data.account_type?.lookup_type || "",
+          sort_order: res.data.account_type?.sort_order || 0,
+          is_active: res.data.account_type?.is_active || false,
         },
+        account_lifecycle: {
+          code: res.data.account_lifecycle?.code || "",
+          label: res.data.account_lifecycle?.label || "",
+          description: res.data.account_lifecycle?.description || "",
+          id: res.data.account_lifecycle?.id || 0,
+          lookup_type: res.data.account_lifecycle?.lookup_type || "",
+          sort_order: res.data.account_lifecycle?.sort_order || 0,
+          is_active: res.data.account_lifecycle?.is_active || false,
+        },
+        account_expiry_date: res.data.account_expiry_date,
+        password_last_changed: res.data.password_last_changed,
+        password_expiry_time: res.data.password_expiry_time,
+        must_change_password: res.data.must_change_password,
+        last_login_time: res.data.last_login_time,
       });
 
-      if (security.must_change_password) {
+      if (res.data.must_change_password) {
         router.replace("/change-password");
       } else {
-        router.replace(`/dashboard/${role}`);
-        Cookies.set("userId", id, { expires: 1 });
-        Cookies.set("userRole", role, { expires: 1 });
-        showSnackbar(`Login successful, welcome ${res.data.full_name}`, "success");
+        router.replace(`/dashboard/${res.data.account_role?.label.toLocaleLowerCase()}`);
+        showSnackbar(
+          `Login successful, welcome ${res.data.full_name}`,
+          "success",
+        );
       }
-      
     } catch (error: any) {
       setErrorMessage(error.response?.data?.message || "Login failed");
       console.log(error);
@@ -75,7 +114,7 @@ const LoginForm = () => {
       validationSchema={loginValidationSchema}
       onSubmit={onSubmit}
     >
-      {(props: FormikProps<IAuthLogin>) => {
+      {(props: FormikProps<LoginDto>) => {
         const { errors, touched, handleBlur, handleChange } = props;
         return (
           <Form>
@@ -92,24 +131,66 @@ const LoginForm = () => {
                 <TextField
                   id="username"
                   label="Username"
-                  required
+                  name="username"
                   fullWidth
                   onBlur={handleBlur}
                   onChange={handleChange}
                   value={props.values.username}
+                  error={touched.username && Boolean(errors.username)}
+                  helperText={touched.username && errors.username}
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <PersonIcon />
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
                 />
               </Grid>
               <Grid size={12}>
-                <TextField
-                  id="password"
-                  label="Password"
-                  type="password"
-                  required
+                <FormControl
+                  variant="outlined"
                   fullWidth
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={props.values.password}
-                />
+                  error={touched.password && Boolean(errors.password)}
+                >
+                  <InputLabel htmlFor="password">Password</InputLabel>
+                  <OutlinedInput
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    value={props.values.password}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    label="Password"
+                    startAdornment={
+                      <InputAdornment position="start">
+                        <LockIcon />
+                      </InputAdornment>
+                    }
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                  />
+                  {touched.password && errors.password && (
+                    <Typography
+                      variant="caption"
+                      color="error"
+                      sx={{ ml: 2, mt: 0.5 }}
+                    >
+                      {errors.password}
+                    </Typography>
+                  )}
+                </FormControl>
               </Grid>
               {errorMessage && (
                 <Grid size={12}>

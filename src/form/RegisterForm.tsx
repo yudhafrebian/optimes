@@ -51,9 +51,9 @@ const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
       setErrorMessage(null);
       console.log(values);
 
-      // const res = await accountsApi.accountControllerCreate(values);
+      const res = await accountsApi.accountControllerCreate(values);
 
-      // onSuccess(res);
+      onSuccess(res.data);
       showSnackbar("Registration successful", "success");
     } catch (error: any) {
       setErrorMessage(
@@ -75,9 +75,10 @@ const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
         full_name: "",
         phone_number: "",
         email: "",
-        account_type: 0,
-        account_role: 0,
+        account_type: "" as any,
+        account_role: "" as any,
         account_expiry_date: "",
+        password_expiry_time: "",
       }}
       validationSchema={registerValidationSchema}
       onSubmit={onSubmit}
@@ -92,10 +93,7 @@ const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
           setFieldValue,
         } = props;
 
-        useEffect(() => {
-          const generated = randomPassword(12);
-          setFieldValue("password", generated);
-        }, []);
+        console.log(errors)
 
         return (
           <Form>
@@ -230,13 +228,14 @@ const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
                 </Grid>
                 <Grid size={6}>
                   <DateTimePicker
-                  ampm={false}
-                    disabled={
-                      values.account_type === 6 ||
-                      !values.account_type
-                    }
+                    ampm={false}
+                    disabled={values.account_type === 6 || !values.account_type}
                     label="Account Expiration Date"
-                    value={values.account_expiry_date ? dayjs(values.account_expiry_date) : null}
+                    value={
+                      values.account_expiry_date
+                        ? dayjs(values.account_expiry_date)
+                        : null
+                    }
                     onChange={(value) =>
                       setFieldValue(
                         "account_expiry_date",
@@ -252,6 +251,34 @@ const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
                         helperText:
                           touched.account_expiry_date &&
                           (errors.account_expiry_date as string),
+                      },
+                    }}
+                  />
+                </Grid>
+                <Grid size={12}>
+                  <DateTimePicker
+                    ampm={false}
+                    label="Password Expiration Time"
+                    value={
+                      values.password_expiry_time
+                        ? dayjs(values.password_expiry_time)
+                        : null
+                    }
+                    onChange={(value) =>
+                      setFieldValue(
+                        "password_expiry_time",
+                        value ? value.toDate() : null,
+                      )
+                    }
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        error:
+                          touched.password_expiry_time &&
+                          Boolean(errors.password_expiry_time),
+                        helperText:
+                          touched.password_expiry_time &&
+                          (errors.password_expiry_time as string),
                       },
                     }}
                   />

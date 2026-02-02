@@ -39,7 +39,6 @@ const fetcher = () =>
   });
 
 function createData(user: AccountResponseDto): UserRowData {
-  console.log(user);
   return {
     id: user.id,
     username: user.username,
@@ -169,10 +168,24 @@ export default function AccountTableManagement() {
     });
   }, [rows, searchQuery, roleFilter, lifecycleFilter, typeFilter]);
 
+  const handleDisableUser = async (id: string) => {
+    try {
+      setLoading(true);
+      await accountsApi.accountControllerDisable(id);
+      showSnackbar("User disabled successfully", "success");
+      closeAll();
+      mutate();
+    } catch (error) {
+      showSnackbar("Failed to disable user", "error");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   const handleReactivateUser = async (id: string) => {
     try {
       setLoading(true);
-      // await apiClient.patch(`/user/reactivate/`, { id });
+      await accountsApi.accountControllerEnable(id);
       showSnackbar("User reactivated successfully", "success");
       closeAll();
       mutate();
@@ -214,16 +227,11 @@ export default function AccountTableManagement() {
       setLoading(false);
     }
   };
+
+
   const handleDeleteUser = async (id: string, status: string) => {
     try {
       setLoading(true);
-      if (status !== "disabled") {
-        showSnackbar(
-          "User is not disabled, you need to disable the user first",
-          "error",
-        );
-        return;
-      }
       await accountsApi.accountControllerDelete(id);
       showSnackbar("User deleted successfully", "success");
       closeAll();
@@ -397,7 +405,9 @@ export default function AccountTableManagement() {
             ? "Are you sure you want to reactivate this user?"
             : modalType === "bulk-delete"
               ? `Are you sure you want to delete ${selected.length} users?`
-              : "Are you sure you want to delete this user?"
+              : modalType === "disable"
+                ? "Are you sure you want to disable this user?"
+                : "Are you sure you want to delete this user?"
         }
         subContent={
           modalType === "delete"
@@ -412,7 +422,9 @@ export default function AccountTableManagement() {
             ? "Reactivate"
             : modalType === "bulk-delete"
               ? "Delete Selected"
-              : "Delete"
+              : modalType === "disable"
+                ? "Disable"
+                : "Delete"
         }
         onConfirm={() => {
           if (modalType === "bulk-delete") {
@@ -421,6 +433,7 @@ export default function AccountTableManagement() {
           }
 
           if (!activeRow) return;
+          if (modalType === "disable") handleDisableUser(activeRow.id);
           if (modalType === "reactivate") handleReactivateUser(activeRow.id);
           if (modalType === "delete")
             handleDeleteUser(activeRow.id, activeRow.lifecycle);
@@ -429,19 +442,9 @@ export default function AccountTableManagement() {
       />
 
       <GenericModal
-        open={
-          modalType === "edit" ||
-          modalType === "disable" ||
-          modalType === "reset"
-        }
+        open={modalType === "edit" || modalType === "reset"}
         onClose={closeAll}
-        title={
-          modalType === "edit"
-            ? "Edit Role"
-            : modalType === "reset"
-              ? "Reset Password"
-              : "Disable Account"
-        }
+        title={modalType === "edit" ? "Edit Role" : "Reset Password"}
       >
         {activeRow && (
           <>
@@ -454,25 +457,6 @@ export default function AccountTableManagement() {
                   <GenericChips value={activeRow.role} variant="filled" />
                 </Box>
                 <EditForm
-                  data={activeRow}
-                  onCancel={closeAll}
-                  onSuccess={() => {
-                    mutate();
-                    closeAll();
-                  }}
-                />
-              </>
-            ) : modalType === "disable" ? (
-              <>
-                <Box sx={{ mb: 2 }}>
-                  <Typography>
-                    Username: <strong>{activeRow.username}</strong>
-                  </Typography>
-                  <Typography>
-                    Full Name: <strong>{activeRow.full_name}</strong>
-                  </Typography>
-                </Box>
-                <DisableForm
                   data={activeRow}
                   onCancel={closeAll}
                   onSuccess={() => {
@@ -520,11 +504,13 @@ export default function AccountTableManagement() {
                     </Box>
 
                     <ResetPasswordAdminForm
+                      data={activeRow}
                       onCancel={closeAll}
                       onSuccess={(formValues) => {
                         mutate();
                         setResetResult({ ...activeRow, ...formValues });
                         setStep("success");
+                        console.log(resetResult);
                       }}
                     />
                   </>

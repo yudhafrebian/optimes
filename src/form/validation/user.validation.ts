@@ -1,17 +1,7 @@
 import * as Yup from "yup";
 
 export const editValidationSchema = Yup.object().shape({
-  role: Yup.string()
-    .oneOf(
-      [
-        "administrator",
-        "operator",
-        "ppic",
-        "maintenance_administrator",
-        "maintenance",
-      ],
-      "Invalid role",
-    )
+  roleLookupId: Yup.string()
     .required("Role is required"),
 });
 
@@ -20,11 +10,7 @@ export const disableValidationSchema = Yup.object().shape({
 });
 
 export const resetPasswordAdminValidationSchema = Yup.object().shape({
-  password: Yup.string().required("Password is required"),
-  password_status: Yup.string()
-    .oneOf(["normal", "temporary", "expired"])
-    .required("Password status is required"),
-  password_expiry_date: Yup.date().required("Password expiry date is required"),
+  password_expiry_time: Yup.date().required("Password expiry date is required"),
 });
 
 export const resetPasswordValidationSchema = Yup.object().shape({
