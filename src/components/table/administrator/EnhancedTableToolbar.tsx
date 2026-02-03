@@ -3,16 +3,12 @@ import {
   alpha,
   Box,
   Button,
-  Divider,
   FormControl,
   Grid,
   IconButton,
-  InputAdornment,
   InputLabel,
   MenuItem,
-  Modal,
   Select,
-  TextField,
   Toolbar,
   Tooltip,
   Typography,
@@ -24,8 +20,6 @@ import AddIcon from "@mui/icons-material/Add";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import GenericModal from "@/components/modal/GenericModal";
 import SuccessRegistrationView from "@/components/view/SuccessRegistrationView";
-import { Dayjs } from "dayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { lookupApi } from "@/lib/api";
 import { LookupResponseDto } from "@/api-client";
 
@@ -63,20 +57,6 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const [lifecycle, setLifecycle] = useState<LookupResponseDto[]>([]);
   const [type, setType] = useState<LookupResponseDto[]>([]);
 
-  const fetchFilter = async () => {
-    try {
-      const roles = await lookupApi.lookupControllerFindAll("ACCOUNT_ROLE");
-      const lifecycle =
-        await lookupApi.lookupControllerFindAll("ACCOUNT_LIFECYCLE");
-      const type = await lookupApi.lookupControllerFindAll("ACCOUNT_TYPE");
-      setRoles(roles.data);
-      setLifecycle(lifecycle.data);
-      setType(type.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const handleOpen = () => {
     setStep("form");
     setOpen(true);
@@ -109,6 +89,20 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   }, [searchTerm, onSearch]);
 
   useEffect(() => {
+    const fetchFilter = async () => {
+      try {
+        const roles = await lookupApi.lookupControllerFindAll("ACCOUNT_ROLE");
+        const lifecycle =
+          await lookupApi.lookupControllerFindAll("ACCOUNT_LIFECYCLE");
+        const type = await lookupApi.lookupControllerFindAll("ACCOUNT_TYPE");
+        setRoles(roles.data);
+        setLifecycle(lifecycle.data);
+        setType(type.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
     fetchFilter();
   }, []);
 

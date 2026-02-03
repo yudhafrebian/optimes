@@ -4,9 +4,8 @@ import { Box } from "@mui/material";
 import * as React from "react";
 import SummaryAnalyticView from "@/components/view/pages/administrator/SummaryAnalyticView";
 
-interface IAccountPageProps {}
 
-const AccountPage: React.FunctionComponent<IAccountPageProps> = (props) => {
+const AccountPage = () => {
   return (
     <Box>
       <SummaryAnalyticView />

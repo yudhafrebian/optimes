@@ -10,10 +10,10 @@ export default function DashboardIndex() {
   const router = useRouter();
 
   useEffect(() => {
-    if (auth?.role) {
-      router.replace(`/dashboard/${auth.role}`);
+    if (auth?.account_role?.label) {
+      router.replace(`/dashboard/${auth.account_role.label.toLowerCase()}`);
     }
-  }, [auth]);
+  }, [auth, router]);
 
   return null;
 }

@@ -1,8 +1,6 @@
 "use client";
-import Cookies from "js-cookie";
 import {
   Button,
-  FilledInput,
   FormControl,
   Grid,
   IconButton,
@@ -14,8 +12,6 @@ import {
 } from "@mui/material";
 import { Form, Formik, FormikProps } from "formik";
 import { loginValidationSchema } from "./validation/auth.validation";
-import { IAuthLogin } from "@/interface/auth.interface";
-import { apiClient } from "@/utils/apiHelper";
 import { useState } from "react";
 import { useSetAtom } from "jotai";
 import { authAtom } from "@/atoms/auth.atom";
@@ -27,6 +23,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { accountsApi } from "@/lib/api";
 import { LoginDto } from "@/api-client";
+import { passwordAtom } from "@/atoms/password.atom";
 
 const LoginForm = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -34,6 +31,7 @@ const LoginForm = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const setAuth = useSetAtom(authAtom);
+  const setPassword = useSetAtom(passwordAtom)
   const router = useRouter();
   const showSnackbar = useSnackbar();
 
@@ -87,6 +85,8 @@ const LoginForm = () => {
         last_login_time: res.data.last_login_time,
       });
 
+      setPassword(values.password);
+
       if (res.data.must_change_password) {
         router.replace("/change-password");
       } else {
@@ -97,7 +97,7 @@ const LoginForm = () => {
         );
       }
     } catch (error: any) {
-      setErrorMessage(error.response?.data?.message || "Login failed");
+      setErrorMessage(error.response?.data?.message || "Login failed, Something went wrong");
       console.log(error);
       showSnackbar(error.response?.data?.message || "Login failed", "error");
     } finally {

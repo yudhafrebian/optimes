@@ -1,9 +1,6 @@
 import * as React from 'react';
 
-interface IJobPageProps {
-}
-
-const JobPage: React.FunctionComponent<IJobPageProps> = (props) => {
+const JobPage = () => {
   return (
     <div>
       <h1>Job Page</h1>

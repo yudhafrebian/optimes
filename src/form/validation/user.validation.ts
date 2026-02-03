@@ -1,8 +1,19 @@
 import * as Yup from "yup";
 
 export const editValidationSchema = Yup.object().shape({
-  roleLookupId: Yup.string()
-    .required("Role is required"),
+  roleLookupId: Yup.string().required("Role is required"),
+});
+
+export const editProfileValidationSchema = Yup.object().shape({
+  full_name: Yup.string()
+    .min(2, "Full name must be at least 2 characters")
+    .required("Full name is required"),
+  username: Yup.string()
+    .min(4, "Username must be at least 4 characters")
+    .required("Username is required"),
+  email: Yup.string()
+    .email("Invalid email address"),
+  phone_number: Yup.string(),
 });
 
 export const disableValidationSchema = Yup.object().shape({
@@ -14,11 +25,11 @@ export const resetPasswordAdminValidationSchema = Yup.object().shape({
 });
 
 export const resetPasswordValidationSchema = Yup.object().shape({
-old_password: Yup.string().when("$isForceChange", {
-  is: (val: any) => val === false, // Gunakan fungsi untuk mengecek nilainya
-  then: (schema) => schema.required("Old Password is required"),
-  otherwise: (schema) => schema.notRequired(),
-}),
+  old_password: Yup.string().when("$isForceChange", {
+    is: (val: any) => val === false, // Gunakan fungsi untuk mengecek nilainya
+    then: (schema) => schema.required("Old Password is required"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
   new_password: Yup.string()
     .min(12, "New Password must be at least 12 characters")
     .matches(/[A-Z]/, "Must contain at least one uppercase letter")

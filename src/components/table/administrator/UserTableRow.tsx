@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { TableRow, TableCell, Checkbox, IconButton, Chip } from "@mui/material";
+import { TableRow, TableCell, Checkbox, IconButton } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import GenericChips from "@/components/core/GenericChips";
 import dayjs from "dayjs";

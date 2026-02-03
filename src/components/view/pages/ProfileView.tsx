@@ -1,6 +1,11 @@
 "use client";
 import { authAtom } from "@/atoms/auth.atom";
 import GenericChips from "@/components/core/GenericChips";
+import GenericModal from "@/components/modal/GenericModal";
+import ProfileSkeleton from "@/components/skeleton/ProfilePageSkeleton";
+import ResetPassword from "@/form/ChangePasswordForm";
+import EditProfileForm from "@/form/EditProfile";
+import EditIcon from "@mui/icons-material/Edit";
 import {
   Avatar,
   Box,
@@ -14,22 +19,15 @@ import {
 } from "@mui/material";
 import dayjs from "dayjs";
 import { useAtom } from "jotai";
-import * as React from "react";
-import KeyIcon from "@mui/icons-material/Key";
-import { useState, useEffect } from "react";
-import ResetPassword from "@/form/ChangePasswordForm";
-import { useRouter } from "next/navigation";
-import ProfileSkeleton from "@/components/skeleton/ProfilePageSkeleton";
+import { useEffect, useState } from "react";
 
-interface IProfileViewProps {}
-
-const ProfileView: React.FunctionComponent<IProfileViewProps> = (props) => {
+const ProfileView = () => {
   const [auth] = useAtom(authAtom);
   const [mounted, setMounted] = useState<boolean>(false);
-
-  const router = useRouter();
+  const [open, setOpen] = useState<boolean>(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
@@ -45,31 +43,48 @@ const ProfileView: React.FunctionComponent<IProfileViewProps> = (props) => {
   return (
     <>
       <Card sx={{ mb: 2 }}>
-        <CardContent sx={{ display: "flex", gap: 4 }}>
-          <Avatar
-            sx={{
-              width: 100,
-              height: 100,
-              bgcolor: "primary.main",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-              fontSize: "4rem",
-            }}
-          >
-            {auth?.username?.charAt(0).toUpperCase()}
-          </Avatar>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-            <Typography variant="h5" fontWeight={600}>
-              {auth?.full_name}
-            </Typography>
-            <Typography variant="body1" fontWeight={500}>
-              {auth.email || auth.username}
-            </Typography>
-            <Box>
-              <GenericChips
-                value={auth?.account_lifecycle.label || ""}
-                variant="outlined"
-              />
+        <CardContent
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Box sx={{ display: "flex", gap: 4 }}>
+            <Avatar
+              sx={{
+                width: 100,
+                height: 100,
+                bgcolor: "primary.main",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                fontSize: "4rem",
+              }}
+            >
+              {auth?.username?.charAt(0).toUpperCase()}
+            </Avatar>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+              <Typography variant="h5" fontWeight={600}>
+                {auth?.full_name}
+              </Typography>
+              <Typography variant="body1" fontWeight={500}>
+                {auth.email || auth.username}
+              </Typography>
+              <Box>
+                <GenericChips
+                  value={auth?.account_lifecycle.label || ""}
+                  variant="outlined"
+                />
+              </Box>
             </Box>
+          </Box>
+          <Box>
+            <Button
+              onClick={() => setOpen(true)}
+              variant="contained"
+              startIcon={<EditIcon />}
+            >
+              Edit Profile
+            </Button>
           </Box>
         </CardContent>
       </Card>
@@ -215,6 +230,17 @@ const ProfileView: React.FunctionComponent<IProfileViewProps> = (props) => {
           </Card>
         </Grid>
       </Grid>
+
+      <GenericModal
+        open={open}
+        onClose={() => setOpen(false)}
+        title="Edit Profile"
+      >
+        <EditProfileForm
+          onSuccess={() => setOpen(false)}
+          onCancel={() => setOpen(false)}
+        />
+      </GenericModal>
     </>
   );
 };

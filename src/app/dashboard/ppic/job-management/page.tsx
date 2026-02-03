@@ -1,24 +1,18 @@
 import AnalyticCard from "@/components/card/AnalyticCard";
 import AccountTableManagement from "@/components/table/administrator/AccountTable";
-import { Box, Grid, Paper, Typography } from "@mui/material";
-import PersonIcon from "@mui/icons-material/Person";
-import HowToRegIcon from "@mui/icons-material/HowToReg";
-import WarningIcon from "@mui/icons-material/Warning";
-import PersonOffIcon from "@mui/icons-material/PersonOff";
-import EventAvailableIcon from '@mui/icons-material/EventAvailable';
-import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
-import SettingsIcon from '@mui/icons-material/Settings';
-import VerifiedIcon from '@mui/icons-material/Verified';
-import PauseCircleOutlineIcon from '@mui/icons-material/PauseCircleOutline';
+import { Box, Grid } from "@mui/material";
+import EventAvailableIcon from "@mui/icons-material/EventAvailable";
+import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
+import SettingsIcon from "@mui/icons-material/Settings";
+import VerifiedIcon from "@mui/icons-material/Verified";
+import PauseCircleOutlineIcon from "@mui/icons-material/PauseCircleOutline";
 import * as React from "react";
 
-interface IAccountPageProps {}
-
-const JobManagementPage: React.FunctionComponent<IAccountPageProps> = (props) => {
+const JobManagementPage = () => {
   return (
     <Box>
       <Grid container spacing={2} sx={{ mb: 2 }}>
-        <Grid size={2.40}>
+        <Grid size={2.4}>
           <AnalyticCard
             title="Scheduled"
             value={24}
@@ -27,7 +21,7 @@ const JobManagementPage: React.FunctionComponent<IAccountPageProps> = (props) =>
           />
         </Grid>
 
-        <Grid size={2.40}>
+        <Grid size={2.4}>
           <AnalyticCard
             title="Released"
             value={8}
@@ -37,7 +31,7 @@ const JobManagementPage: React.FunctionComponent<IAccountPageProps> = (props) =>
           />
         </Grid>
 
-        <Grid size={2.40}>
+        <Grid size={2.4}>
           <AnalyticCard
             title="Running"
             value={12}
@@ -46,7 +40,7 @@ const JobManagementPage: React.FunctionComponent<IAccountPageProps> = (props) =>
             iconBackgroundColor="success.light"
           />
         </Grid>
-        <Grid size={2.40}>
+        <Grid size={2.4}>
           <AnalyticCard
             title="Completed"
             value={156}
@@ -55,7 +49,7 @@ const JobManagementPage: React.FunctionComponent<IAccountPageProps> = (props) =>
             iconBackgroundColor="secondary.light"
           />
         </Grid>
-        <Grid size={2.40}>
+        <Grid size={2.4}>
           <AnalyticCard
             title="Suspended"
             value={3}

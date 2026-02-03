@@ -2,17 +2,14 @@
 import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 
-interface IAdministratorPageProps {
-}
-
-const AdministratorPage: React.FunctionComponent<IAdministratorPageProps> = (props) => {
+const AdministratorPage= () => {
   const pathname = usePathname();
   const navigate = useRouter();
   React.useEffect(() => {
     if (pathname !== '/') {
       navigate.replace('/dashboard/administrator/account-management');
     }
-  }, []);
+  }, [pathname, navigate]);
   return (
     <div>
       <h1>Account Management</h1>

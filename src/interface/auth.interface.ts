@@ -1,4 +1,3 @@
-import { UserRole } from "./user.interface";
 
 export interface IAuthLogin {
   username: string;

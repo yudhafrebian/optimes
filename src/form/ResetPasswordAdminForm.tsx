@@ -6,8 +6,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Form, Formik, FormikProps } from "formik";
-import { useEffect, useState } from "react";
-import { randomPassword } from "@/utils/passwordGenerator";
+import { useState } from "react";
 import { useSnackbar } from "@/hooks/useSnackbar";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs";
@@ -67,11 +66,6 @@ const ResetPasswordAdminForm = ({ onSuccess, onCancel, data }: ISuspendFormProps
           handleBlur,
           setFieldValue,
         } = props;
-
-        useEffect(() => {
-          const generated = randomPassword(12);
-          setFieldValue("password", generated);
-        }, []);
 
         return (
           <Form>

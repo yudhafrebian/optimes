@@ -2,7 +2,6 @@
 
 import { Button, Grid, TextField, Typography } from "@mui/material";
 import { Form, Formik, FormikProps } from "formik";
-import { apiClient } from "@/utils/apiHelper";
 import { useState } from "react";
 import { useSnackbar } from "@/hooks/useSnackbar";
 import { IDisableUser } from "@/interface/user.interface";

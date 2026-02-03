@@ -10,9 +10,7 @@ import Paper from "@mui/material/Paper";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import { Divider, LinearProgress, Typography } from "@mui/material";
-import { IUser } from "@/interface/user.interface";
 import { useMemo, useState } from "react";
-import { apiClient } from "@/utils/apiHelper";
 import EnhancedTableToolbar from "./EnhancedTableToolbar";
 import EnhancedTableHead from "./EnhancedTableHead";
 import GenericModal from "../../modal/GenericModal";
@@ -22,13 +20,11 @@ import { useSnackbar } from "@/hooks/useSnackbar";
 import UserTableRow from "./UserTableRow";
 import TableActionMenu from "./TableActionMenu";
 import EditForm from "@/form/EditForm";
-import dayjs, { Dayjs } from "dayjs";
 import GenericChips from "@/components/core/GenericChips";
 import ResetPasswordAdminForm from "@/form/ResetPasswordAdminForm";
 import WarningIcon from "@mui/icons-material/Warning";
 import SuccessResetPasswordView from "@/components/view/SuccessResetPasswordView";
 import useSwr from "swr";
-import DisableForm from "@/form/DisableForm";
 import { UserRowData } from "@/interface/row-table.interface";
 import { accountsApi } from "@/lib/api";
 import { AccountResponseDto } from "@/api-client";
@@ -180,7 +176,7 @@ export default function AccountTableManagement() {
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   const handleReactivateUser = async (id: string) => {
     try {
@@ -227,7 +223,6 @@ export default function AccountTableManagement() {
       setLoading(false);
     }
   };
-
 
   const handleDeleteUser = async (id: string, status: string) => {
     try {
@@ -323,11 +318,12 @@ export default function AccountTableManagement() {
             onDelete={() => setModalType("bulk-delete")}
           />
           <Box sx={{ height: 4 }}>{loading && <LinearProgress />}</Box>
-          <TableContainer sx={{ overflowX: "auto", whiteSpace: "nowrap" }}>
+          <TableContainer sx={{ overflowX: "auto", whiteSpace: "nowrap", maxHeight: 600 }}>
             <Table
               sx={{ minWidth: 1100, tableLayout: "auto" }}
               aria-labelledby="tableTitle"
               size={dense ? "small" : "medium"}
+              stickyHeader
             >
               <EnhancedTableHead
                 numSelected={selected.length}

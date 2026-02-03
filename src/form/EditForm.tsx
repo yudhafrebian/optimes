@@ -7,7 +7,6 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  TextField,
   Typography,
 } from "@mui/material";
 import { Form, Formik, FormikProps } from "formik";
@@ -61,8 +60,8 @@ const EditForm = ({ data, onSuccess, onCancel }: IEditFormProps) => {
     try {
       setLoading(true);
       setErrorMessage(null);
-      
-      if(auth[0]?.id === data.id) {
+
+      if (auth[0]?.id === data.id) {
         showSnackbar("Cannot Change Role of Yourself", "error");
         return;
       }
@@ -70,8 +69,6 @@ const EditForm = ({ data, onSuccess, onCancel }: IEditFormProps) => {
         showSnackbar("Cannot Change Role of Administrator", "error");
         return;
       }
-
-
 
       const response = await accountsApi.accountControllerEditRole(data.id, {
         roleLookupId: values.roleLookupId,
@@ -96,7 +93,7 @@ const EditForm = ({ data, onSuccess, onCancel }: IEditFormProps) => {
   useEffect(() => {
     fetchRoles();
     fetchId();
-  }, []);
+  }, [fetchId]);
 
   return (
     <Formik

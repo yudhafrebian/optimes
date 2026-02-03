@@ -1,17 +1,37 @@
 "use client";
-import { authAtom } from "@/atoms/auth.atom";
+import { authAtom, loggingOutAtom } from "@/atoms/auth.atom";
 import ResetPassword from "@/form/ChangePasswordForm";
 import { accountsApi } from "@/lib/api";
-import { Card, CardContent, CardHeader, Grid } from "@mui/material";
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  Grid,
+} from "@mui/material";
 import { useAtom } from "jotai";
 import { useEffect } from "react";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import { useRouter } from "next/navigation";
 
 const ChangePasswordView = () => {
   const [auth, setAuth] = useAtom(authAtom);
 
- 
+  const [isLoggingOut, setIsLoggingOut] = useAtom(loggingOutAtom);
+  const router = useRouter();
+
+  const handleGoBack = async () => {
+    setIsLoggingOut(true);
+    await accountsApi.accountControllerLogout();
+    setAuth(null);
+
+    router.replace("/auth/login");
+  };
+
   useEffect(() => {
     const checkAuth = async () => {
+      if (auth || isLoggingOut) return; 
       try {
         if (!auth) {
           const res = await accountsApi.accountControllerValidate();
@@ -60,7 +80,7 @@ const ChangePasswordView = () => {
       }
     };
     checkAuth();
-  }, [auth, setAuth]);
+  }, [auth, setAuth, isLoggingOut]);
 
   return (
     <Grid
@@ -73,17 +93,28 @@ const ChangePasswordView = () => {
         sx={{
           padding: 2,
           minWidth: 300,
-          maxWidth: 400,
+          maxWidth: 450,
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
-          gap: "1rem",
         }}
       >
-        <CardHeader title="Change Password" />
+        <CardHeader
+          sx={{ textAlign: "center" }}
+          subheader="Please change your password first before logging in"
+          title="Change Password"
+        />
         <CardContent>
           <ResetPassword />
         </CardContent>
+        <CardActions>
+          <Button
+            onClick={handleGoBack}
+            variant="outlined"
+            startIcon={<ArrowBackIosIcon />}
+          >
+            Back
+          </Button>
+        </CardActions>
       </Card>
     </Grid>
   );

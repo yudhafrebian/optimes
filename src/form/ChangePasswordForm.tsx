@@ -9,16 +9,13 @@ import {
   InputAdornment,
   InputLabel,
   OutlinedInput,
-  TextField,
   Typography,
 } from "@mui/material";
 import { Form, Formik, FormikHelpers, FormikProps } from "formik";
-import Cookies from "js-cookie";
-import { useEffect, useState } from "react";
-import { useAtom, useSetAtom } from "jotai";
+import { useState } from "react";
+import { useAtom } from "jotai";
 import { authAtom } from "@/atoms/auth.atom";
 import { usePathname, useRouter } from "next/navigation";
-import { resetPasswordValidationSchema } from "./validation/user.validation";
 import { IChangePassword } from "@/interface/user.interface";
 import { useSnackbar } from "@/hooks/useSnackbar";
 import * as Yup from "yup";
@@ -29,6 +26,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { accountsApi } from "@/lib/api";
 import { ChangePasswordDto } from "@/api-client";
 import { getCriteria } from "@/lib/criteria";
+import { passwordAtom } from "@/atoms/password.atom";
 
 const ResetPassword = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -38,11 +36,12 @@ const ResetPassword = () => {
   const [showNewPassword, setShowNewPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
     useState<boolean>(false);
-
   const showSnackbar = useSnackbar();
   const pathname = usePathname();
   const router = useRouter();
-  console.log(auth?.account_role?.label.toLowerCase());
+
+  const password = useAtom(passwordAtom);
+  console.log(password);
 
   const isForceChange = pathname === "/change-password";
 
@@ -74,7 +73,7 @@ const ResetPassword = () => {
       setLoading(true);
       if (!auth?.id) throw new Error("User ID is required");
       await accountsApi.accountControllerChangePassword(auth.id, {
-        currentPassword: values.currentPassword,
+        currentPassword: values.currentPassword || password[0] || "",
         newPassword: values.newPassword,
       });
       showSnackbar("Password updated successfully", "success");
@@ -128,7 +127,9 @@ const ResetPassword = () => {
                     variant="outlined"
                     error={touched.currentPassword && !!errors.currentPassword}
                   >
-                    <InputLabel htmlFor="currentPassword">Old Password</InputLabel>
+                    <InputLabel htmlFor="currentPassword">
+                      Old Password
+                    </InputLabel>
                     <OutlinedInput
                       id="currentPassword"
                       name="currentPassword"
@@ -137,7 +138,9 @@ const ResetPassword = () => {
                       onBlur={handleBlur}
                       onChange={handleChange}
                       value={values.currentPassword}
-                      error={touched.currentPassword && !!errors.currentPassword}
+                      error={
+                        touched.currentPassword && !!errors.currentPassword
+                      }
                       endAdornment={
                         <InputAdornment position="end">
                           <IconButton

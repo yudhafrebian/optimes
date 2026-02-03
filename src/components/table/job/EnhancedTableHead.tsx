@@ -1,6 +1,5 @@
 import {
   Box,
-  Checkbox,
   TableCell,
   TableHead,
   TableRow,

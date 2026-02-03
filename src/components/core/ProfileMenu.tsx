@@ -2,14 +2,12 @@
 
 import {
   Avatar,
-  Button,
   Menu,
   MenuItem,
   ListItemIcon,
   Typography,
   Box,
 } from "@mui/material";
-import Cookies from "js-cookie";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
 import { useState } from "react";

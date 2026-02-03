@@ -7,9 +7,8 @@ import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import { usePathname } from "next/navigation";
 import { branding } from "./branding";
 import { ProfileMenu } from "@/components/core/ProfileMenu";
-import { authAtom } from "@/atoms/auth.atom";
+import { authAtom, loggingOutAtom } from "@/atoms/auth.atom";
 import { useAtom } from "jotai";
-import { apiClient } from "@/utils/apiHelper";
 import theme from "@/theme";
 import { navigationByRole } from "./navigation";
 import { GlobalSnackbar } from "@/components/core/GlobalSnackbar";
@@ -19,10 +18,13 @@ import { accountsApi } from "@/lib/api";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const [auth, setAuth] = useAtom(authAtom);
+
+  const isLoggingOut = useAtom(loggingOutAtom)[0];
   const pathname = usePathname();
 
   useEffect(() => {
     const checkAuth = async () => {
+      if (auth || isLoggingOut) return;
       try {
         if (!auth) {
           const res = await accountsApi.accountControllerValidate();
@@ -66,12 +68,15 @@ export function AppShell({ children }: { children: ReactNode }) {
             last_login_time: res.data.last_login_time,
           });
         }
-      } catch (error) {
+      } catch (error: any) {
+        if (error?.response?.status === 401) {
+          return;
+        }
         console.error(error);
       }
     };
     checkAuth();
-  }, [pathname, auth, setAuth]);
+  }, [pathname, auth, setAuth, isLoggingOut]);
 
   // Mengambil role dari URL (misal: /dashboard/administrator/...)
   const role = pathname.split("/")[2];

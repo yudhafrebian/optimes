@@ -12,13 +12,9 @@ import {
 } from "@mui/material";
 import { Form, Formik, FormikProps } from "formik";
 import {
-  loginValidationSchema,
   registerValidationSchema,
 } from "./validation/auth.validation";
-import { IAuthRegister } from "@/interface/auth.interface";
-import { apiClient } from "@/utils/apiHelper";
 import { useEffect, useState } from "react";
-import { randomPassword } from "@/utils/passwordGenerator";
 import { useSnackbar } from "@/hooks/useSnackbar";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs";
