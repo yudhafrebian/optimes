@@ -6,7 +6,6 @@ import {
   Box,
   Button,
   FormControl,
-  Grid,
   IconButton,
   InputLabel,
   LinearProgress,
@@ -25,7 +24,6 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import AddIcon from "@mui/icons-material/Add";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import GenericModal from "@/components/modal/GenericModal";
-import SuccessRegistrationView from "@/components/view/SuccessRegistrationView";
 import { lookupApi } from "@/lib/api";
 import { LookupResponseDto } from "@/api-client";
 import CreateJobForm, {
@@ -33,7 +31,6 @@ import CreateJobForm, {
   defaultJobFormValues,
   priorityOptions,
 } from "@/form/CreateJobForm";
-import CreateJobConfirmationView from "@/components/view/JobConfirmationView";
 import JobConfirmationView from "@/components/view/JobConfirmationView";
 import ImportForm from "@/form/ImportForm";
 import { useSnackbar } from "@/hooks/useSnackbar";

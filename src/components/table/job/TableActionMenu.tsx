@@ -14,7 +14,6 @@ import PersonOffIcon from "@mui/icons-material/PersonOff";
 import PersonIcon from "@mui/icons-material/Person";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { JobRowData } from "@/interface/row-table.interface";
-import { usePathname } from "next/navigation";
 
 interface TableActionMenuProps {
   anchorEl: HTMLElement | null;

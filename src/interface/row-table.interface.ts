@@ -1,4 +1,4 @@
-import { AccountResponseDto, LookupResponseDto } from "@/api-client";
+import { LookupResponseDto } from "@/api-client";
 
 export interface UserRowData {
   id: string;

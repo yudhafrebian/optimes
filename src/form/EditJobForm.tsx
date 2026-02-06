@@ -1,9 +1,8 @@
-import { AccountResponseDto, LookupResponseDto } from "@/api-client";
+import { LookupResponseDto } from "@/api-client";
 import GenericChips from "@/components/core/GenericChips";
 import { useSnackbar } from "@/hooks/useSnackbar";
-import { accountsApi, lookupApi } from "@/lib/api";
+import { lookupApi } from "@/lib/api";
 import {
-  Autocomplete,
   Box,
   Button,
   Divider,
@@ -13,14 +12,12 @@ import {
   MenuItem,
   Select,
   TextField,
-  Typography,
 } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs";
 import { Form, Formik, FormikProps, useFormikContext } from "formik";
 import * as React from "react";
 import { createJobValidationSchema } from "./validation/job.validation";
-import { error } from "console";
 import { JobRowData } from "@/interface/row-table.interface";
 
 interface ICreateJobFormProps {
