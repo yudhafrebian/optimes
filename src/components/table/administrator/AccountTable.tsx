@@ -28,6 +28,8 @@ import useSwr from "swr";
 import { UserRowData } from "@/interface/row-table.interface";
 import { accountsApi } from "@/lib/api";
 import { AccountResponseDto } from "@/api-client";
+import { filterAccounts } from "@/utils/accountFilters";
+import { getAccountDialogConfig } from "@/components/dialog/accountDialogConfig";
 
 const fetcher = () =>
   accountsApi.accountControllerGetAll().then((res) => {
@@ -74,7 +76,6 @@ function getComparator<Key extends keyof any>(
 export default function AccountTableManagement() {
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof UserRowData>("full_name");
-  const [selected, setSelected] = useState<readonly string[]>([]);
   const [page, setPage] = useState<number>(0);
   const [dense, setDense] = useState<boolean>(false);
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
@@ -149,20 +150,16 @@ export default function AccountTableManagement() {
     setActiveRow(row);
   };
 
-  const filteredRows = useMemo(() => {
-    return rows.filter((row) => {
-      const matchesSearch = row.username
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-      const matchesRole = roleFilter === "All" || row.role === roleFilter;
-      const matchesLifecycle =
-        lifecycleFilter === "All" || row.lifecycle === lifecycleFilter;
-      const matchesType =
-        typeFilter === "All" || row.account_type === typeFilter;
-
-      return matchesSearch && matchesRole && matchesLifecycle && matchesType;
-    });
-  }, [rows, searchQuery, roleFilter, lifecycleFilter, typeFilter]);
+  const filteredRows = useMemo(
+    () =>
+      filterAccounts(rows, {
+        searchQuery,
+        roleFilter,
+        lifecycleFilter,
+        typeFilter,
+      }),
+    [rows, searchQuery, roleFilter, lifecycleFilter, typeFilter],
+  );
 
   const handleDisableUser = async (id: string) => {
     try {
@@ -192,38 +189,6 @@ export default function AccountTableManagement() {
     }
   };
 
-  const handleBulkDelete = async () => {
-    const selectedUsersData = rows.filter((row) => selected.includes(row.id));
-
-    const hasActiveUser = selectedUsersData.some(
-      (user) => user.lifecycle !== "disabled",
-    );
-
-    if (hasActiveUser) {
-      showSnackbar(
-        "Some users are not disabled, you need to disable them first",
-        "error",
-      );
-      return;
-    }
-
-    try {
-      setLoading(true);
-      await Promise.all(
-        selected.map((id) => accountsApi.accountControllerDelete(id)),
-      );
-
-      showSnackbar(`${selected.length} users deleted successfully`, "success");
-      setSelected([]);
-      closeAll();
-      mutate();
-    } catch (error) {
-      showSnackbar("Failed to delete users", "error");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleDeleteUser = async (id: string, status: string) => {
     try {
       setLoading(true);
@@ -247,27 +212,6 @@ export default function AccountTableManagement() {
     setOrderBy(property);
   };
 
-  const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) {
-      const newSelected = filteredRows.map((n: UserRowData) => n.id);
-      setSelected(newSelected);
-      return;
-    }
-    setSelected([]);
-  };
-
-  const handleClick = (event: React.MouseEvent<unknown>, id: string) => {
-    const selectedIndex = selected.indexOf(id);
-    let newSelected: readonly string[] = [];
-
-    if (selectedIndex === -1) {
-      newSelected = [...selected, id];
-    } else {
-      newSelected = selected.filter((item) => item !== id);
-    }
-    setSelected(newSelected);
-  };
-
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
@@ -282,6 +226,8 @@ export default function AccountTableManagement() {
   const handleChangeDense = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDense(event.target.checked);
   };
+
+  const dialogConfig = getAccountDialogConfig(modalType);
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
@@ -300,7 +246,7 @@ export default function AccountTableManagement() {
       <Box sx={{ width: "100%" }}>
         <Paper sx={{ width: "100%", mb: 2, boxShadow: 3, overflow: "hidden" }}>
           <EnhancedTableToolbar
-            numSelected={selected.length}
+            // numSelected={selected.length}
             onRefresh={mutate}
             roleFilter={roleFilter}
             lifecycleFilter={lifecycleFilter}
@@ -315,10 +261,12 @@ export default function AccountTableManagement() {
             onFilterType={(type) => {
               setTypeFilter(type), setPage(0);
             }}
-            onDelete={() => setModalType("bulk-delete")}
+            // onDelete={() => setModalType("bulk-delete")}
           />
           <Box sx={{ height: 4 }}>{loading && <LinearProgress />}</Box>
-          <TableContainer sx={{ overflowX: "auto", whiteSpace: "nowrap", maxHeight: 600 }}>
+          <TableContainer
+            sx={{ overflowX: "auto", whiteSpace: "nowrap", maxHeight: 600 }}
+          >
             <Table
               sx={{ minWidth: 1100, tableLayout: "auto" }}
               aria-labelledby="tableTitle"
@@ -326,12 +274,12 @@ export default function AccountTableManagement() {
               stickyHeader
             >
               <EnhancedTableHead
-                numSelected={selected.length}
+                // numSelected={selected.length}
                 order={order}
                 orderBy={orderBy}
-                onSelectAllClick={handleSelectAllClick}
+                // onSelectAllClick={handleSelectAllClick}
                 onRequestSort={handleRequestSort}
-                rowCount={rows.length}
+                // rowCount={rows.length}
               />
               <TableBody>
                 {(isLoading && rows.length === 0) || loading ? (
@@ -341,9 +289,9 @@ export default function AccountTableManagement() {
                     <UserTableRow
                       key={row.id}
                       row={row}
-                      isSelected={selected.includes(row.id)}
-                      labelId={`enhanced-table-checkbox-${index}`}
-                      onSelect={handleClick}
+                      // isSelected={selected.includes(row.id)}
+                      // labelId={`enhanced-table-checkbox-${index}`}
+                      // onSelect={handleClick}
                       onOpenMenu={handleOpenMenu}
                     />
                   ))
@@ -383,50 +331,20 @@ export default function AccountTableManagement() {
         open={
           modalType === "disable" ||
           modalType === "delete" ||
-          modalType === "reactivate" ||
-          modalType === "bulk-delete"
+          modalType === "reactivate"
+          // || modalType === "bulk-delete"
         }
         onClose={closeAll}
-        title={
-          modalType === "disable"
-            ? "Disable Account"
-            : modalType === "reactivate"
-              ? "Reactivate Account"
-              : modalType === "bulk-delete"
-                ? "Delete Accounts"
-                : "Delete Account"
-        }
-        content={
-          modalType === "reactivate"
-            ? "Are you sure you want to reactivate this user?"
-            : modalType === "bulk-delete"
-              ? `Are you sure you want to delete ${selected.length} users?`
-              : modalType === "disable"
-                ? "Are you sure you want to disable this user?"
-                : "Are you sure you want to delete this user?"
-        }
-        subContent={
-          modalType === "delete"
-            ? "This user will be deleted permanently!"
-            : modalType === "bulk-delete"
-              ? "These users will be deleted permanently"
-              : ""
-        }
+        title={dialogConfig.title}
+        content={dialogConfig.content}
+        subContent={dialogConfig.subContent}
         negativeText="Cancel"
-        positiveText={
-          modalType === "reactivate"
-            ? "Reactivate"
-            : modalType === "bulk-delete"
-              ? "Delete Selected"
-              : modalType === "disable"
-                ? "Disable"
-                : "Delete"
-        }
+        positiveText={dialogConfig.positiveText}
         onConfirm={() => {
-          if (modalType === "bulk-delete") {
-            handleBulkDelete();
-            return;
-          }
+          // if (modalType === "bulk-delete") {
+          //   handleBulkDelete();
+          //   return;
+          // }
 
           if (!activeRow) return;
           if (modalType === "disable") handleDisableUser(activeRow.id);
@@ -506,7 +424,6 @@ export default function AccountTableManagement() {
                         mutate();
                         setResetResult({ ...activeRow, ...formValues });
                         setStep("success");
-                        console.log(resetResult);
                       }}
                     />
                   </>

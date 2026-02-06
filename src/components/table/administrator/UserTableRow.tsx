@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { TableRow, TableCell, Checkbox, IconButton } from "@mui/material";
+import { TableRow, TableCell, IconButton } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import GenericChips from "@/components/core/GenericChips";
 import dayjs from "dayjs";
@@ -8,9 +8,7 @@ import { UserRowData } from "@/interface/row-table.interface";
 
 interface UserTableRowProps {
   row: UserRowData;
-  isSelected: boolean;
-  labelId: string;
-  onSelect: (event: React.MouseEvent<unknown>, id: string) => void;
+  // isSelected, labelId, dan onSelect dihapus karena fitur select ditiadakan
   onOpenMenu: (
     event: React.MouseEvent<HTMLButtonElement>,
     row: UserRowData,
@@ -19,118 +17,98 @@ interface UserTableRowProps {
 
 const UserTableRow: React.FC<UserTableRowProps> = ({
   row,
-  isSelected,
-  labelId,
-  onSelect,
   onOpenMenu,
 }) => {
   return (
     <TableRow
       hover
-      role="checkbox"
-      aria-checked={isSelected}
       tabIndex={-1}
       key={row.id}
-      selected={isSelected}
-      onClick={(event) => onSelect(event, row.id)}
-      sx={{ cursor: "pointer" }}
+      sx={{ 
+        cursor: "default", // Diubah ke default karena klik row tidak lagi memilih checkbox
+        "&:last-child td, &:last-child th": { border: 0 } 
+      }}
     >
-      <TableCell padding="checkbox">
-        <Checkbox
-          color="primary"
-          checked={isSelected}
-          inputProps={{ "aria-labelledby": labelId }}
-        />
-      </TableCell>
+      {/* TableCell padding="checkbox" dan Checkbox dihapus dari sini */}
+
       <TableCell
         component="th"
-        id={labelId}
         scope="row"
-        padding="none"
-        sx={{ minWidth: 250 }}
+        padding="normal" // Diubah dari "none" ke "normal" agar ada jarak di pinggir kiri
+        sx={{ minWidth: 250, fontWeight: 500 }}
       >
         {row.full_name}
       </TableCell>
+      
       <TableCell
-        component="th"
-        id={labelId}
-        scope="row"
-        padding="none"
+        align="left"
+        padding="normal"
         sx={{ minWidth: 200 }}
       >
         {row.username}
       </TableCell>
 
       <TableCell
-        component="th"
-        scope="row"
-        padding="none"
         align="left"
+        padding="normal"
         sx={{ minWidth: 200 }}
       >
         <GenericChips value={row.role} variant="filled" />
       </TableCell>
 
-      <TableCell component="th" scope="row" padding="none" align="left">
+      <TableCell align="left" padding="normal">
         <GenericChips value={row.lifecycle} />
       </TableCell>
+
       <TableCell
-        component="th"
-        scope="row"
-        padding="normal"
         align="left"
+        padding="normal"
         sx={{ textTransform: "capitalize", minWidth: 200 }}
       >
         {row.account_type}
       </TableCell>
+
       <TableCell
-        component="th"
-        scope="row"
-        padding="normal"
         align="left"
-        sx={{ textTransform: "capitalize", minWidth: 200 }}
+        padding="normal"
+        sx={{ minWidth: 200 }}
       >
         {dayjs(row.account_expiry_date).isValid()
           ? dayjs(row.account_expiry_date).format("HH:mm:ss - DD/MM/YYYY")
           : "-"}
       </TableCell>
+
       <TableCell
-        component="th"
-        scope="row"
-        padding="normal"
         align="left"
-        sx={{ textTransform: "capitalize", minWidth: 200 }}
+        padding="normal"
+        sx={{ minWidth: 200 }}
       >
         {dayjs(row.password_last_changed).isValid()
           ? dayjs(row.password_last_changed).format("HH:mm:ss - DD/MM/YYYY")
           : "-"}
       </TableCell>
+
       <TableCell
-        component="th"
-        scope="row"
-        padding="normal"
         align="left"
-        sx={{ textTransform: "capitalize", minWidth: 200 }}
+        padding="normal"
+        sx={{ minWidth: 200 }}
       >
         {dayjs(row.password_expiry_time).isValid()
           ? dayjs(row.password_expiry_time).format("HH:mm:ss - DD/MM/YYYY")
           : "-"}
       </TableCell>
+
       <TableCell
-        component="th"
-        scope="row"
-        padding="normal"
         align="left"
-        sx={{ textTransform: "capitalize", minWidth: 200 }}
+        padding="normal"
+        sx={{ minWidth: 200 }}
       >
         {row.must_change_password ? "Yes" : "No"}
       </TableCell>
 
       <TableCell
-        component="th"
-        scope="row"
-        padding="none"
         align="left"
+        padding="normal"
         sx={{ minWidth: 150 }}
       >
         {dayjs(row.last_login).isValid()

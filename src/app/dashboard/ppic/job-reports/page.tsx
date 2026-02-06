@@ -8,7 +8,7 @@ import PauseCircleOutlineIcon from "@mui/icons-material/PauseCircleOutline";
 import * as React from "react";
 import JobTableManagement from "@/components/table/job/JobTable";
 
-const JobManagementPage = () => {
+const JobReportsPage = () => {
   return (
     <Box>
       <Grid container spacing={2} sx={{ mb: 2 }}>
@@ -64,4 +64,4 @@ const JobManagementPage = () => {
   );
 };
 
-export default JobManagementPage;
+export default JobReportsPage;

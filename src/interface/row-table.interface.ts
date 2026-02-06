@@ -1,4 +1,4 @@
-import { AccountResponseDto } from "@/api-client";
+import { AccountResponseDto, LookupResponseDto } from "@/api-client";
 
 export interface UserRowData {
   id: string;
@@ -15,13 +15,16 @@ export interface UserRowData {
 }
 
 export interface JobRowData {
+  id: string;
   work_order: string;
   sales_order: string;
-  product_name: string; //temporary, might be changed
-  assigned_entity: string;
+  machine_id: LookupResponseDto;
   quantity_order: number;
+  quantity_unit: LookupResponseDto;           // Isinya: { label: "BK", code: "BK", ... }
   planned_start_time: string;
-  job_lifecycle_state: string;
-  assigned_operator_1: AccountResponseDto;
-  assigned_operator_2?: AccountResponseDto;
+  release_date?: string;
+  due_date?: string;
+  job_priority: LookupResponseDto;            // Isinya: { label: "High", code: "HIGH", ... }
+  job_lifecycle_state: LookupResponseDto;     // Isinya: { label: "Created", code: "CREATED", ... }
+  notes: string;
 }

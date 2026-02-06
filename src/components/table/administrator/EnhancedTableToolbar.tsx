@@ -1,3 +1,5 @@
+"use client";
+
 import RegisterForm from "@/form/RegisterForm";
 import {
   alpha,
@@ -11,11 +13,9 @@ import {
   Select,
   Toolbar,
   Tooltip,
-  Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import RefreshIcon from "@mui/icons-material/Refresh";
-import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import GenericModal from "@/components/modal/GenericModal";
@@ -24,7 +24,7 @@ import { lookupApi } from "@/lib/api";
 import { LookupResponseDto } from "@/api-client";
 
 interface EnhancedTableToolbarProps {
-  numSelected: number;
+  // numSelected dihapus karena fitur select ditiadakan
   roleFilter: string;
   lifecycleFilter: string;
   typeFilter: string;
@@ -33,12 +33,11 @@ interface EnhancedTableToolbarProps {
   onFilterLifecycle: (lifecycle: string) => void;
   onFilterType: (type: string) => void;
   onRefresh: () => void;
-  onDelete: () => void;
+  // onDelete (bulk) dihapus
 }
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const {
-    numSelected,
     onRefresh,
     onSearch,
     roleFilter,
@@ -47,8 +46,8 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     onFilterRole,
     onFilterLifecycle,
     onFilterType,
-    onDelete,
   } = props;
+  
   const [open, setOpen] = useState<boolean>(false);
   const [step, setStep] = useState<"form" | "success">("form");
   const [userData, setUserData] = useState<any>({});
@@ -80,7 +79,9 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     onFilterLifecycle("All");
     onFilterType("All");
     onSearch("");
+    setSearchTerm(""); // Reset local search state juga
   };
+
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       onSearch(searchTerm);
@@ -91,183 +92,103 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   useEffect(() => {
     const fetchFilter = async () => {
       try {
-        const roles = await lookupApi.lookupControllerFindAll("ACCOUNT_ROLE");
-        const lifecycle =
-          await lookupApi.lookupControllerFindAll("ACCOUNT_LIFECYCLE");
-        const type = await lookupApi.lookupControllerFindAll("ACCOUNT_TYPE");
-        setRoles(roles.data);
-        setLifecycle(lifecycle.data);
-        setType(type.data);
+        const [rolesRes, lifecycleRes, typeRes] = await Promise.all([
+          lookupApi.lookupControllerFindAll("ACCOUNT_ROLE"),
+          lookupApi.lookupControllerFindAll("ACCOUNT_LIFECYCLE"),
+          lookupApi.lookupControllerFindAll("ACCOUNT_TYPE")
+        ]);
+        setRoles(rolesRes.data);
+        setLifecycle(lifecycleRes.data);
+        setType(typeRes.data);
       } catch (error) {
-        console.log(error);
+        console.error("Failed to fetch filters:", error);
       }
     };
-
     fetchFilter();
   }, []);
 
   return (
-    <Toolbar
-      sx={[
-        {
-          pl: { sm: 2 },
-          pr: { xs: 1, sm: 1 },
-        },
-        numSelected > 0 && {
-          bgcolor: (theme) =>
-            alpha(
-              theme.palette.primary.main,
-              theme.palette.action.activatedOpacity,
-            ),
-        },
-      ]}
-    >
-      {numSelected > 0 ? (
-        <Typography
-          sx={{ flex: "1 1 100%" }}
-          color="inherit"
-          variant="subtitle1"
-          component="div"
-        >
-          {numSelected} selected
-        </Typography>
-      ) : (
-        <Grid container size={12}>
-          <Grid size={12}>
-            <Box
-              sx={{
-                p: 2,
-                display: "flex",
-                gap: 2,
-                alignItems: "center",
-                flexWrap: "wrap",
-              }}
+    <Toolbar sx={{ pl: { sm: 2 }, pr: { xs: 1, sm: 1 } }}>
+      <Grid container spacing={2} alignItems="center" sx={{ p: 2, width: '100%' }}>
+        <Box sx={{ display: "flex", gap: 2, alignItems: "center", flexWrap: "wrap", width: '100%' }}>
+          
+          {/* Filter Role */}
+          <FormControl size="small" sx={{ minWidth: "150px" }}>
+            <InputLabel id="filter-role-label">Role</InputLabel>
+            <Select
+              labelId="filter-role-label"
+              label="Role"
+              value={roleFilter}
+              onChange={(e) => onFilterRole(e.target.value)}
             >
-              {/* Search Bar */}
-              {/* <TextField
-                size="small"
-                placeholder="Search username..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                sx={{ flexGrow: 1, minWidth: "100px", maxWidth: "300px" }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon fontSize="small" />
-                    </InputAdornment>
-                  ),
-                }}
-              /> */}
+              <MenuItem value="All">All Roles</MenuItem>
+              {roles.map((role) => (
+                <MenuItem key={role.code} value={role.label}>{role.label}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-              <FormControl size="small" sx={{ minWidth: "150px" }}>
-                <InputLabel id="filter-role-label">Role</InputLabel>
-                <Select
-                  labelId="filter-role-label"
-                  label="Role"
-                  defaultValue="All"
-                  value={roleFilter}
-                  onChange={(e) => onFilterRole(e.target.value)}
-                >
-                  <MenuItem value="All">All Roles</MenuItem>
-                  {roles.map((role) => (
-                    <MenuItem key={role.code} value={role.label}>
-                      {role.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+          {/* Filter Lifecycle */}
+          <FormControl size="small" sx={{ minWidth: "150px" }}>
+            <InputLabel id="filter-lifecycle-label">Lifecycle</InputLabel>
+            <Select
+              labelId="filter-lifecycle-label"
+              label="Lifecycle"
+              value={lifecycleFilter}
+              onChange={(e) => onFilterLifecycle(e.target.value)}
+            >
+              <MenuItem value="All">All Lifecycle</MenuItem>
+              {lifecycle.map((lc) => (
+                <MenuItem key={lc.code} value={lc.label}>{lc.label}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-              <FormControl size="small" sx={{ minWidth: "150px" }}>
-                <InputLabel id="filter-lifecycle-label">Lifecycle</InputLabel>
-                <Select
-                  labelId="filter-lifecycle-label"
-                  label="Lifecycle"
-                  value={lifecycleFilter}
-                  onChange={(e) => onFilterLifecycle(e.target.value)}
-                >
-                  <MenuItem value="All">All Lifecycle</MenuItem>
-                  {lifecycle.map((lifecycle) => (
-                    <MenuItem key={lifecycle.code} value={lifecycle.label}>
-                      {lifecycle.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+          {/* Filter Type */}
+          <FormControl size="small" sx={{ minWidth: "150px" }}>
+            <InputLabel id="filter-type-label">Account Type</InputLabel>
+            <Select
+              labelId="filter-type-label"
+              label="Account Type"
+              value={typeFilter}
+              onChange={(e) => onFilterType(e.target.value)}
+            >
+              <MenuItem value="All">All Type</MenuItem>
+              {type.map((t) => (
+                <MenuItem key={t.code} value={t.label}>{t.label}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-              <FormControl size="small" sx={{ minWidth: "150px" }}>
-                <InputLabel id="filter-type-label">Account Type</InputLabel>
-                <Select
-                  labelId="filter-type-label"
-                  label="Account Type"
-                  value={typeFilter}
-                  onChange={(e) => onFilterType(e.target.value)}
-                >
-                  <MenuItem value="All">All Type</MenuItem>
-                  {type.map((type) => (
-                    <MenuItem key={type.code} value={type.label}>
-                      {type.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+          {/* Reset Action */}
+          {isFiltered && (
+            <Tooltip title="Reset Filters">
+              <IconButton onClick={handleReset} color="error" 
+                sx={{ bgcolor: (theme) => alpha(theme.palette.error.main, 0.1) }}>
+                <RestartAltIcon />
+              </IconButton>
+            </Tooltip>
+          )}
 
-              {isFiltered && (
-                <Tooltip title="Reset Filters">
-                  <IconButton
-                    onClick={handleReset}
-                    color="error"
-                    sx={{
-                      bgcolor: (theme) => alpha(theme.palette.error.main, 0.1),
-                      "&:hover": {
-                        bgcolor: (theme) =>
-                          alpha(theme.palette.error.main, 0.2),
-                      },
-                    }}
-                  >
-                    <RestartAltIcon />
-                  </IconButton>
-                </Tooltip>
-              )}
+          <Box sx={{ flexGrow: 1 }} /> {/* Spacer */}
 
-              <Tooltip title="Refresh Data">
-                <IconButton
-                  onClick={onRefresh}
-                  color="primary"
-                  sx={{
-                    border: "1px solid",
-                    borderColor: "divider",
-                  }}
-                >
-                  <RefreshIcon />
-                </IconButton>
-              </Tooltip>
-              <Button
-                variant="contained"
-                startIcon={<AddIcon />}
-                onClick={handleOpen}
-              >
-                Add Account
-              </Button>
-            </Box>
-          </Grid>
-        </Grid>
-      )}
-      {numSelected > 0 && (
-        <Tooltip title="Delete">
-          <IconButton onClick={onDelete}>
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-      )}
+          {/* Global Actions */}
+          <Tooltip title="Refresh Data">
+            <IconButton onClick={onRefresh} color="primary" sx={{ border: "1px solid", borderColor: "divider" }}>
+              <RefreshIcon />
+            </IconButton>
+          </Tooltip>
+
+          <Button variant="contained" startIcon={<AddIcon />} onClick={handleOpen}>
+            Add Account
+          </Button>
+        </Box>
+      </Grid>
 
       <GenericModal
         open={open}
         onClose={handleClose}
-        title={
-          step === "form"
-            ? "Create New Account"
-            : "Account Created Successfully"
-        }
+        title={step === "form" ? "Create New Account" : "Account Created Successfully"}
         maxWidth={step === "form" ? 550 : 500}
       >
         {step === "form" ? (

@@ -19,15 +19,22 @@ interface StatusChipProps {
 }
 
 const defaultColorMap: Record<string, ChipColor> = {
-  active: "success",
-  suspended: "warning",
-  disabled: "error",
-
-  administrator: "primary",
-  operator: "secondary",
-  ppic: "warning",
-  maintenance_administrator: "success",
-  maintenance: "default"
+  "active": "success",
+  "running": "success",
+  "on hold": "warning", 
+  "completed": "secondary",  
+  "created": "primary",        
+  "urgent": "error",
+  "suspended": "warning",
+  "disabled": "error",
+  "administrator": "primary",
+  "operator": "secondary",
+  "ppic": "warning",
+  "maintenance administrator": "success",
+  "maintenance": "default",
+  "high": "error",
+  "medium": "warning",
+  "low": "success",
 };
 
 const GenericChips: React.FC<StatusChipProps> = ({

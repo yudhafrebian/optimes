@@ -1,0 +1,113 @@
+[
+  {
+    "id": "job-8822-y1",
+    "work_order": "WO/2026/02/002",
+    "sales_order": "SO/MKT/2026/012",
+    "machine_id": {
+      "id": 14,
+      "lookup_type": "MACHINE_LIST",
+      "code": "OFFSET_PRINTER_2",
+      "label": "Offset Printer 2"
+    },
+    "quantity_order": 10000,
+    "quantity_unit": { "id": 101, "code": "BK", "label": "Book" },
+    "planned_start_time": "2026-02-11T09:00:00Z",
+    "due_date": "2026-02-11T11:00:00Z",
+    "release_date": "2026-02-10T08:00:00Z",
+    "job_priority": { "id": 2, "code": "NORMAL", "label": "Normal" },
+    "job_lifecycle_state": { "id": 302, "code": "RUNNING", "label": "Running" },
+    "notes": "Pastikan lipatan rapi."
+  },
+  {
+    "id": "job-8823-z2",
+    "work_order": "WO/2026/02/003",
+    "sales_order": "SO/MKT/2026/015",
+    "machine_id": {
+      "id": 13,
+      "lookup_type": "MACHINE_LIST",
+      "code": "OFFSET_PRINTER_1",
+      "label": "Offset Printer 1"
+    },
+    "quantity_order": 2500,
+    "quantity_unit": { "id": 101, "code": "BK", "label": "Book" },
+    "planned_start_time": "2026-02-11T13:00:00Z",
+    "due_date": "2026-02-11T14:00:00Z",
+    "release_date": "2026-02-10T08:00:00Z",
+    "job_priority": { "id": 1, "code": "HIGH", "label": "High" },
+    "job_lifecycle_state": {
+      "id": 301,
+      "code": "RELEASED",
+      "label": "Released"
+    },
+    "notes": "Cutting die-cut sesuai pola."
+  },
+  {
+    "id": "job-8824-a3",
+    "work_order": "WO/2026/02/004",
+    "sales_order": "SO/MKT/2026/020",
+    "machine_id": {
+      "id": 13,
+      "lookup_type": "MACHINE_LIST",
+      "code": "OFFSET_PRINTER_1",
+      "label": "Offset Printer 1"
+    },
+    "quantity_order": 500,
+    "quantity_unit": { "id": 102, "code": "EA", "label": "Each" },
+    "planned_start_time": "2026-02-12T08:00:00Z",
+    "due_date": "2026-02-12T16:00:00Z",
+    "release_date": "2026-02-11T08:00:00Z",
+    "job_priority": { "id": 3, "code": "LOW", "label": "Low" },
+    "job_lifecycle_state": {
+      "id": 303,
+      "code": "SUSPENDED",
+      "label": "Suspended"
+    },
+    "notes": "Menunggu ketersediaan bahan baku laminasi."
+  },
+  {
+    "id": "job-8825-b4",
+    "work_order": "WO/2026/02/005",
+    "sales_order": "SO/MKT/2026/022",
+    "machine_id": {
+      "id": 13,
+      "lookup_type": "MACHINE_LIST",
+      "code": "OFFSET_PRINTER_1",
+      "label": "Offset Printer 1"
+    },
+    "quantity_order": 3000,
+    "quantity_unit": { "id": 101, "code": "BK", "label": "Book" },
+    "planned_start_time": "2026-02-13T08:00:00Z",
+    "due_date": "2026-02-13T13:00:00Z",
+    "release_date": "2026-02-12T10:00:00Z",
+    "job_priority": { "id": 2, "code": "NORMAL", "label": "Normal" },
+    "job_lifecycle_state": {
+      "id": 301,
+      "code": "SCHEDULED",
+      "label": "Scheduled"
+    },
+    "notes": "Spiral binding warna putih."
+  },
+  {
+    "id": "job-8826-c5",
+    "work_order": "WO/2026/02/006",
+    "sales_order": "SO/MKT/2026/025",
+    "machine_id": {
+      "id": 13,
+      "lookup_type": "MACHINE_LIST",
+      "code": "OFFSET_PRINTER_1",
+      "label": "Offset Printer 1"
+    },
+    "quantity_order": 15000,
+     "quantity_unit": { "id": 102, "code": "EA", "label": "Each" },
+    "planned_start_time": "2026-02-14T09:00:00Z",
+    "due_date": "2026-02-14T13:00:00Z",
+    "release_date": "2026-02-13T08:00:00Z",
+    "job_priority": { "id": 1, "code": "HIGH", "label": "High" },
+    "job_lifecycle_state": {
+      "id": 304,
+      "code": "COMPLETED",
+      "label": "Completed"
+    },
+    "notes": "Hot stamp gold foil pada logo."
+  }
+]

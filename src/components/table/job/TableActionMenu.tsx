@@ -12,20 +12,18 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import PersonOffIcon from "@mui/icons-material/PersonOff";
 import PersonIcon from "@mui/icons-material/Person";
-import LockResetIcon from "@mui/icons-material/LockReset";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { UserRowData } from "@/interface/row-table.interface";
+import { JobRowData } from "@/interface/row-table.interface";
+import { usePathname } from "next/navigation";
 
 interface TableActionMenuProps {
   anchorEl: HTMLElement | null;
-  activeRow: UserRowData | null;
+  activeRow: JobRowData | null;
   onClose: () => void;
-  onEdit: (row: UserRowData) => void;
-  onDisable: (row: UserRowData) => void;
-  onSuspend: (row: UserRowData) => void;
-  onReset: (row: UserRowData) => void;
-  onReactivate: (row: UserRowData) => void;
-  onDelete: (row: UserRowData) => void;
+  onEdit: (row: JobRowData) => void;
+  onDisable: (row: JobRowData) => void;
+  onEnable: (row: JobRowData) => void;
+  onDelete: (row: JobRowData) => void;
 }
 
 const TableActionMenu: React.FC<TableActionMenuProps> = ({
@@ -34,15 +32,15 @@ const TableActionMenu: React.FC<TableActionMenuProps> = ({
   onClose,
   onEdit,
   onDisable,
-  onSuspend,
-  onReset,
-  onReactivate,
+  onEnable,
   onDelete,
 }) => {
   const open = Boolean(anchorEl);
-  const status = activeRow?.status?.toLowerCase();
+  const status = activeRow?.job_lifecycle_state.label?.toLowerCase();
   const isDisabled = status === "disabled";
-  const isActive = status === "active";
+  const isScheduled = status === "scheduled";
+  const isReleased = status === "released";
+  const canEdit = isScheduled || isReleased;
 
   return (
     <Menu
@@ -52,7 +50,7 @@ const TableActionMenu: React.FC<TableActionMenuProps> = ({
       transformOrigin={{ horizontal: "right", vertical: "top" }}
       anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
     >
-      {!isDisabled && (
+      {canEdit && (
         <Box>
           <MenuItem
             onClick={() => {
@@ -63,19 +61,7 @@ const TableActionMenu: React.FC<TableActionMenuProps> = ({
             <ListItemIcon>
               <EditIcon fontSize="small" color="primary" />
             </ListItemIcon>
-            <ListItemText>Edit Role</ListItemText>
-          </MenuItem>
-
-          <MenuItem
-            onClick={() => {
-              if (activeRow) onReset(activeRow);
-              onClose();
-            }}
-          >
-            <ListItemIcon>
-              <LockResetIcon fontSize="small" color="secondary" />
-            </ListItemIcon>
-            <ListItemText>Reset Password</ListItemText>
+            <ListItemText>Edit Job</ListItemText>
           </MenuItem>
           <Divider />
         </Box>
@@ -92,20 +78,20 @@ const TableActionMenu: React.FC<TableActionMenuProps> = ({
           <ListItemIcon>
             <PersonOffIcon fontSize="small" color="error" />
           </ListItemIcon>
-          <ListItemText>Disable Account</ListItemText>
+          <ListItemText>Disable Job</ListItemText>
         </MenuItem>
       ) : (
         <MenuItem
           sx={{ color: "success.main" }}
           onClick={() => {
-            if (activeRow) onReactivate(activeRow);
+            if (activeRow) onEnable(activeRow);
             onClose();
           }}
         >
           <ListItemIcon>
             <PersonIcon fontSize="small" color="success" />
           </ListItemIcon>
-          <ListItemText>Reactivate Account</ListItemText>
+          <ListItemText>Enable Job</ListItemText>
         </MenuItem>
       )}
 
@@ -119,7 +105,7 @@ const TableActionMenu: React.FC<TableActionMenuProps> = ({
         <ListItemIcon>
           <DeleteIcon fontSize="small" color="error" />
         </ListItemIcon>
-        <ListItemText>Delete Account</ListItemText>
+        <ListItemText>Delete Job</ListItemText>
       </MenuItem>
     </Menu>
   );

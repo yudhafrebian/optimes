@@ -14,7 +14,6 @@ const SuccessRegistrationView = ({
   onClose: () => void;
 }) => {
   const showSnackbar = useSnackbar();
-  console.log(data);
 
   const handleCopyPassword = () => {
     if (data?.initial_password) {

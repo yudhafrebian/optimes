@@ -1,3 +1,4 @@
+import { AccountResponseDto, LookupResponseDto } from "@/api-client";
 import {
   Box,
   TableCell,
@@ -9,28 +10,29 @@ import { visuallyHidden } from "@mui/utils";
 
 interface Data {
   id: string;
-  username: string;
-  full_name: string;
-  role: string;
-  status: string;
-  password_status: "normal" | "temporary" | "expired";
-  last_login: string;
-  created_date: string;
+  work_order: string;
+  sales_order: string;
+  machine_id: LookupResponseDto;              // Isinya: { label: "Offset Printer 1", code: "OFFSET_PRINTER_1", ... }
+  quantity_order: number;
+  quantity_unit: LookupResponseDto;           // Isinya: { label: "BK", code: "BK", ... }
+  planned_start_time: string;
+  release_date?: string;
+  due_date: string;
+  job_priority: LookupResponseDto;            // Isinya: { label: "High", code: "HIGH", ... }
+  job_lifecycle_state: LookupResponseDto;     // Isinya: { label: "Created", code: "CREATED", ... }
+  notes: string;
 }
 
 type Order = "asc" | "desc";
 type ColumnId = keyof Data | "actions";
 
 interface EnhancedTableProps {
-  numSelected?: number;
   onRequestSort: (
     event: React.MouseEvent<unknown>,
     property: keyof Data,
   ) => void;
-  onSelectAllClick?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
   orderBy: keyof Data;
-  rowCount: number;
 }
 
 interface HeadCell {
@@ -42,70 +44,76 @@ interface HeadCell {
 
 const headCells: readonly HeadCell[] = [
   {
-    id: "id",
+    id: "work_order",
     numeric: false,
-    disablePadding: true,
-    label: "Employee ID",
+    disablePadding: false,
+    label: "Work Order",
   },
   {
-    id: "full_name",
+    id: "sales_order",
     numeric: false,
-    disablePadding: true,
-    label: "Full Name",
+    disablePadding: false,
+    label: "Sales Order",
   },
   {
-    id: "username",
+    id: "machine_id",
     numeric: false,
-    disablePadding: true,
-    label: "Username",
+    disablePadding: false,
+    label: "Machine",
   },
   {
-    id: "role",
-    numeric: true,
+    id: "quantity_order",
+    numeric: false,
     disablePadding: false,
-    label: "Role",
+    label: "Quantity Order",
   },
   {
-    id: "status",
-    numeric: true,
+    id: "planned_start_time",
+    numeric: false,
     disablePadding: false,
-    label: "Status",
+    label: "Planned Start Time",
   },
   {
-    id: "password_status",
-    numeric: true,
+    id: "due_date",
+    numeric: false,
     disablePadding: false,
-    label: "Password Status",
+    label: "Due Date",
   },
   {
-    id: "last_login",
-    numeric: true,
+    id: "release_date",
+    numeric: false,
     disablePadding: false,
-    label: "Last Login",
+    label: "Release Date",
   },
   {
-    id: "created_date",
-    numeric: true,
+    id: "job_lifecycle_state",
+    numeric: false,
     disablePadding: false,
-    label: "Created Date",
+    label: "Job Lifecycle State",
+  },
+  {
+    id: "job_priority",
+    numeric: false,
+    disablePadding: false,
+    label: "Job Priority",
+  },
+  {
+    id: "notes",
+    numeric: false,
+    disablePadding: false,
+    label: "Notes",
   },
   {
     id: "actions",
     numeric: false,
     disablePadding: false,
-    label: "",
+    label: "Actions",
   },
 ];
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-  const {
-    onSelectAllClick,
-    order,
-    orderBy,
-    numSelected,
-    rowCount,
-    onRequestSort,
-  } = props;
+  const { order, orderBy, onRequestSort } = props;
+
   const createSortHandler =
     (property: ColumnId) => (event: React.MouseEvent<unknown>) => {
       if (property !== "actions") {
@@ -116,6 +124,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   return (
     <TableHead>
       <TableRow>
+        {/* TableCell Checkbox dihapus dari sini */}
+
         {headCells.map((headCell) => {
           const isAction = headCell.id === "actions";
 
@@ -127,13 +137,15 @@ function EnhancedTableHead(props: EnhancedTableProps) {
               sx={{
                 fontWeight: 700,
                 fontSize: "0.875rem",
-                bgcolor: "#F8F9FA", // Warna abu-abu muda yang modern
-                color: "#475569", // Warna teks slate
-                borderBottom: "2px solid #E2E8F0", // Garis bawah lebih tegas
-                py: 2, // Padding vertikal agar header lebih lega
+                bgcolor: "#F8F9FA",
+                color: "#475569",
+                borderBottom: "2px solid #E2E8F0",
+                py: 2,
               }}
             >
-              {isAction ? null : (
+              {isAction ? (
+                headCell.label // Menampilkan label "Actions" tanpa sort link
+              ) : (
                 <TableSortLabel
                   active={orderBy === headCell.id}
                   direction={orderBy === headCell.id ? order : "asc"}

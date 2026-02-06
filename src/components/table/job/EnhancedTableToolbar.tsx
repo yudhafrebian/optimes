@@ -1,76 +1,119 @@
-import RegisterForm from "@/form/RegisterForm";
+"use client";
+
 import {
   alpha,
+  Autocomplete,
   Box,
   Button,
   FormControl,
   Grid,
   IconButton,
   InputLabel,
+  LinearProgress,
   MenuItem,
   Select,
+  TextField,
   Toolbar,
   Tooltip,
   Typography,
 } from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import DescriptionIcon from "@mui/icons-material/Description";
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import RefreshIcon from "@mui/icons-material/Refresh";
-import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import GenericModal from "@/components/modal/GenericModal";
 import SuccessRegistrationView from "@/components/view/SuccessRegistrationView";
-import { Dayjs } from "dayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { lookupApi } from "@/lib/api";
+import { LookupResponseDto } from "@/api-client";
+import CreateJobForm, {
+  CreateJobFormValues,
+  defaultJobFormValues,
+  priorityOptions,
+} from "@/form/CreateJobForm";
+import CreateJobConfirmationView from "@/components/view/JobConfirmationView";
+import JobConfirmationView from "@/components/view/JobConfirmationView";
+import ImportForm from "@/form/ImportForm";
+import { useSnackbar } from "@/hooks/useSnackbar";
+import { usePathname } from "next/navigation";
 
 interface EnhancedTableToolbarProps {
-  numSelected?: number;
-  workFilter: string;
-  salesFilter: string;
-  equipmentFilter: string;
-  operator_1Filter: string;
-  operator_2Filter: string;
-  statusFilter: string;
-  startDate: Dayjs | null;
-  endDate: Dayjs | null;
+  workOrderFilter: string;
+  salesOrderFilter: string;
+  machineFilter: string;
+  plannedDateFilter: string;
+  lifecycleFilter: string;
+  priorityFilter: string;
   onSearch: (value: string) => void;
-  onFilterWork: (work: string) => void;
-  onFilterSales: (sales: string) => void;
-  onFilterEquipment: (equipment: string) => void;
-  onFilterOperator_1: (operator_1: string) => void;
-  onFilterOperator_2: (operator_1: string) => void;
-  onFilterStatus: (status: string) => void;
-  onFilterDate: (start: Dayjs | null, end: Dayjs | null) => void;
+  onFilterWorkOrder: (workOrder: string) => void;
+  onFilterSalesOrder: (salesOrder: string) => void;
+  onFilterMachine: (machine: string) => void;
+  onFilterPlannedDate: (plannedDate: string) => void;
+  onFilterLifecycle: (lifecycle: string) => void;
+  onFilterPriority: (priority: string) => void;
   onRefresh: () => void;
-  onDelete: () => void;
 }
+
+const workOrderOptions = [
+  { label: "All Work Order", value: "All" },
+  { label: "WO/2026/02/002", value: "WO/2026/02/002" },
+  { label: "WO/2026/02/003", value: "WO/2026/02/003" },
+  { label: "WO/2026/02/004", value: "WO/2026/02/004" },
+  { label: "WO/2026/02/005", value: "WO/2026/02/005" },
+  { label: "WO/2026/02/006", value: "WO/2026/02/006" },
+];
+
+const salesOrderOptions = [
+  { label: "All Sales Order", value: "All" },
+  { label: "SO/MKT/2026/012", value: "SO/MKT/2026/012" },
+  { label: "SO/MKT/2026/015", value: "SO/MKT/2026/015" },
+  { label: "SO/MKT/2026/020", value: "SO/MKT/2026/020" },
+  { label: "SO/MKT/2026/022", value: "SO/MKT/2026/022" },
+  { label: "SO/MKT/2026/025", value: "SO/MKT/2026/025" },
+];
+
+const lifecycleOptions = [
+  { label: "Scheduled", value: "Scheduled" },
+  { label: "Running", value: "Running" },
+  { label: "Released", value: "Released" },
+  { label: "Completed", value: "Completed" },
+  { label: "Suspended", value: "Suspended" },
+];
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const {
-    numSelected,
     onRefresh,
-    onFilterWork,
-    onFilterSales,
-    onFilterEquipment,
-    onFilterOperator_1,
-    onFilterOperator_2,
     onSearch,
-    workFilter,
-    salesFilter,
-    equipmentFilter,
-    operator_1Filter,
-    operator_2Filter,
-    statusFilter,
-    onFilterStatus,
-    startDate,
-    endDate,
-    onFilterDate,
-    onDelete,
+    workOrderFilter,
+    salesOrderFilter,
+    machineFilter,
+    plannedDateFilter,
+    lifecycleFilter,
+    priorityFilter,
+    onFilterWorkOrder,
+    onFilterSalesOrder,
+    onFilterMachine,
+    onFilterPlannedDate,
+    onFilterLifecycle,
+    onFilterPriority,
   } = props;
+
   const [open, setOpen] = useState<boolean>(false);
   const [step, setStep] = useState<"form" | "success">("form");
-  const [userData, setUserData] = useState<any>({});
+  const [jobData, setJobData] =
+    useState<CreateJobFormValues>(defaultJobFormValues);
+  const [draftJobData, setDraftJobData] =
+    useState<CreateJobFormValues>(defaultJobFormValues);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [machine, setMachine] = useState<LookupResponseDto[]>([]);
+  const [importOpen, setImportOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const pathname = usePathname();
+  const isJobManagement = pathname.startsWith("/dashboard/ppic/job-management");
+  const showSnackbar = useSnackbar();
 
   const handleOpen = () => {
     setStep("form");
@@ -78,35 +121,39 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   };
 
   const handleSuccess = (data: any) => {
-    setUserData(data);
+    setJobData(data);
     setStep("success");
   };
 
   const handleClose = () => {
     setOpen(false);
+    setDraftJobData(defaultJobFormValues);
     setTimeout(() => setStep("form"), 300);
   };
 
+  const handleBack = () => {
+    setStep("form");
+  };
+
   const isFiltered =
-    workFilter !== "All" ||
-    salesFilter !== "All" ||
-    equipmentFilter !== "All" ||
-    operator_1Filter !== "All" ||
-    operator_2Filter !== "All" ||
-    statusFilter !== "All" ||
-    startDate !== null ||
-    endDate !== null;
+    workOrderFilter !== "All" ||
+    salesOrderFilter !== "All" ||
+    machineFilter !== "All" ||
+    plannedDateFilter !== "" ||
+    lifecycleFilter !== "All" ||
+    priorityFilter !== "All";
 
   const handleReset = () => {
-    onFilterWork("All");
-    onFilterSales("All");
-    onFilterEquipment("All");
-    onFilterOperator_1("All");
-    onFilterOperator_2("All");
-    onFilterStatus("All");
-    onFilterDate(null, null);
+    onFilterWorkOrder("All");
+    onFilterSalesOrder("All");
+    onFilterMachine("All");
+    onFilterPlannedDate("");
+    onFilterLifecycle("All");
+    onFilterPriority("All");
     onSearch("");
+    setSearchTerm(""); // Reset local search state juga
   };
+
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       onSearch(searchTerm);
@@ -114,252 +161,268 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     return () => clearTimeout(delayDebounceFn);
   }, [searchTerm, onSearch]);
 
+  useEffect(() => {
+    const fetchFilter = async () => {
+      try {
+        const [machinesRes] = await Promise.all([
+          lookupApi.lookupControllerFindAll("MACHINE_LIST"),
+        ]);
+        setMachine(machinesRes.data);
+      } catch (error) {
+        console.error("Failed to fetch filters:", error);
+      }
+    };
+    fetchFilter();
+  }, []);
+
+  const handleImportSubmit = async (file: File) => {
+    try {
+      setLoading(true);
+      showSnackbar("Import started", "info");
+      await new Promise<void>((resolve) => {
+        setTimeout(() => {
+          console.log("Import file:", file);
+          resolve();
+        }, 1500);
+      });
+      showSnackbar("Import completed", "success");
+      setImportOpen(false);
+      onRefresh();
+    } catch (error) {
+      console.error("Import failed:", error);
+      showSnackbar("Import failed", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <Toolbar
-      sx={[
-        {
-          pl: { sm: 2 },
-          pr: { xs: 1, sm: 1 },
-        },
-        (numSelected ?? 0) > 0 && {
-          bgcolor: (theme) =>
-            alpha(
-              theme.palette.primary.main,
-              theme.palette.action.activatedOpacity,
-            ),
-        },
-      ]}
-    >
-      {(numSelected ?? 0) ? (
-        <Typography
-          sx={{ flex: "1 1 100%" }}
-          color="inherit"
-          variant="subtitle1"
-          component="div"
+    <Toolbar sx={{ pl: { sm: 2 }, pr: { xs: 1, sm: 1 } }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          width: "100%",
+          marginTop: 2,
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            gap: 2,
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+            marginBottom: 2,
+          }}
         >
-          {numSelected} selected
-        </Typography>
-      ) : (
-        <Grid container size={12}>
-          <Grid size={12}>
-            <Box
-              sx={{
-                p: 2,
-                display: "flex",
-                gap: 2,
-                alignItems: "center",
-                flexWrap: "wrap",
-              }}
-            >
-              {/* Search Bar */}
-              {/* <TextField
-                size="small"
-                placeholder="Search username..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                sx={{ flexGrow: 1, minWidth: "100px", maxWidth: "300px" }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon fontSize="small" />
-                    </InputAdornment>
-                  ),
-                }}
-              /> */}
-
-              <FormControl size="small" sx={{ minWidth: "150px" }}>
-                <InputLabel id="work-order-label">Work Order</InputLabel>
-                <Select
-                  labelId="work-order-label"
-                  label="Work Order"
-                  defaultValue="All"
-                  value={workFilter}
-                  onChange={(e) => onFilterWork(e.target.value)}
-                >
-                  <MenuItem value="All">All Work Order</MenuItem>
-                  <MenuItem value="WO-20260112">WO-20260112</MenuItem>
-                  <MenuItem value="WO-20260113"> WO-20260113</MenuItem>
-                  <MenuItem value="WO-20260114">WO-20260114</MenuItem>
-                  <MenuItem value="WO-20260115">WO-20260115</MenuItem>
-                </Select>
-              </FormControl>
-
-              <FormControl size="small" sx={{ minWidth: "150px" }}>
-                <InputLabel id="sales-order-label">Sales Order</InputLabel>
-                <Select
-                  labelId="sales-order-label"
-                  label="Sales Order"
-                  defaultValue="All"
-                  value={salesFilter}
-                  onChange={(e) => onFilterSales(e.target.value)}
-                >
-                  <MenuItem value="All">All Sales Order</MenuItem>
-                  <MenuItem value="SO-20260112">SO-20260112</MenuItem>
-                  <MenuItem value="SO-20260113"> SO-20260113</MenuItem>
-                  <MenuItem value="SO-20260114">SO-20260114</MenuItem>
-                  <MenuItem value="SO-20260115">SO-20260115</MenuItem>
-                </Select>
-              </FormControl>
-
-              <FormControl size="small" sx={{ minWidth: "150px" }}>
-                <InputLabel id="equipment-label">Equipment</InputLabel>
-                <Select
-                  labelId="equipment-label"
-                  label="Equipment"
-                  defaultValue="All"
-                  value={equipmentFilter}
-                  onChange={(e) => onFilterEquipment(e.target.value)}
-                >
-                  <MenuItem value="All">All Equipment</MenuItem>
-                  <MenuItem value="offset-printer-1">Offset Printer 1</MenuItem>
-                  <MenuItem value="offset-printer-2">Offset Printer 2</MenuItem>
-                  <MenuItem value="offset-printer-3">Offset Printer 3</MenuItem>
-                  <MenuItem value="offset-printer-4">Offset Printer 4</MenuItem>
-                </Select>
-              </FormControl>
-
-              <FormControl size="small" sx={{ minWidth: "150px" }}>
-                <InputLabel id="filter-status-label">Status</InputLabel>
-                <Select
-                  labelId="filter-status-label"
-                  label="Status"
-                  value={statusFilter}
-                  onChange={(e) => onFilterStatus(e.target.value)}
-                >
-                  <MenuItem value="All">All Status</MenuItem>
-                  <MenuItem value="scheduled">Scheduled</MenuItem>
-                  <MenuItem value="released">Released</MenuItem>
-                  <MenuItem value="running">Running</MenuItem>
-                  <MenuItem value="suspended">Suspended</MenuItem>
-                  <MenuItem value="completed">Completed</MenuItem>
-                  <MenuItem value="cancelled">Cancelled</MenuItem>
-                  <MenuItem value="closed">Closed</MenuItem>
-                </Select>
-              </FormControl>
-
-              <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-                <DatePicker
-                  label="Start Date"
-                  value={startDate}
-                  onChange={(newValue) => onFilterDate(newValue, endDate)}
-                  slotProps={{
-                    textField: { size: "small", sx: { width: 170 } },
-                  }}
-                />
-                <Typography variant="body2">to</Typography>
-                <DatePicker
-                  label="End Date"
-                  value={endDate}
-                  minDate={startDate || undefined}
-                  onChange={(newValue) => onFilterDate(startDate, newValue)}
-                  slotProps={{
-                    textField: { size: "small", sx: { width: 170 } },
-                  }}
-                />
-              </Box>
-
-              <FormControl size="small" sx={{ minWidth: "150px" }}>
-                <InputLabel id="operator-1-label">Operator 1</InputLabel>
-                <Select
-                  labelId="operator-1-label"
-                  label="Operator 1"
-                  defaultValue="All"
-                  value={operator_1Filter}
-                  onChange={(e) => onFilterOperator_1(e.target.value)}
-                >
-                  <MenuItem value="All">All Operator 1</MenuItem>
-                  <MenuItem value="Jack Smith">Jack Smith</MenuItem>
-                  <MenuItem value="John Doe">John Doe</MenuItem>
-                  <MenuItem value="Jane Doe">Jane Doe</MenuItem>
-                </Select>
-              </FormControl>
-
-              <FormControl size="small" sx={{ minWidth: "150px" }}>
-                <InputLabel id="operator-2-label">Operator 2</InputLabel>
-                <Select
-                  labelId="operator-2-label"
-                  label="Operator 2"
-                  defaultValue="All"
-                  value={operator_2Filter}
-                  onChange={(e) => onFilterOperator_2(e.target.value)}
-                >
-                  <MenuItem value="All">All Operator 2</MenuItem>
-                  <MenuItem value="Jack Smith">Jack Smith</MenuItem>
-                  <MenuItem value="John Doe">John Doe</MenuItem>
-                  <MenuItem value="Jane Doe">Jane Doe</MenuItem>
-                </Select>
-              </FormControl>
-
-              {isFiltered && (
-                <Tooltip title="Reset Filters">
-                  <IconButton
-                    onClick={handleReset}
-                    color="error"
-                    sx={{
-                      bgcolor: (theme) => alpha(theme.palette.error.main, 0.1),
-                      "&:hover": {
-                        bgcolor: (theme) =>
-                          alpha(theme.palette.error.main, 0.2),
-                      },
-                    }}
-                  >
-                    <RestartAltIcon />
-                  </IconButton>
-                </Tooltip>
-              )}
-
-              <Tooltip title="Refresh Data">
-                <IconButton
-                  onClick={onRefresh}
-                  color="primary"
-                  sx={{
-                    border: "1px solid",
-                    borderColor: "divider",
-                  }}
-                >
-                  <RefreshIcon />
-                </IconButton>
-              </Tooltip>
+          <Typography variant="h5" fontWeight={500}>
+            Job List
+          </Typography>
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <Tooltip title="Refresh Data">
+              <IconButton
+                onClick={onRefresh}
+                color="primary"
+                sx={{ border: "1px solid", borderColor: "divider" }}
+              >
+                <RefreshIcon />
+              </IconButton>
+            </Tooltip>
+            {isJobManagement && (
+              <Button
+                variant="contained"
+                startIcon={<DescriptionIcon />}
+                color="success"
+                onClick={() => setImportOpen(true)}
+              >
+                Import Excel
+              </Button>
+            )}
+            {isJobManagement && (
               <Button
                 variant="contained"
                 startIcon={<AddIcon />}
                 onClick={handleOpen}
               >
-                Add Account
+                Add Job
               </Button>
-            </Box>
-          </Grid>
-        </Grid>
-      )}
-      {(numSelected ?? 0) > 0 && (
-        <Tooltip title="Delete">
-          <IconButton onClick={onDelete}>
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-      )}
+            )}
+          </Box>
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "nowrap",
+            gap: 2,
+            alignItems: "center",
+            width: "100%",
+            p: 2,
+            overflowX: "auto",
+          }}
+        >
+          <Autocomplete<{ label: string; value: string }, false, false, false>
+            disablePortal
+            size="small"
+            value={
+              workOrderOptions.find(
+                (option) => option.value === workOrderFilter,
+              ) ?? null
+            }
+            onChange={(e, newValue) => onFilterWorkOrder(newValue?.value ?? "")}
+            options={workOrderOptions}
+            getOptionLabel={(option) => option.label}
+            isOptionEqualToValue={(option, value) =>
+              option.value === value.value
+            }
+            sx={{ minWidth: 150 }}
+            renderInput={(params) => (
+              <TextField {...params} label="Work Order" />
+            )}
+          />
+          <Autocomplete<{ label: string; value: string }, false, false, false>
+            disablePortal
+            size="small"
+            value={
+              salesOrderOptions.find(
+                (option) => option.value === salesOrderFilter,
+              ) ?? null
+            }
+            onChange={(e, newValue) =>
+              onFilterSalesOrder(newValue?.value ?? "")
+            }
+            options={salesOrderOptions}
+            getOptionLabel={(option) => option.label}
+            isOptionEqualToValue={(option, value) =>
+              option.value === value.value
+            }
+            sx={{ minWidth: 150 }}
+            renderInput={(params) => (
+              <TextField {...params} label="Sales Order" />
+            )}
+          />
+
+          <FormControl size="small" sx={{ minWidth: "150px" }}>
+            <InputLabel id="filter-machine-label">Machine</InputLabel>
+            <Select
+              labelId="filter-machine-label"
+              label="Machine"
+              value={machineFilter}
+              onChange={(e) => onFilterMachine(e.target.value)}
+            >
+              <MenuItem value="All">All Machine</MenuItem>
+              {machine.map((t) => (
+                <MenuItem key={t.code} value={t.label}>
+                  {t.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <DatePicker
+            label="Planned Date"
+            value={plannedDateFilter ? dayjs(plannedDateFilter) : null}
+            onChange={(value) =>
+              onFilterPlannedDate(value ? value.format("YYYY-MM-DD") : "")
+            }
+            slotProps={{
+              textField: {
+                size: "small",
+                sx: { width: 150 },
+              },
+            }}
+          />
+          {/* Filter Lifecycle */}
+          <FormControl size="small" sx={{ minWidth: "150px" }}>
+            <InputLabel id="filter-lifecycle-label">Lifecycle</InputLabel>
+            <Select
+              labelId="filter-lifecycle-label"
+              label="Lifecycle"
+              value={lifecycleFilter}
+              onChange={(e) => onFilterLifecycle(e.target.value)}
+            >
+              <MenuItem value="All">All Lifecycle</MenuItem>
+              {lifecycleOptions.map((l) => (
+                <MenuItem key={l.value} value={l.value}>
+                  {l.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          {/* Filter Type */}
+          <FormControl size="small" sx={{ minWidth: "150px" }}>
+            <InputLabel id="filter-priority-label">Priority</InputLabel>
+            <Select
+              labelId="filter-priority-label"
+              label="Priority"
+              value={priorityFilter}
+              onChange={(e) => onFilterPriority(e.target.value)}
+            >
+              <MenuItem value="All">All Priority</MenuItem>
+              {priorityOptions.map((t) => (
+                <MenuItem key={t.code} value={t.label}>
+                  {t.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          {/* Reset Action */}
+          {isFiltered && (
+            <Tooltip title="Reset Filters">
+              <IconButton
+                onClick={handleReset}
+                color="error"
+                sx={{
+                  bgcolor: (theme) => alpha(theme.palette.error.main, 0.1),
+                  flex: "0 0 auto",
+                }}
+              >
+                <RestartAltIcon />
+              </IconButton>
+            </Tooltip>
+          )}
+        </Box>
+      </Box>
 
       <GenericModal
         open={open}
         onClose={handleClose}
-        title={
-          step === "form"
-            ? "Create New Account"
-            : "Account Created Successfully"
-        }
-        maxWidth={step === "form" ? 550 : 500}
+        title={step === "form" ? "Create Job" : "Create Job Confirmation"}
+        maxWidth={step === "form" ? 1000 : 400}
       >
         {step === "form" ? (
-          <RegisterForm
+          <CreateJobForm
+            onCancel={handleClose}
             onSuccess={(data) => {
               handleSuccess(data);
-              onRefresh();
             }}
-            onCancel={handleClose}
+            initialValues={draftJobData}
+            onValuesChange={setDraftJobData}
           />
         ) : (
-          <SuccessRegistrationView data={userData} onClose={handleClose} />
+          <JobConfirmationView
+            data={jobData}
+            onBack={handleBack}
+            onSuccess={() => {
+              handleClose();
+            }}
+            type="create"
+          />
         )}
+      </GenericModal>
+
+      <GenericModal
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        title="Import Job File"
+        maxWidth={600}
+      >
+        {loading && <LinearProgress />}
+        <ImportForm
+          onSubmit={handleImportSubmit}
+          onCancel={() => setImportOpen(false)}
+        />
       </GenericModal>
     </Toolbar>
   );

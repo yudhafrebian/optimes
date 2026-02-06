@@ -1,84 +1,117 @@
-// "use client";
-// import * as React from "react";
-// import { TableRow, TableCell, Checkbox, IconButton, Chip } from "@mui/material";
-// import MoreVertIcon from "@mui/icons-material/MoreVert";
-// import GenericChips from "@/components/core/GenericChips";
-// import dayjs from "dayjs";
-// import { UserRowData } from "@/interface/row-table.interface";
+"use client";
+import * as React from "react";
+import { TableRow, TableCell, IconButton, Button } from "@mui/material";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import GenericChips from "@/components/core/GenericChips";
+import dayjs from "dayjs";
+import { JobRowData } from "@/interface/row-table.interface";
+import { usePathname } from "next/navigation";
 
-// interface UserTableRowProps {
-//   row: UserRowData;
-//   isSelected: boolean;
-//   labelId: string;
-//   onSelect: (event: React.MouseEvent<unknown>, id: string) => void;
-//   onOpenMenu: (
-//     event: React.MouseEvent<HTMLButtonElement>,
-//     row: UserRowData,
-//   ) => void;
-// }
+interface JobTableRowProps {
+  row: JobRowData;
+  // isSelected, labelId, dan onSelect dihapus karena fitur select ditiadakan
+  onOpenMenu: (
+    event: React.MouseEvent<HTMLButtonElement>,
+    row: JobRowData,
+  ) => void;
+}
 
-// const UserTableRow: React.FC<UserTableRowProps> = ({
-//   row,
-//   isSelected,
-//   labelId,
-//   onSelect,
-//   onOpenMenu,
-// }) => {
-//   return (
-//     <TableRow
-//       hover
-//       role="checkbox"
-//       aria-checked={isSelected}
-//       tabIndex={-1}
-//       key={row.id}
-//       selected={isSelected}
-//       onClick={(event) => onSelect(event, row.id)}
-//       sx={{ cursor: "pointer" }}
-//     >
+const JobTableRow: React.FC<JobTableRowProps> = ({ row, onOpenMenu }) => {
+  const pathname = usePathname();
+  const isJobManagement = pathname.startsWith("/dashboard/ppic/job-management");
+  return (
+    <TableRow
+      hover
+      tabIndex={-1}
+      key={row.work_order}
+      sx={{
+        cursor: "default",
+        "&:last-child td, &:last-child th": { border: 0 },
+      }}
+    >
+      {/* TableCell padding="checkbox" dan Checkbox dihapus dari sini */}
 
-//       <TableCell component="th" id={labelId} scope="row" padding="normal" sx={{minWidth:150}}>
-//         {row.id}
-//       </TableCell>
-//       <TableCell component="th" id={labelId} scope="row" padding="none" sx={{minWidth:250}}>
-//         {row.full_name}
-//       </TableCell>
-//       <TableCell component="th" id={labelId} scope="row" padding="none" sx={{minWidth:200}}>
-//         {row.username}
-//       </TableCell>
+      <TableCell
+        component="th"
+        scope="row"
+        padding="normal" // Diubah dari "none" ke "normal" agar ada jarak di pinggir kiri
+        sx={{ minWidth: 250, fontWeight: 500 }}
+      >
+        {row.work_order}
+      </TableCell>
 
-//       <TableCell component="th" scope="row" padding="none" align="left" sx={{minWidth:200}}>
-//         <GenericChips value={row.role} variant="filled" />
-//       </TableCell>
+      <TableCell align="left" padding="normal" sx={{ minWidth: 200 }}>
+        {row.sales_order}
+      </TableCell>
 
-//       <TableCell component="th" scope="row" padding="none" align="left">
-//         <GenericChips value={row.status} />
-//       </TableCell>
-//       <TableCell
-//         component="th"
-//         scope="row"
-//         padding="normal"
-//         align="left"
-//         sx={{ textTransform: "capitalize", minWidth: 200 }}
-//       >
-//         {row.password_status}
-//       </TableCell>
-//       <TableCell component="th" scope="row" padding="none" align="left" sx={{minWidth:150}}>
-//         {dayjs(row.last_login).format("DD/MM/YYYY HH:mm")}
-//       </TableCell>
+      <TableCell align="left" padding="normal" sx={{ minWidth: 200 }}>
+        {row.machine_id.label}
+      </TableCell>
 
-//       <TableCell align="center" sx={{ width: 50 }}>
-//         <IconButton
-//           size="small"
-//           onClick={(e) => {
-//             e.stopPropagation();
-//             onOpenMenu(e, row);
-//           }}
-//         >
-//           <MoreVertIcon fontSize="small" />
-//         </IconButton>
-//       </TableCell>
-//     </TableRow>
-//   );
-// };
+      <TableCell
+        align="left"
+        padding="normal"
+        sx={{ textTransform: "capitalize", minWidth: 200 }}
+      >
+        {row.quantity_order} {row.quantity_unit.label}
+      </TableCell>
 
-// export default React.memo(UserTableRow);
+      <TableCell align="left" padding="normal" sx={{ minWidth: 200 }}>
+        {dayjs(row.planned_start_time).isValid()
+          ? dayjs(row.planned_start_time).format("HH:mm:ss - DD/MM/YYYY")
+          : "-"}
+      </TableCell>
+
+      <TableCell align="left" padding="normal" sx={{ minWidth: 200 }}>
+        {dayjs(row.due_date).isValid()
+          ? dayjs(row.due_date).format("HH:mm:ss - DD/MM/YYYY")
+          : "-"}
+      </TableCell>
+
+      <TableCell align="left" padding="normal" sx={{ minWidth: 200 }}>
+        {dayjs(row.release_date).isValid()
+          ? dayjs(row.release_date).format("HH:mm:ss - DD/MM/YYYY")
+          : "-"}
+      </TableCell>
+
+      <TableCell align="left" padding="normal" sx={{ minWidth: 200 }}>
+        <GenericChips value={row.job_lifecycle_state.label} variant="filled" />
+      </TableCell>
+
+      <TableCell align="left" padding="normal" sx={{ minWidth: 200 }}>
+        <GenericChips value={row.job_priority.label} variant="filled" />
+      </TableCell>
+
+      <TableCell
+        align="left"
+        padding="normal"
+        sx={{ textTransform: "capitalize", minWidth: 200 }}
+      >
+        {row.notes}
+      </TableCell>
+
+      <TableCell align="center" sx={{ width: 50 }}>
+        {isJobManagement ? (
+          <IconButton
+            size="small"
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenMenu(e, row);
+            }}
+          >
+            <MoreVertIcon fontSize="small" />
+          </IconButton>
+        ) : (
+          <Button
+            variant="contained"
+            onClick={() => window.open(`/report/job/${row.id}`)}
+          >
+            Get Report
+          </Button>
+        )}
+      </TableCell>
+    </TableRow>
+  );
+};
+
+export default React.memo(JobTableRow);
