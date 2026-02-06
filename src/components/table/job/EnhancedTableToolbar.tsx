@@ -215,7 +215,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           }}
         >
           <Typography variant="h5" fontWeight={500}>
-            Job List
+            {isJobManagement ? "Job List" : "Job Report List"}
           </Typography>
           <Box sx={{ display: "flex", gap: 2 }}>
             <Tooltip title="Refresh Data">
