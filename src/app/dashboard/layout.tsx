@@ -1,8 +1,10 @@
-"use client";
-
-import { ReactNode } from "react";
-import { AppShell } from "@/toolpad/AppShell";
+import { ReactNode, Suspense } from "react";
+import DashboardShell from "./DashboardShell";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
-  return <AppShell>{children}</AppShell>;
+  return (
+    <Suspense fallback={null}>
+      <DashboardShell>{children}</DashboardShell>
+    </Suspense>
+  );
 }

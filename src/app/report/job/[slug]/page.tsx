@@ -4,8 +4,13 @@ import { apiServer } from "@/utils/apiHelper";
 import { Box, Typography } from "@mui/material";
 import dayjs from "dayjs";
 
-export default async function Page({ params }: { params: { slug: string } }) {
-  const res = await apiServer.get(`/job/${params.slug}`);
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const res = await apiServer.get(`/job/${slug}`);
   const data: IJobOffsetPrinter = res.data;
 
   if (!data) {
