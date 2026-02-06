@@ -2,13 +2,10 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 
-type Params = {
-  params: {
-    id: string;
-  };
-};
-
-export async function GET(_: Request, { params }: Params) {
+export async function GET(
+  _: Request,
+  { params }: { params: { id: string } },
+) {
   try {
     const filePath = path.join(process.cwd(), "src/lib/jobs.json");
     const jsonData = fs.readFileSync(filePath, "utf-8");
