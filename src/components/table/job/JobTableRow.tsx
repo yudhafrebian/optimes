@@ -40,6 +40,8 @@ const JobTableRow: React.FC<JobTableRowProps> = ({ row, onOpenMenu }) => {
     };
     return map[status] ?? "transparent";
   };
+
+  
   return (
     <TableRow
       hover

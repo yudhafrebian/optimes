@@ -412,11 +412,31 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
               onChange={(e) => onFilterLifecycle(e.target.value)}
             >
               <MenuItem value="All">All Lifecycle</MenuItem>
-              {lifeCycleOptions.map((l) => (
-                <MenuItem key={l.label} value={l.label}>
-                  {l.label}
-                </MenuItem>
-              ))}
+              {isJobManagement
+                ? lifeCycleOptions
+                    .map((l) => (
+                      <MenuItem key={l.label} value={l.label}>
+                        {l.label}
+                      </MenuItem>
+                    ))
+                    .filter(
+                      (t) =>
+                        t.props.value !== "Closed" &&
+                        t.props.value !== "Completed",
+                    )
+                : lifeCycleOptions
+                    .map((l) => (
+                      <MenuItem key={l.label} value={l.label}>
+                        {l.label}
+                      </MenuItem>
+                    ))
+                    .filter(
+                      (t) =>
+                        t.props.value !== "Scheduled" &&
+                        t.props.value !== "Released" &&
+                        t.props.value !== "Running" &&
+                        t.props.value !== "Suspended",
+                    )}
             </Select>
           </FormControl>
           {/* Filter Type */}
@@ -492,10 +512,13 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         {loading && <LinearProgress />}
         <ImportForm
           onSubmit={handleImportPreview}
-          onCancel={() => setImportOpen(false)}
+          onCancel={() => {
+            setImportOpen(false);
+            setErrMessage([]);
+          }}
         />
 
-        <Box sx={{maxHeight:200, overflowY:"auto", mt: 2}}>
+        <Box sx={{ maxHeight: 200, overflowY: "auto", mt: 2 }}>
           {errMessage.length > 0 &&
             errMessage.map((e, idx) => (
               <Alert sx={{ mt: 1 }} key={idx} severity="error">

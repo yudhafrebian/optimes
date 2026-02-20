@@ -54,11 +54,12 @@ const ImportForm = ({
     setFieldTouched("file", true, true);
   };
 
-  const handleDownloadTemplate = async() => {
+  const handleDownloadTemplate = async () => {
     try {
-      const res = await jobsApi.jobOffsetPrinterTaiyoControllerDownloadExcelTemplate({
-        responseType: "blob",
-      });
+      const res =
+        await jobsApi.jobOffsetPrinterTaiyoControllerDownloadExcelTemplate({
+          responseType: "blob",
+        });
 
       const contentType =
         res.headers["content-type"] ||
@@ -97,6 +98,13 @@ const ImportForm = ({
       {(props: FormikProps<ImportFormValues>) => {
         const { values, errors, touched, setFieldValue, setFieldTouched } =
           props;
+        const handleClearFile = () => {
+          setFieldValue("file", null, true);
+          setFieldTouched("file", false, false);
+          if (inputRef.current) {
+            inputRef.current.value = "";
+          }
+        };
 
         return (
           <Form>
@@ -140,10 +148,24 @@ const ImportForm = ({
                   </Typography>
 
                   {values.file && (
-                    <Typography variant="body2" mt={1}>
-                      Selected: {values.file.name} (
-                      {Math.ceil(values.file.size / 1024)} KB)
-                    </Typography>
+                    <Box mt={1}>
+                      <Typography variant="body2">
+                        Selected: {values.file.name} (
+                        {Math.ceil(values.file.size / 1024)} KB)
+                      </Typography>
+                      <Button
+                        size="small"
+                        variant="text"
+                        color="error"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleClearFile();
+                        }}
+                        disabled={loading}
+                      >
+                        Clear File
+                      </Button>
+                    </Box>
                   )}
                 </Box>
 

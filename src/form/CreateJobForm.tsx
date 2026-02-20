@@ -1,4 +1,5 @@
 import {
+  ApiErrorResponseDto,
   CreateJobOffsetPrinterTaiyoDto,
   LookupResponseDto,
 } from "@/api-client";
@@ -93,7 +94,7 @@ const CreateJobForm: React.FunctionComponent<ICreateJobFormProps> = ({
         setPriority(priority.data);
       } catch (error: any) {
         console.log(error);
-        showSnackbar(error.response.data.message, "error");
+        showSnackbar(error.response.data.details[0].message, "error");
       }
     };
 

@@ -8,7 +8,7 @@ const MachineInfoCard: React.FunctionComponent<IMachineInfoCardProps> = (
   props,
 ) => {
   return (
-    <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, height: "100%" }}>
+    <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, height: "100%", minHeight:100 }}>
       <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
         <SettingsIcon sx={{ color: "#1976d2", fontSize: 20 }} />
         <Typography variant="subtitle1" fontWeight="700">

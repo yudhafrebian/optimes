@@ -11,6 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Form, Formik, FormikProps } from "formik";
+import LoginIcon from '@mui/icons-material/Login';
 import { loginValidationSchema } from "./validation/auth.validation";
 import { useState } from "react";
 import { useSetAtom } from "jotai";
@@ -206,7 +207,9 @@ const LoginForm = () => {
                   color="primary"
                   fullWidth
                   size="large"
-                  disabled={loading ? true : false}
+                  loading={loading}
+                  loadingPosition="end"
+                  endIcon={<LoginIcon />}
                 >
                   {loading ? "Logging in..." : "Login"}
                 </Button>

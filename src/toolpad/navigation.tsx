@@ -2,6 +2,7 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import HistoryIcon from '@mui/icons-material/History';
+import PrecisionManufacturingIcon from '@mui/icons-material/PrecisionManufacturing';
 
 export const navigationByRole = {
   administrator: [
@@ -39,6 +40,12 @@ export const navigationByRole = {
       segment: "dashboard/ppic/job-reports",
       title: "Job Reports",
       icon: <AssessmentIcon />,
+      
+    },
+    {
+      segment: "dashboard/ppic/work-center-manager",
+      title: "Work Center Manager",
+      icon: <PrecisionManufacturingIcon />,
       
     },
   ],

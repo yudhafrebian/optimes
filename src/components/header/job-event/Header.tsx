@@ -15,6 +15,7 @@ export default function JobEventHeader() {
         top: 0,
         zIndex: 100,
         boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+        height: 200,
       }}
     >
       <Grid container spacing={3}>

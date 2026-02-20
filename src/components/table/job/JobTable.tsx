@@ -28,6 +28,7 @@ import JobConfirmationView from "@/components/view/JobConfirmationView";
 import { filterJobs } from "@/utils/jobFilters";
 import { getJobDialogConfig } from "@/components/dialog/jobDialogConfig";
 import { jobsApi } from "@/lib/api";
+import { usePathname } from "next/navigation";
 
 const fetcher = () =>
   jobsApi.jobOffsetPrinterTaiyoControllerGetAll().then((res) => {
@@ -94,6 +95,9 @@ export default function JobTableManagement() {
   const [priorityFilter, setPriorityFilter] = useState<string>("All");
   const [jobData, setJobData] = useState<any>(null);
 
+  const pathname = usePathname();
+  const isJobManagement = pathname.startsWith("/dashboard/ppic/job-management");
+
   const {
     data: jobs,
     mutate,
@@ -110,10 +114,26 @@ export default function JobTableManagement() {
   const rows = useMemo(() => {
     if (!jobs) return [];
 
-    const jobsArray = Array.isArray(jobs) ? jobs : [jobs];
+    const jobsArray = Array.isArray(jobs) ? jobs : [];
 
-    return jobsArray.map((job) => createData(job));
-  }, [jobs]);
+    const filtered = jobsArray.filter((job) => {
+      if (isJobManagement) {
+        return (
+          job.job_lifecycle_state.label !== "Closed" &&
+          job.job_lifecycle_state.label !== "Completed"
+        );
+      } else {
+        return (
+          job.job_lifecycle_state.label !== "Scheduled" &&
+          job.job_lifecycle_state.label !== "Released" &&
+          job.job_lifecycle_state.label !== "Running" &&
+          job.job_lifecycle_state.label !== "Suspended"
+        );
+      }
+    });
+
+    return filtered.map((job) => createData(job));
+  }, [jobs, isJobManagement]);
 
   const showSnackbar = useSnackbar();
 
