@@ -18,6 +18,7 @@ interface IGenericModalProps {
   title: string;
   children: React.ReactNode;
   maxWidth?: number | string;
+  maxHeight?: number | string;
   showCloseButton?: boolean;
 }
 
@@ -27,6 +28,7 @@ const GenericModal: React.FC<IGenericModalProps> = ({
   title,
   children,
   maxWidth = 500,
+  maxHeight = "auto",
   showCloseButton = true,
 }) => {
   // Mencegah modal tertutup saat klik area luar (backdrop)
@@ -42,6 +44,7 @@ const GenericModal: React.FC<IGenericModalProps> = ({
     transform: "translate(-50%, -50%)",
     width: "90%", // Responsif untuk layar kecil
     maxWidth: maxWidth,
+    maxHeight: maxHeight,
     bgcolor: "background.paper",
     boxShadow: 24,
     p: 3,

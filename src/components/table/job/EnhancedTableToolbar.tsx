@@ -487,18 +487,22 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         onClose={() => setImportOpen(false)}
         title="Import Job File"
         maxWidth={600}
+        maxHeight={600}
       >
         {loading && <LinearProgress />}
         <ImportForm
           onSubmit={handleImportPreview}
           onCancel={() => setImportOpen(false)}
         />
-        {errMessage.length > 0 &&
-          errMessage.map((e, idx) => (
-            <Alert sx={{ mt: 1 }} key={idx} severity="error">
-              {e.message}
-            </Alert>
-          ))}
+
+        <Box sx={{maxHeight:200, overflowY:"auto", mt: 2}}>
+          {errMessage.length > 0 &&
+            errMessage.map((e, idx) => (
+              <Alert sx={{ mt: 1 }} key={idx} severity="error">
+                {e.message}
+              </Alert>
+            ))}
+        </Box>
       </GenericModal>
 
       <GenericModal
