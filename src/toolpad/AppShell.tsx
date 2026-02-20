@@ -15,6 +15,9 @@ import { GlobalSnackbar } from "@/components/core/GlobalSnackbar";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { accountsApi } from "@/lib/api";
+import JobExecutionHeader from "@/components/header/job-execution/Header";
+import { Box } from "@mui/material";
+import JobEventHeader from "@/components/header/job-event/Header";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const [auth, setAuth] = useAtom(authAtom);
@@ -78,10 +81,16 @@ export function AppShell({ children }: { children: ReactNode }) {
     checkAuth();
   }, [pathname, auth, setAuth, isLoggingOut]);
 
-  // Mengambil role dari URL (misal: /dashboard/administrator/...)
   const role = pathname.split("/")[2];
   const navigation =
     navigationByRole[role as keyof typeof navigationByRole] ?? [];
+  const isJobExecution = pathname.startsWith(
+    "/dashboard/operator/job-execution",
+  );
+  const isJobEvent = pathname.startsWith("/dashboard/operator/job-event");
+  const isJobEventHistory = pathname.startsWith(
+    "/dashboard/operator/job-event-history",
+  );
 
   return (
     <NextAppProvider theme={theme} branding={branding} navigation={navigation}>
@@ -91,7 +100,19 @@ export function AppShell({ children }: { children: ReactNode }) {
             toolbarActions: ProfileMenu,
           }}
         >
-          <PageContainer>{children}</PageContainer>
+          {isJobExecution ? (
+            <Box sx={{ px: 0 }}>
+              <JobExecutionHeader />
+              <Box sx={{ px: { xs: 2, sm: 3 } }}>{children}</Box>
+            </Box>
+          ) : isJobEvent ? (
+            <Box sx={{ px: 0 }}>
+              <JobEventHeader />
+              <Box sx={{ px: { xs: 2, sm: 3 } }}>{children}</Box>
+            </Box>
+          ) : (
+            <PageContainer>{children}</PageContainer>
+          )}
         </DashboardLayout>
         <GlobalSnackbar />
       </LocalizationProvider>

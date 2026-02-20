@@ -1,20 +1,29 @@
-export type JobDialogType = "edit" | "disable" | "enable" | "delete" | null;
+export type JobDialogType = "edit" | "close" | "release" | "delete" | null;
 
 export const getJobDialogConfig = (modalType: JobDialogType) => {
-  if (modalType === "disable") {
+  if (modalType === "edit") {
     return {
-      title: "Disable Job",
-      content: "Are you sure you want to disable this job?",
-      positiveText: "Disable",
+      title: "Edit Job",
+      content: "Are you sure you want to edit this job?",
+      positiveText: "Edit",
       subContent: "",
     };
   }
 
-  if (modalType === "enable") {
+  if (modalType === "close") {
     return {
-      title: "Enable Job",
-      content: "Are you sure you want to enable this job?",
-      positiveText: "Enable",
+      title: "Close Job",
+      content: "Are you sure you want to close this job?",
+      positiveText: "Close",
+      subContent: "",
+    };
+  }
+
+  if (modalType === "release") {
+    return {
+      title: "Release Job",
+      content: "Are you sure you want to release this job?",
+      positiveText: "Release",
       subContent: "",
     };
   }

@@ -22,7 +22,7 @@ export default async function Page({
       <Typography variant="h4">Job Report</Typography>
       <Typography variant="body1">Work Order: {data.work_order}</Typography>
       <Typography variant="body1">Sales Order: {data.sales_order}</Typography>
-      <Typography variant="body1">Machine: {data.machine_id.label}</Typography>
+      <Typography variant="body1">Machine: {data.work_center.label}</Typography>
       <Typography variant="body1">
         Quantity Order: {data.quantity_order} {data.quantity_unit.label}
       </Typography>

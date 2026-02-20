@@ -1,11 +1,7 @@
 "use client";
 
-import {
-  Box,
-  Button,
-  Grid,
-  Typography,
-} from "@mui/material";
+import { jobsApi } from "@/lib/api";
+import { Box, Button, Grid, Typography } from "@mui/material";
 import { Form, Formik, FormikProps } from "formik";
 import { useRef, useState } from "react";
 import * as Yup from "yup";
@@ -56,6 +52,32 @@ const ImportForm = ({
   ) => {
     setFieldValue("file", file, true);
     setFieldTouched("file", true, true);
+  };
+
+  const handleDownloadTemplate = async() => {
+    try {
+      const res = await jobsApi.jobOffsetPrinterTaiyoControllerDownloadExcelTemplate({
+        responseType: "blob",
+      });
+
+      const contentType =
+        res.headers["content-type"] ||
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+      const blob = new Blob([res.data as unknown as BlobPart], {
+        type: contentType,
+      });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "job-import-template.xlsx";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Failed to download template:", error);
+    }
   };
 
   return (
@@ -142,6 +164,9 @@ const ImportForm = ({
                   </Typography>
                 )}
               </Grid>
+              <Button variant="text" onClick={handleDownloadTemplate}>
+                Download Template
+              </Button>
 
               <Grid container size={12} spacing={2}>
                 {onCancel && (

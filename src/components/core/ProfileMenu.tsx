@@ -7,6 +7,7 @@ import {
   ListItemIcon,
   Typography,
   Box,
+  Button,
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
@@ -17,12 +18,16 @@ import { authAtom } from "@/atoms/auth.atom";
 import ProfileMenuSekeleton from "../skeleton/ProfileMenuSkeleton";
 import GenericDialog from "../dialog/GenericDialog";
 import { accountsApi } from "@/lib/api";
+import WarningIcon from "@mui/icons-material/Warning";
+import Link from "next/link";
 
 export function ProfileMenu() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const router = useRouter();
   const [auth, setAuth] = useAtom(authAtom);
+
+  const isOperator = auth?.account_role?.label === "Operator";
 
   const open = Boolean(anchorEl);
 
@@ -45,13 +50,20 @@ export function ProfileMenu() {
 
   return (
     <>
+      {isOperator && (
+        <Link href={"#"} target="_blank">
+          <Button variant="contained" color="error" startIcon={<WarningIcon />}>
+            Report Trouble
+          </Button>
+        </Link>
+      )}
       <Box
         onClick={handleOpen}
         sx={{
           display: "flex",
           alignItems: "center",
           gap: 1.5,
-          cursor: "pointer", 
+          cursor: "pointer",
           px: 1.5,
           py: 0.5,
           borderRadius: "12px",
@@ -102,7 +114,9 @@ export function ProfileMenu() {
         <MenuItem
           onClick={() => {
             handleClose();
-            router.push(`/dashboard/${auth?.account_role?.label.toLowerCase()}/profile`);
+            router.push(
+              `/dashboard/${auth?.account_role?.label.toLowerCase()}/profile`,
+            );
           }}
         >
           <ListItemIcon>
@@ -111,15 +125,26 @@ export function ProfileMenu() {
           Profile
         </MenuItem>
 
-        <MenuItem onClick={() => setOpenDialog(true)} sx={{ color: "error.main" }}>
+        <MenuItem
+          onClick={() => setOpenDialog(true)}
+          sx={{ color: "error.main" }}
+        >
           <ListItemIcon>
-            <LogoutIcon fontSize="small" color="error"/>
+            <LogoutIcon fontSize="small" color="error" />
           </ListItemIcon>
           Logout
         </MenuItem>
       </Menu>
 
-      <GenericDialog open={openDialog} positiveText="Logout" onClose={() => setOpenDialog(false)} title="Logout" content="Are you sure you want to logout?" onConfirm={handleLogout} onRefresh={() => {}} />
+      <GenericDialog
+        open={openDialog}
+        positiveText="Logout"
+        onClose={() => setOpenDialog(false)}
+        title="Logout"
+        content="Are you sure you want to logout?"
+        onConfirm={handleLogout}
+        onRefresh={() => {}}
+      />
     </>
   );
 }

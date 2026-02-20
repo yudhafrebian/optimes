@@ -10,8 +10,8 @@ import {
   Box,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import PersonOffIcon from "@mui/icons-material/PersonOff";
-import PersonIcon from "@mui/icons-material/Person";
+import PlayCircleIcon from '@mui/icons-material/PlayCircle';
+import BlockIcon from '@mui/icons-material/Block';
 import DeleteIcon from "@mui/icons-material/Delete";
 import { JobRowData } from "@/interface/row-table.interface";
 
@@ -20,8 +20,8 @@ interface TableActionMenuProps {
   activeRow: JobRowData | null;
   onClose: () => void;
   onEdit: (row: JobRowData) => void;
-  onDisable: (row: JobRowData) => void;
-  onEnable: (row: JobRowData) => void;
+  onCloseJob: (row: JobRowData) => void;
+  onRelease: (row: JobRowData) => void;
   onDelete: (row: JobRowData) => void;
 }
 
@@ -30,16 +30,20 @@ const TableActionMenu: React.FC<TableActionMenuProps> = ({
   activeRow,
   onClose,
   onEdit,
-  onDisable,
-  onEnable,
+  onCloseJob,
+  onRelease,
   onDelete,
 }) => {
   const open = Boolean(anchorEl);
   const status = activeRow?.job_lifecycle_state.label?.toLowerCase();
-  const isDisabled = status === "disabled";
   const isScheduled = status === "scheduled";
+  const isCompleted = status === "completed";
+  const isClosed = status === "closed";
   const isReleased = status === "released";
-  const canEdit = isScheduled || isReleased;
+  const canEditOrDelete = isScheduled;
+  const canClose = isReleased || isCompleted;
+
+  
 
   return (
     <Menu
@@ -49,7 +53,20 @@ const TableActionMenu: React.FC<TableActionMenuProps> = ({
       transformOrigin={{ horizontal: "right", vertical: "top" }}
       anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
     >
-      {canEdit && (
+      {isScheduled && (
+        <MenuItem
+          onClick={() => {
+            if (activeRow) onRelease(activeRow);
+            onClose();
+          }}
+        >
+          <ListItemIcon>
+            <PlayCircleIcon fontSize="small" color="primary" />
+          </ListItemIcon>
+          <ListItemText>Release Job</ListItemText>
+        </MenuItem>
+      )}
+      {canEditOrDelete && (
         <Box>
           <MenuItem
             onClick={() => {
@@ -65,47 +82,35 @@ const TableActionMenu: React.FC<TableActionMenuProps> = ({
           <Divider />
         </Box>
       )}
-
-      {!isDisabled ? (
+      {canClose && (
         <MenuItem
           sx={{ color: "error.main" }}
           onClick={() => {
-            if (activeRow) onDisable(activeRow);
+            if (activeRow) onCloseJob(activeRow);
             onClose();
           }}
         >
           <ListItemIcon>
-            <PersonOffIcon fontSize="small" color="error" />
+            <BlockIcon fontSize="small" color="error" />
           </ListItemIcon>
-          <ListItemText>Disable Job</ListItemText>
-        </MenuItem>
-      ) : (
-        <MenuItem
-          sx={{ color: "success.main" }}
-          onClick={() => {
-            if (activeRow) onEnable(activeRow);
-            onClose();
-          }}
-        >
-          <ListItemIcon>
-            <PersonIcon fontSize="small" color="success" />
-          </ListItemIcon>
-          <ListItemText>Enable Job</ListItemText>
+          <ListItemText>Close Job</ListItemText>
         </MenuItem>
       )}
 
-      <MenuItem
-        sx={{ color: "error.main" }}
-        onClick={() => {
-          if (activeRow) onDelete(activeRow);
-          onClose();
-        }}
-      >
-        <ListItemIcon>
-          <DeleteIcon fontSize="small" color="error" />
-        </ListItemIcon>
-        <ListItemText>Delete Job</ListItemText>
-      </MenuItem>
+      {canEditOrDelete && (
+        <MenuItem
+          sx={{ color: "error.main" }}
+          onClick={() => {
+            if (activeRow) onDelete(activeRow);
+            onClose();
+          }}
+        >
+          <ListItemIcon>
+            <DeleteIcon fontSize="small" color="error" />
+          </ListItemIcon>
+          <ListItemText>Delete Job</ListItemText>
+        </MenuItem>
+      )}
     </Menu>
   );
 };

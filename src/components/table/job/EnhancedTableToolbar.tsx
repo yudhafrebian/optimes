@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Alert,
   alpha,
   Autocomplete,
   Box,
@@ -10,7 +11,14 @@ import {
   InputLabel,
   LinearProgress,
   MenuItem,
+  Paper,
   Select,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   TextField,
   Toolbar,
   Tooltip,
@@ -19,22 +27,26 @@ import {
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import DescriptionIcon from "@mui/icons-material/Description";
 import dayjs from "dayjs";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import AddIcon from "@mui/icons-material/Add";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import GenericModal from "@/components/modal/GenericModal";
-import { lookupApi } from "@/lib/api";
-import { LookupResponseDto } from "@/api-client";
-import CreateJobForm, {
-  CreateJobFormValues,
-  defaultJobFormValues,
-  priorityOptions,
-} from "@/form/CreateJobForm";
+import { jobsApi, lookupApi } from "@/lib/api";
+import {
+  CreateJobOffsetPrinterTaiyoDto,
+  JobOffsetPrinterTaiyoImportErrorDto,
+  JobOffsetPrinterTaiyoListResponseDto,
+  JobOffsetPrinterTaiyoUploadPreviewResponseDto,
+  LookupResponseDto,
+} from "@/api-client";
+import CreateJobForm, { defaultJobFormValues } from "@/form/CreateJobForm";
 import JobConfirmationView from "@/components/view/JobConfirmationView";
 import ImportForm from "@/form/ImportForm";
 import { useSnackbar } from "@/hooks/useSnackbar";
 import { usePathname } from "next/navigation";
+import useSwr from "swr";
+import ImportPreviewTable from "./ImportPreviewTable";
 
 interface EnhancedTableToolbarProps {
   workOrderFilter: string;
@@ -53,31 +65,29 @@ interface EnhancedTableToolbarProps {
   onRefresh: () => void;
 }
 
-const workOrderOptions = [
-  { label: "All Work Order", value: "All" },
-  { label: "WO/2026/02/002", value: "WO/2026/02/002" },
-  { label: "WO/2026/02/003", value: "WO/2026/02/003" },
-  { label: "WO/2026/02/004", value: "WO/2026/02/004" },
-  { label: "WO/2026/02/005", value: "WO/2026/02/005" },
-  { label: "WO/2026/02/006", value: "WO/2026/02/006" },
-];
+type FilterData = {
+  orders: JobOffsetPrinterTaiyoListResponseDto[];
+  workCenters: LookupResponseDto[];
+  lifecycles: LookupResponseDto[];
+  priorities: LookupResponseDto[];
+};
 
-const salesOrderOptions = [
-  { label: "All Sales Order", value: "All" },
-  { label: "SO/MKT/2026/012", value: "SO/MKT/2026/012" },
-  { label: "SO/MKT/2026/015", value: "SO/MKT/2026/015" },
-  { label: "SO/MKT/2026/020", value: "SO/MKT/2026/020" },
-  { label: "SO/MKT/2026/022", value: "SO/MKT/2026/022" },
-  { label: "SO/MKT/2026/025", value: "SO/MKT/2026/025" },
-];
+const fetchFilterData = async (): Promise<FilterData> => {
+  const [orderRes, workCenterRes, lifecycleRes, priorityRes] =
+    await Promise.all([
+      jobsApi.jobOffsetPrinterTaiyoControllerGetAll(),
+      lookupApi.lookupControllerFindAll("WORK_CENTER"),
+      lookupApi.lookupControllerFindAll("JOB_LIFECYCLE_STATE"),
+      lookupApi.lookupControllerFindAll("JOB_PRIORITY"),
+    ]);
 
-const lifecycleOptions = [
-  { label: "Scheduled", value: "Scheduled" },
-  { label: "Running", value: "Running" },
-  { label: "Released", value: "Released" },
-  { label: "Completed", value: "Completed" },
-  { label: "Suspended", value: "Suspended" },
-];
+  return {
+    orders: orderRes.data,
+    workCenters: workCenterRes.data,
+    lifecycles: lifecycleRes.data,
+    priorities: priorityRes.data,
+  };
+};
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const {
@@ -100,17 +110,90 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const [open, setOpen] = useState<boolean>(false);
   const [step, setStep] = useState<"form" | "success">("form");
   const [jobData, setJobData] =
-    useState<CreateJobFormValues>(defaultJobFormValues);
+    useState<CreateJobOffsetPrinterTaiyoDto>(defaultJobFormValues);
   const [draftJobData, setDraftJobData] =
-    useState<CreateJobFormValues>(defaultJobFormValues);
+    useState<CreateJobOffsetPrinterTaiyoDto>(defaultJobFormValues);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [machine, setMachine] = useState<LookupResponseDto[]>([]);
+  const [previewOpen, setPreviewOpen] = useState<boolean>(false);
   const [importOpen, setImportOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [previewData, setPreviewData] =
+    useState<JobOffsetPrinterTaiyoUploadPreviewResponseDto>(
+      {} as JobOffsetPrinterTaiyoUploadPreviewResponseDto,
+    );
+  const [errMessage, setErrMessage] = useState<
+    JobOffsetPrinterTaiyoImportErrorDto[]
+  >([]);
 
   const pathname = usePathname();
   const isJobManagement = pathname.startsWith("/dashboard/ppic/job-management");
   const showSnackbar = useSnackbar();
+
+  const { data: filterData } = useSwr<FilterData>(
+    "job-toolbar-filter-data",
+    fetchFilterData,
+    {
+      refreshInterval: 5000,
+      revalidateOnFocus: false,
+      onError: (error) => {
+        console.error("Failed to fetch filters:", error);
+      },
+    },
+  );
+
+  const workOrderList = useMemo(() => {
+    const seen = new Set<string>();
+
+    return (filterData?.orders ?? [])
+      .map((item) => item.work_order)
+      .filter((workOrder): workOrder is string => Boolean(workOrder))
+      .filter((workOrder) => {
+        if (seen.has(workOrder)) return false;
+        seen.add(workOrder);
+        return true;
+      })
+      .map((workOrder) => ({
+        label: workOrder,
+        value: workOrder,
+      }));
+  }, [filterData?.orders]);
+
+  const salesOrderList = useMemo(() => {
+    const seen = new Set<string>();
+
+    return (filterData?.orders ?? [])
+      .map((item) => item.sales_order)
+      .filter((salesOrder): salesOrder is string => Boolean(salesOrder))
+      .filter((salesOrder) => {
+        if (seen.has(salesOrder)) return false;
+        seen.add(salesOrder);
+        return true;
+      })
+      .map((salesOrder) => ({
+        label: salesOrder,
+        value: salesOrder,
+      }));
+  }, [filterData?.orders]);
+
+  const lifeCycleOptions = (filterData?.lifecycles ?? []).map((item) => ({
+    label: item.label,
+    value: item.label,
+  }));
+
+  const priorityOptions = (filterData?.priorities ?? []).map((item) => ({
+    label: item.label,
+    value: item.label,
+  }));
+
+  const workOrderOptions = [
+    { label: "All Work Order", value: "All" },
+    ...workOrderList,
+  ];
+
+  const salesOrderOptions = [
+    { label: "All Sales Order", value: "All" },
+    ...salesOrderList,
+  ];
 
   const handleOpen = () => {
     setStep("form");
@@ -148,7 +231,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     onFilterLifecycle("All");
     onFilterPriority("All");
     onSearch("");
-    setSearchTerm(""); // Reset local search state juga
+    setSearchTerm("");
   };
 
   useEffect(() => {
@@ -158,33 +241,22 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     return () => clearTimeout(delayDebounceFn);
   }, [searchTerm, onSearch]);
 
-  useEffect(() => {
-    const fetchFilter = async () => {
-      try {
-        const [machinesRes] = await Promise.all([
-          lookupApi.lookupControllerFindAll("MACHINE_LIST"),
-        ]);
-        setMachine(machinesRes.data);
-      } catch (error) {
-        console.error("Failed to fetch filters:", error);
-      }
-    };
-    fetchFilter();
-  }, []);
-
-  const handleImportSubmit = async (file: File) => {
+  const handleImportPreview = async (file: File) => {
     try {
       setLoading(true);
-      showSnackbar("Import started", "info");
-      await new Promise<void>((resolve) => {
-        setTimeout(() => {
-          console.log("Import file:", file);
-          resolve();
-        }, 1500);
-      });
-      showSnackbar("Import completed", "success");
+      setErrMessage([]);
+      const res =
+        await jobsApi.jobOffsetPrinterTaiyoControllerUploadExcelPreview(file);
+      const previewRes = res.data;
+      setPreviewData(previewRes);
+
+      if (previewRes.errors.length > 0) {
+        setErrMessage(previewRes.errors);
+        return;
+      }
+      showSnackbar("Preview ready", "success");
       setImportOpen(false);
-      onRefresh();
+      setPreviewOpen(true);
     } catch (error) {
       console.error("Import failed:", error);
       showSnackbar("Import failed", "error");
@@ -301,15 +373,15 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           />
 
           <FormControl size="small" sx={{ minWidth: "150px" }}>
-            <InputLabel id="filter-machine-label">Machine</InputLabel>
+            <InputLabel id="filter-work_center-label">Work Center</InputLabel>
             <Select
-              labelId="filter-machine-label"
-              label="Machine"
+              labelId="filter-work_center-label"
+              label="Work Center"
               value={machineFilter}
               onChange={(e) => onFilterMachine(e.target.value)}
             >
-              <MenuItem value="All">All Machine</MenuItem>
-              {machine.map((t) => (
+              <MenuItem value="All">All Work Center</MenuItem>
+              {(filterData?.workCenters ?? []).map((t) => (
                 <MenuItem key={t.code} value={t.label}>
                   {t.label}
                 </MenuItem>
@@ -340,8 +412,8 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
               onChange={(e) => onFilterLifecycle(e.target.value)}
             >
               <MenuItem value="All">All Lifecycle</MenuItem>
-              {lifecycleOptions.map((l) => (
-                <MenuItem key={l.value} value={l.value}>
+              {lifeCycleOptions.map((l) => (
+                <MenuItem key={l.label} value={l.label}>
                   {l.label}
                 </MenuItem>
               ))}
@@ -358,7 +430,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
             >
               <MenuItem value="All">All Priority</MenuItem>
               {priorityOptions.map((t) => (
-                <MenuItem key={t.code} value={t.label}>
+                <MenuItem key={t.label} value={t.label}>
                   {t.label}
                 </MenuItem>
               ))}
@@ -402,6 +474,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
             data={jobData}
             onBack={handleBack}
             onSuccess={() => {
+              onRefresh();
               handleClose();
             }}
             type="create"
@@ -417,8 +490,26 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
       >
         {loading && <LinearProgress />}
         <ImportForm
-          onSubmit={handleImportSubmit}
+          onSubmit={handleImportPreview}
           onCancel={() => setImportOpen(false)}
+        />
+        {errMessage.length > 0 &&
+          errMessage.map((e, idx) => (
+            <Alert sx={{ mt: 1 }} key={idx} severity="error">
+              {e.message}
+            </Alert>
+          ))}
+      </GenericModal>
+
+      <GenericModal
+        open={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+        title="Preview Job File"
+        maxWidth={1000}
+      >
+        <ImportPreviewTable
+          data={previewData}
+          onClose={() => setPreviewOpen(false)}
         />
       </GenericModal>
     </Toolbar>

@@ -27,9 +27,10 @@ import EditJobForm from "@/form/EditJobForm";
 import JobConfirmationView from "@/components/view/JobConfirmationView";
 import { filterJobs } from "@/utils/jobFilters";
 import { getJobDialogConfig } from "@/components/dialog/jobDialogConfig";
+import { jobsApi } from "@/lib/api";
 
 const fetcher = () =>
-  apiClient.get("/job/all").then((res) => {
+  jobsApi.jobOffsetPrinterTaiyoControllerGetAll().then((res) => {
     return res.data;
   });
 
@@ -38,7 +39,7 @@ function createData(user: IJobOffsetPrinter): JobRowData {
     id: user.id,
     work_order: user.work_order,
     sales_order: user.sales_order,
-    machine_id: user.machine_id,
+    work_center: user.work_center,
     quantity_order: user.quantity_order,
     quantity_unit: user.quantity_unit,
     planned_start_time: user.planned_start_time,
@@ -80,7 +81,7 @@ export default function JobTableManagement() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [activeRow, setActiveRow] = useState<JobRowData | null>(null);
   const [modalType, setModalType] = useState<
-    "edit" | "delete" | "disable" | "enable" | null
+    "edit" | "delete" | "close" | "release" | null
   >(null);
   const [step, setStep] = useState<"form" | "success">("form");
   const [loading, setLoading] = useState<boolean>(false);
@@ -143,7 +144,7 @@ export default function JobTableManagement() {
   };
 
   const handleAction = (
-    type: "edit" | "delete" | "disable" | "enable",
+    type: "edit" | "delete" | "close" | "release",
     row: JobRowData,
   ) => {
     setAnchorEl(null);
@@ -154,7 +155,6 @@ export default function JobTableManagement() {
   const filteredRows = useMemo(
     () =>
       filterJobs(rows, {
-        searchQuery,
         workOrderFilter,
         salesOrderFilter,
         machineFilter,
@@ -174,29 +174,31 @@ export default function JobTableManagement() {
     ],
   );
 
-  const handleDisableJob = async (id: string) => {
+  const handleCloseJob = async (id: string) => {
     try {
       setLoading(true);
-      // await accountsApi.accountControllerDisable(id);
-      showSnackbar("Job disabled successfully", "success");
+      await jobsApi.jobOffsetPrinterTaiyoControllerClose(id);
+      showSnackbar("Job closed successfully", "success");
       closeAll();
       mutate();
-    } catch (error) {
-      showSnackbar("Failed to disable job", "error");
+    } catch (error: any) {
+      console.log(error);
+      showSnackbar(error.response.data.message, "error");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleEnableJob = async (id: string) => {
+  const handleReleaseJob = async (id: string) => {
     try {
       setLoading(true);
-      // await accountsApi.accountControllerEnable(id);
+      await jobsApi.jobOffsetPrinterTaiyoControllerRelease(id);
       showSnackbar("Job reactivated successfully", "success");
       closeAll();
       mutate();
-    } catch (error) {
-      showSnackbar("Failed to reactivate job", "error");
+    } catch (error: any) {
+      console.log(error);
+      showSnackbar(error.response.data.message, "error");
     } finally {
       setLoading(false);
     }
@@ -205,12 +207,13 @@ export default function JobTableManagement() {
   const handleDeleteJob = async (id: string) => {
     try {
       setLoading(true);
-      // await accountsApi.accountControllerDelete(id);
+      await jobsApi.jobOffsetPrinterTaiyoControllerRemove(id);
       showSnackbar("Job deleted successfully", "success");
       closeAll();
       mutate();
-    } catch (error) {
-      showSnackbar("Failed to delete job", "error");
+    } catch (error: any) {
+      console.log(error);
+      showSnackbar(error.response.data.message, "error");
     } finally {
       setLoading(false);
     }
@@ -301,7 +304,7 @@ export default function JobTableManagement() {
                 ) : (
                   visibleRows.map((row, index) => (
                     <JobTableRow
-                      key={row.work_order}
+                      key={index}
                       row={row}
                       onOpenMenu={handleOpenMenu}
                     />
@@ -313,7 +316,7 @@ export default function JobTableManagement() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={rows.length}
+            count={filteredRows.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -331,16 +334,16 @@ export default function JobTableManagement() {
         activeRow={activeRow}
         onClose={handleCloseMenu}
         onEdit={(row) => handleAction("edit", row)}
-        onDisable={(row) => handleAction("disable", row)}
-        onEnable={(row) => handleAction("enable", row)}
+        onCloseJob={(row) => handleAction("close", row)}
+        onRelease={(row) => handleAction("release", row)}
         onDelete={(row) => handleAction("delete", row)}
       />
 
       <GenericDialog
         open={
-          modalType === "disable" ||
+          modalType === "close" ||
           modalType === "delete" ||
-          modalType === "enable"
+          modalType === "release"
         }
         onClose={closeAll}
         title={dialogConfig.title}
@@ -350,8 +353,8 @@ export default function JobTableManagement() {
         positiveText={dialogConfig.positiveText}
         onConfirm={() => {
           if (!activeRow) return;
-          if (modalType === "disable") handleDisableJob(activeRow.id);
-          if (modalType === "enable") handleEnableJob(activeRow.id);
+          if (modalType === "close") handleCloseJob(activeRow.id);
+          if (modalType === "release") handleReleaseJob(activeRow.id);
           if (modalType === "delete") handleDeleteJob(activeRow.id);
         }}
         onRefresh={mutate}

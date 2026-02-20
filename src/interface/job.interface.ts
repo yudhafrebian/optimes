@@ -6,7 +6,7 @@ export interface IJobOffsetPrinter {
   id: string;
   work_order: string;
   sales_order: string;
-  machine_id: LookupResponseDto;
+  work_center: LookupResponseDto;
   quantity_order: number;
   quantity_unit: LookupResponseDto;           // Isinya: { label: "BK", code: "BK", ... }
   planned_start_time: string;

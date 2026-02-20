@@ -12,7 +12,7 @@ interface Data {
   id: string;
   work_order: string;
   sales_order: string;
-  machine_id: LookupResponseDto;              // Isinya: { label: "Offset Printer 1", code: "OFFSET_PRINTER_1", ... }
+  work_center: LookupResponseDto;              // Isinya: { label: "Offset Printer 1", code: "OFFSET_PRINTER_1", ... }
   quantity_order: number;
   quantity_unit: LookupResponseDto;           // Isinya: { label: "BK", code: "BK", ... }
   planned_start_time: string;
@@ -56,10 +56,10 @@ const headCells: readonly HeadCell[] = [
     label: "Sales Order",
   },
   {
-    id: "machine_id",
+    id: "work_center",
     numeric: false,
     disablePadding: false,
-    label: "Machine",
+    label: "Work Center",
   },
   {
     id: "quantity_order",

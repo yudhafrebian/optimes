@@ -18,13 +18,39 @@ export interface JobRowData {
   id: string;
   work_order: string;
   sales_order: string;
-  machine_id: LookupResponseDto;
+  work_center: LookupResponseDto;
   quantity_order: number;
   quantity_unit: LookupResponseDto;           // Isinya: { label: "BK", code: "BK", ... }
   planned_start_time: string;
   release_date?: string;
   due_date?: string;
   job_priority: LookupResponseDto;            // Isinya: { label: "High", code: "HIGH", ... }
+  job_lifecycle_state: LookupResponseDto;     // Isinya: { label: "Created", code: "CREATED", ... }
+  notes: string;
+}
+
+export interface OperatorRowData {
+  id: string;
+  work_order: string;
+  sales_order: string;
+  quantity_order: number;
+  quantity_unit: LookupResponseDto;           // Isinya: { label: "BK", code: "BK", ... }
+  planned_start_time: string;           // Isinya: { label: "High", code: "HIGH", ... }
+  job_lifecycle_state: LookupResponseDto;     // Isinya: { label: "Created", code: "CREATED", ... }
+  notes: string;
+}
+
+export interface JobFiltersData {
+  id: string;
+  work_order: string;
+  sales_order: string;
+  work_center?: LookupResponseDto;
+  quantity_order: number;
+  quantity_unit: LookupResponseDto;           // Isinya: { label: "BK", code: "BK", ... }
+  planned_start_time: string;
+  release_date?: string;
+  due_date?: string;
+  job_priority?: LookupResponseDto;            // Isinya: { label: "High", code: "HIGH", ... }
   job_lifecycle_state: LookupResponseDto;     // Isinya: { label: "Created", code: "CREATED", ... }
   notes: string;
 }

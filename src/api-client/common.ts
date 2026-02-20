@@ -1,5 +1,5 @@
 /* tslint:disable */
- 
+/* eslint-disable */
 /**
  * Optimes NEST API
  * OptiMES API documentation

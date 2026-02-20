@@ -1,4 +1,7 @@
-import { LookupResponseDto } from "@/api-client";
+import {
+  CreateJobOffsetPrinterTaiyoDto,
+  LookupResponseDto,
+} from "@/api-client";
 import GenericChips from "@/components/core/GenericChips";
 import { useSnackbar } from "@/hooks/useSnackbar";
 import { lookupApi } from "@/lib/api";
@@ -12,6 +15,7 @@ import {
   MenuItem,
   Select,
   TextField,
+  Typography,
 } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs";
@@ -22,38 +26,26 @@ import { createJobValidationSchema } from "./validation/job.validation";
 interface ICreateJobFormProps {
   onSuccess: (data: any) => void;
   onCancel: () => void;
-  initialValues?: CreateJobFormValues;
-  onValuesChange?: (values: CreateJobFormValues) => void;
+  initialValues?: CreateJobOffsetPrinterTaiyoDto;
+  onValuesChange?: (values: CreateJobOffsetPrinterTaiyoDto) => void;
 }
 
-export interface CreateJobFormValues {
-  work_order: string;
-  sales_order: string;
-  quantity_order: number;
-  quantity_unit: string; // Isinya: { label: "BK", code: "BK", ... }
-  planned_start_time: string;
-  machine_id: string;
-  due_date?: string;
-  job_priority: string; // Isinya: { label: "High", code: "HIGH", ... }
-  notes?: string;
-}
-
-export const defaultJobFormValues: CreateJobFormValues = {
+export const defaultJobFormValues: CreateJobOffsetPrinterTaiyoDto = {
   sales_order: "",
   work_order: "",
-  machine_id: "",
+  work_center: 0,
   quantity_order: 1,
-  quantity_unit: "",
+  quantity_unit: 0,
   planned_start_time: "",
   due_date: "",
-  job_priority: "",
+  job_priority: 0,
   notes: "",
 };
 
 const FormObserver: React.FunctionComponent<{
-  onChange: (values: CreateJobFormValues) => void;
+  onChange: (values: CreateJobOffsetPrinterTaiyoDto) => void;
 }> = ({ onChange }) => {
-  const { values } = useFormikContext<CreateJobFormValues>();
+  const { values } = useFormikContext<CreateJobOffsetPrinterTaiyoDto>();
 
   React.useEffect(() => {
     onChange(values);
@@ -62,47 +54,6 @@ const FormObserver: React.FunctionComponent<{
   return null;
 };
 
-export const quantityUnitOptions: LookupResponseDto[] = [
-  {
-    id: 101,
-    lookup_type: "QUANTITY_UNIT",
-    code: "BK",
-    label: "Book",
-    is_active: true,
-  },
-  {
-    id: 102,
-    lookup_type: "QUANTITY_UNIT",
-    code: "EA",
-    label: "Each",
-    is_active: true,
-  },
-];
-
-export const priorityOptions: LookupResponseDto[] = [
-  {
-    id: 1,
-    lookup_type: "JOB_PRIORITY",
-    code: "HIGH",
-    label: "High",
-    is_active: true,
-  },
-  {
-    id: 2,
-    lookup_type: "JOB_PRIORITY",
-    code: "MEDIUM",
-    label: "Medium",
-    is_active: true,
-  },
-  {
-    id: 3,
-    lookup_type: "JOB_PRIORITY",
-    code: "LOW",
-    label: "Low",
-    is_active: true,
-  },
-];
-
 const CreateJobForm: React.FunctionComponent<ICreateJobFormProps> = ({
   onCancel,
   onSuccess,
@@ -110,12 +61,12 @@ const CreateJobForm: React.FunctionComponent<ICreateJobFormProps> = ({
   onValuesChange,
 }) => {
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [machineOptions, setMachineOptions] = React.useState<
-    LookupResponseDto[]
-  >([]);
+  const [workCenter, setWorkCenter] = React.useState<LookupResponseDto[]>([]);
+  const [quantityUnit, setQuantityUnit] = React.useState<LookupResponseDto[]>([]);
+  const [priority, setPriority] = React.useState<LookupResponseDto[]>([]);
   const showSnackbar = useSnackbar();
 
-  const onSubmit = async (values: CreateJobFormValues) => {
+  const onSubmit = async (values: CreateJobOffsetPrinterTaiyoDto) => {
     try {
       setLoading(true);
       console.log(values);
@@ -132,9 +83,14 @@ const CreateJobForm: React.FunctionComponent<ICreateJobFormProps> = ({
   React.useEffect(() => {
     const fetchUserOptions = async () => {
       try {
-        const res = await lookupApi.lookupControllerFindAll("MACHINE_LIST");
-
-        setMachineOptions(res.data);
+        const [workCenter, quantityUnit, priority] = await Promise.all([
+          lookupApi.lookupControllerFindAll("WORK_CENTER"),
+          lookupApi.lookupControllerFindAll("QUANTITY_UNIT"),
+          lookupApi.lookupControllerFindAll("JOB_PRIORITY"),
+        ]);
+        setWorkCenter(workCenter.data);
+        setQuantityUnit(quantityUnit.data);
+        setPriority(priority.data);
       } catch (error: any) {
         console.log(error);
         showSnackbar(error.response.data.message, "error");
@@ -144,13 +100,13 @@ const CreateJobForm: React.FunctionComponent<ICreateJobFormProps> = ({
     fetchUserOptions();
   }, []);
   return (
-    <Formik<CreateJobFormValues>
+    <Formik<CreateJobOffsetPrinterTaiyoDto>
       initialValues={initialValues ?? defaultJobFormValues}
       validationSchema={createJobValidationSchema}
       onSubmit={onSubmit}
       enableReinitialize
     >
-      {(prop: FormikProps<CreateJobFormValues>) => {
+      {(prop: FormikProps<CreateJobOffsetPrinterTaiyoDto>) => {
         const {
           values,
           touched,
@@ -159,6 +115,7 @@ const CreateJobForm: React.FunctionComponent<ICreateJobFormProps> = ({
           handleChange,
           setFieldValue,
         } = prop;
+
 
         return (
           <Form style={{ display: "flex", gap: 20 }}>
@@ -193,23 +150,31 @@ const CreateJobForm: React.FunctionComponent<ICreateJobFormProps> = ({
                 </Grid>
                 <Grid size={12}>
                   <FormControl fullWidth>
-                    <InputLabel id="machine_id">Machine</InputLabel>
+                    <InputLabel id="work_center">Work Center</InputLabel>
                     <Select
-                      labelId="machine_id"
-                      id="machine_id"
-                      name="machine_id"
-                      value={values.machine_id}
-                      label="Machine"
-                      onChange={handleChange}
+                      labelId="work_center"
+                      id="work_center"
+                      name="work_center"
+                      value={values.work_center}
+                      label="Work Center"
+                      onChange={(event) =>
+                        setFieldValue("work_center", Number(event.target.value))
+                      }
                       onBlur={handleBlur}
-                      error={touched.machine_id && Boolean(errors.machine_id)}
+                      error={touched.work_center && Boolean(errors.work_center)}
                     >
-                      {machineOptions.map((option) => (
+                      <MenuItem value={0} disabled>
+                        Select Work Center
+                      </MenuItem>
+                      {workCenter.map((option) => (
                         <MenuItem key={option.id} value={option.id}>
                           {option.label}
                         </MenuItem>
                       ))}
                     </Select>
+                    <Typography variant="caption" color="error">
+                      {touched.work_center && errors.work_center}
+                    </Typography>
                   </FormControl>
                 </Grid>
 
@@ -246,18 +211,29 @@ const CreateJobForm: React.FunctionComponent<ICreateJobFormProps> = ({
                           name="quantity_unit"
                           value={values.quantity_unit}
                           label="Quantity Unit"
-                          onChange={handleChange}
+                          onChange={(event) =>
+                            setFieldValue(
+                              "quantity_unit",
+                              Number(event.target.value),
+                            )
+                          }
                           error={
                             touched.quantity_unit &&
                             Boolean(errors.quantity_unit)
                           }
                         >
-                          {quantityUnitOptions.map((option) => (
+                          <MenuItem value={0} disabled>
+                            Select Quantity Unit
+                          </MenuItem>
+                          {quantityUnit.map((option) => (
                             <MenuItem key={option.id} value={option.id}>
                               {option.label} ({option.code})
                             </MenuItem>
                           ))}
                         </Select>
+                        <Typography variant="caption" color="error">
+                          {touched.quantity_unit && errors.quantity_unit}
+                        </Typography>
                       </FormControl>
                     </Grid>
                   </Grid>
@@ -326,12 +302,17 @@ const CreateJobForm: React.FunctionComponent<ICreateJobFormProps> = ({
                       name="job_priority"
                       value={values.job_priority}
                       label="Priority"
-                      onChange={handleChange}
+                      onChange={(event) =>
+                        setFieldValue("job_priority", Number(event.target.value))
+                      }
                       error={
                         touched.job_priority && Boolean(errors.job_priority)
                       }
                     >
-                      {priorityOptions.map((option) => (
+                      <MenuItem value={0} disabled>
+                        Select Priority
+                      </MenuItem>
+                      {priority.map((option) => (
                         <MenuItem key={option.id} value={option.id}>
                           <GenericChips value={option.label} variant="filled" />
                         </MenuItem>

@@ -34,7 +34,7 @@ export interface CreateJobFormValues {
   quantity_order: number;
   quantity_unit: string; // Isinya: { label: "BK", code: "BK", ... }
   planned_start_time: string;
-  machine_id: string;
+  work_center: string;
   due_date?: string;
   job_priority: string; // Isinya: { label: "High", code: "HIGH", ... }
   notes?: string;
@@ -52,46 +52,7 @@ const FormObserver: React.FunctionComponent<{
   return null;
 };
 
-export const quantityUnitOptions: LookupResponseDto[] = [
-  {
-    id: 101,
-    lookup_type: "QUANTITY_UNIT",
-    code: "BK",
-    label: "Book",
-    is_active: true,
-  },
-  {
-    id: 102,
-    lookup_type: "QUANTITY_UNIT",
-    code: "EA",
-    label: "Each",
-    is_active: true,
-  },
-];
 
-export const priorityOptions: LookupResponseDto[] = [
-  {
-    id: 1,
-    lookup_type: "JOB_PRIORITY",
-    code: "HIGH",
-    label: "High",
-    is_active: true,
-  },
-  {
-    id: 2,
-    lookup_type: "JOB_PRIORITY",
-    code: "MEDIUM",
-    label: "Medium",
-    is_active: true,
-  },
-  {
-    id: 3,
-    lookup_type: "JOB_PRIORITY",
-    code: "LOW",
-    label: "Low",
-    is_active: true,
-  },
-];
 
 const EditJobForm: React.FunctionComponent<ICreateJobFormProps> = ({
   onCancel,
@@ -101,15 +62,15 @@ const EditJobForm: React.FunctionComponent<ICreateJobFormProps> = ({
   data,
 }) => {
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [machineOptions, setMachineOptions] = React.useState<
-    LookupResponseDto[]
-  >([]);
+  const [workCenter, setWorkCenter] = React.useState<LookupResponseDto[]>([]);
+  const [quantityUnit, setQuantityUnit] = React.useState<LookupResponseDto[]>([]);
+  const [priority, setPriority] = React.useState<LookupResponseDto[]>([]);
   console.log(data);
 
   const defaultJobFormValues: CreateJobFormValues = {
     sales_order: data.sales_order,
     work_order: data.work_order,
-    machine_id: String(data.machine_id.id),
+    work_center: String(data.work_center.id) ,
     quantity_order: data.quantity_order,
     quantity_unit: String(data.quantity_unit.id),
     planned_start_time: data.planned_start_time,
@@ -123,9 +84,13 @@ const EditJobForm: React.FunctionComponent<ICreateJobFormProps> = ({
   const onSubmit = async (values: CreateJobFormValues) => {
     try {
       setLoading(true);
-      console.log(values);
+      const dataValues = {
+        ...values,
+        id: data.id,
+      };
+      console.log(dataValues);
 
-      onSuccess(values);
+      onSuccess(dataValues);
     } catch (error: any) {
       console.log(error);
       showSnackbar(error.response.data.message, "error");
@@ -134,12 +99,17 @@ const EditJobForm: React.FunctionComponent<ICreateJobFormProps> = ({
     }
   };
 
-  React.useEffect(() => {
+React.useEffect(() => {
     const fetchUserOptions = async () => {
       try {
-        const res = await lookupApi.lookupControllerFindAll("MACHINE_LIST");
-
-        setMachineOptions(res.data);
+        const [workCenter, quantityUnit, priority] = await Promise.all([
+          lookupApi.lookupControllerFindAll("WORK_CENTER"),
+          lookupApi.lookupControllerFindAll("QUANTITY_UNIT"),
+          lookupApi.lookupControllerFindAll("JOB_PRIORITY"),
+        ]);
+        setWorkCenter(workCenter.data);
+        setQuantityUnit(quantityUnit.data);
+        setPriority(priority.data);
       } catch (error: any) {
         console.log(error);
         showSnackbar(error.response.data.message, "error");
@@ -200,18 +170,18 @@ const EditJobForm: React.FunctionComponent<ICreateJobFormProps> = ({
                 </Grid>
                 <Grid size={12}>
                   <FormControl fullWidth>
-                    <InputLabel id="machine_id">Machine</InputLabel>
+                    <InputLabel id="work_center">Machine</InputLabel>
                     <Select
-                      labelId="machine_id"
-                      id="machine_id"
-                      name="machine_id"
-                      value={values.machine_id}
+                      labelId="work_center"
+                      id="work_center"
+                      name="work_center"
+                      value={values.work_center}
                       label="Machine"
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      error={touched.machine_id && Boolean(errors.machine_id)}
+                      error={touched.work_center && Boolean(errors.work_center)}
                     >
-                      {machineOptions.map((option) => (
+                      {workCenter.map((option) => (
                         <MenuItem key={option.id} value={option.id}>
                           {option.label}
                         </MenuItem>
@@ -259,7 +229,7 @@ const EditJobForm: React.FunctionComponent<ICreateJobFormProps> = ({
                             Boolean(errors.quantity_unit)
                           }
                         >
-                          {quantityUnitOptions.map((option) => (
+                          {quantityUnit.map((option) => (
                             <MenuItem key={option.id} value={option.id}>
                               {option.label} ({option.code})
                             </MenuItem>
@@ -338,7 +308,7 @@ const EditJobForm: React.FunctionComponent<ICreateJobFormProps> = ({
                         touched.job_priority && Boolean(errors.job_priority)
                       }
                     >
-                      {priorityOptions.map((option) => (
+                      {priority.map((option) => (
                         <MenuItem key={option.id} value={option.id}>
                           <GenericChips value={option.label} variant="filled" />
                         </MenuItem>

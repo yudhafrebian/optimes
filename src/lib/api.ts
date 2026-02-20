@@ -1,5 +1,5 @@
 // src/lib/api.ts
-import { Configuration, AccountsApi, LookupsApi } from '../api-client';
+import { Configuration, AccountsApi, LookupsApi, JobOffsetPrinterTaiyoApi } from '../api-client';
 
 const apiConfig = new Configuration({
   basePath: 'http://192.168.68.99:2000', // Sesuaikan dengan URL Backend
@@ -10,3 +10,4 @@ const apiConfig = new Configuration({
 
 export const lookupApi = new LookupsApi(apiConfig);
 export const accountsApi = new AccountsApi(apiConfig);
+export const jobsApi = new JobOffsetPrinterTaiyoApi(apiConfig);

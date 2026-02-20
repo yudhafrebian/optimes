@@ -341,6 +341,31 @@ export interface CreateAccountDto {
     'account_expiry_date'?: string;
     'password_expiry_time'?: string;
 }
+export interface CreateJobOffsetPrinterTaiyoDto {
+    /**
+     * Must be unique
+     */
+    'work_order': string;
+    'sales_order': string;
+    'quantity_order'?: number;
+    /**
+     * Lookup id for QUANTITY_UNIT (BK, EA)
+     */
+    'quantity_unit': number;
+    /**
+     * Lookup id for WORK_CENTER (MACHINE_A, MACHINE_B)
+     */
+    'work_center': number;
+    'planned_start_time': string;
+    'release_date'?: string;
+    'due_date'?: string;
+    /**
+     * Lookup id for JOB_PRIORITY (HIGH, MEDIUM, LOW)
+     */
+    'job_priority': number;
+    'notes'?: string;
+    'attribute'?: object;
+}
 export interface CreateLookupDto {
     'lookup_type': string;
     'code': string;
@@ -362,6 +387,234 @@ export interface EditAccountDto {
 }
 export interface EditRoleDto {
     'roleLookupId': string;
+}
+export interface JobOffsetPrinterTaiyoBatchCreateResponseDto {
+    'created_count': number;
+    'failed_count': number;
+    'created': Array<JobOffsetPrinterTaiyoResponseDto>;
+    'errors': Array<JobOffsetPrinterTaiyoImportErrorDto>;
+}
+export interface JobOffsetPrinterTaiyoCreateResponseDto {
+    'id': string;
+    'work_order': string;
+    'sales_order': string;
+    'quantity_order': number;
+    /**
+     * Populated lookup object for quantity_unit
+     */
+    'quantity_unit': LookupResponseDto;
+    /**
+     * Populated lookup object for work_center
+     */
+    'work_center': LookupResponseDto;
+    'planned_start_time': string;
+    'release_date'?: string;
+    'due_date'?: string;
+    /**
+     * Populated lookup object for job_priority
+     */
+    'job_priority': LookupResponseDto;
+    /**
+     * Populated lookup object for job_lifecycle_state
+     */
+    'job_lifecycle_state': LookupResponseDto;
+    'notes': string;
+    'attribute'?: object;
+}
+export interface JobOffsetPrinterTaiyoDashboardResponseDto {
+    'total': number;
+    'scheduled': number;
+    'released': number;
+    'running': number;
+    'completed': number;
+    'suspended': number;
+    'other': number;
+    'generated_at': string;
+}
+export interface JobOffsetPrinterTaiyoDeleteResponseDto {
+    'id': string;
+    'work_order': string;
+    'sales_order': string;
+    'quantity_order': number;
+    /**
+     * Populated lookup object for quantity_unit
+     */
+    'quantity_unit': LookupResponseDto;
+    /**
+     * Populated lookup object for work_center
+     */
+    'work_center': LookupResponseDto;
+    'planned_start_time': string;
+    'release_date'?: string;
+    'due_date'?: string;
+    /**
+     * Populated lookup object for job_priority
+     */
+    'job_priority': LookupResponseDto;
+    /**
+     * Populated lookup object for job_lifecycle_state
+     */
+    'job_lifecycle_state': LookupResponseDto;
+    'notes': string;
+    'attribute'?: object;
+}
+export interface JobOffsetPrinterTaiyoGetResponseDto {
+    'id': string;
+    'work_order': string;
+    'sales_order': string;
+    'quantity_order': number;
+    /**
+     * Populated lookup object for quantity_unit
+     */
+    'quantity_unit': LookupResponseDto;
+    /**
+     * Populated lookup object for work_center
+     */
+    'work_center': LookupResponseDto;
+    'planned_start_time': string;
+    'release_date'?: string;
+    'due_date'?: string;
+    /**
+     * Populated lookup object for job_priority
+     */
+    'job_priority': LookupResponseDto;
+    /**
+     * Populated lookup object for job_lifecycle_state
+     */
+    'job_lifecycle_state': LookupResponseDto;
+    'notes': string;
+    'attribute'?: object;
+}
+export interface JobOffsetPrinterTaiyoImportErrorDto {
+    'row': number;
+    'field': string;
+    'message': string;
+    'value'?: object;
+}
+export interface JobOffsetPrinterTaiyoLifecycleResponseDto {
+    'id': string;
+    'work_order': string;
+    'sales_order': string;
+    'quantity_order': number;
+    /**
+     * Populated lookup object for quantity_unit
+     */
+    'quantity_unit': LookupResponseDto;
+    /**
+     * Populated lookup object for work_center
+     */
+    'work_center': LookupResponseDto;
+    'planned_start_time': string;
+    'release_date'?: string;
+    'due_date'?: string;
+    /**
+     * Populated lookup object for job_priority
+     */
+    'job_priority': LookupResponseDto;
+    /**
+     * Populated lookup object for job_lifecycle_state
+     */
+    'job_lifecycle_state': LookupResponseDto;
+    'notes': string;
+    'attribute'?: object;
+}
+export interface JobOffsetPrinterTaiyoListResponseDto {
+    'id': string;
+    'work_order': string;
+    'sales_order': string;
+    'quantity_order': number;
+    /**
+     * Populated lookup object for quantity_unit
+     */
+    'quantity_unit': LookupResponseDto;
+    /**
+     * Populated lookup object for work_center
+     */
+    'work_center': LookupResponseDto;
+    'planned_start_time': string;
+    'release_date'?: string;
+    'due_date'?: string;
+    /**
+     * Populated lookup object for job_priority
+     */
+    'job_priority': LookupResponseDto;
+    /**
+     * Populated lookup object for job_lifecycle_state
+     */
+    'job_lifecycle_state': LookupResponseDto;
+    'notes': string;
+    'attribute'?: object;
+}
+export interface JobOffsetPrinterTaiyoResponseDto {
+    'id': string;
+    'work_order': string;
+    'sales_order': string;
+    'quantity_order': number;
+    /**
+     * Populated lookup object for quantity_unit
+     */
+    'quantity_unit': LookupResponseDto;
+    /**
+     * Populated lookup object for work_center
+     */
+    'work_center': LookupResponseDto;
+    'planned_start_time': string;
+    'release_date'?: string;
+    'due_date'?: string;
+    /**
+     * Populated lookup object for job_priority
+     */
+    'job_priority': LookupResponseDto;
+    /**
+     * Populated lookup object for job_lifecycle_state
+     */
+    'job_lifecycle_state': LookupResponseDto;
+    'notes': string;
+    'attribute'?: object;
+}
+export interface JobOffsetPrinterTaiyoUpdateResponseDto {
+    'id': string;
+    'work_order': string;
+    'sales_order': string;
+    'quantity_order': number;
+    /**
+     * Populated lookup object for quantity_unit
+     */
+    'quantity_unit': LookupResponseDto;
+    /**
+     * Populated lookup object for work_center
+     */
+    'work_center': LookupResponseDto;
+    'planned_start_time': string;
+    'release_date'?: string;
+    'due_date'?: string;
+    /**
+     * Populated lookup object for job_priority
+     */
+    'job_priority': LookupResponseDto;
+    /**
+     * Populated lookup object for job_lifecycle_state
+     */
+    'job_lifecycle_state': LookupResponseDto;
+    'notes': string;
+    'attribute'?: object;
+}
+export interface JobOffsetPrinterTaiyoUploadPreviewDataDto {
+    /**
+     * Valid rows in unpopulated format (lookup fields as IDs) for batch-create payload
+     */
+    'unpopulated': Array<object>;
+    /**
+     * Valid rows in populated format (lookup fields as full lookup objects) for review/view context
+     */
+    'populated': Array<object>;
+}
+export interface JobOffsetPrinterTaiyoUploadPreviewResponseDto {
+    'total_rows': number;
+    'valid_rows': number;
+    'invalid_rows': number;
+    'data': JobOffsetPrinterTaiyoUploadPreviewDataDto;
+    'errors': Array<JobOffsetPrinterTaiyoImportErrorDto>;
 }
 export interface LoginDto {
     'username': string;
@@ -388,6 +641,28 @@ export interface ResetPasswordDto {
      * Password expiry time (ISO). Can be set by system/admin.
      */
     'password_expiry_time': string;
+}
+export interface UpdateJobOffsetPrinterTaiyoDto {
+    'work_order'?: string;
+    'sales_order'?: string;
+    'quantity_order'?: number;
+    /**
+     * Lookup id for QUANTITY_UNIT (BK, EA)
+     */
+    'quantity_unit'?: number;
+    /**
+     * Lookup id for WORK_CENTER (MACHINE_A, MACHINE_B)
+     */
+    'work_center'?: number;
+    'planned_start_time'?: string;
+    'release_date'?: string;
+    'due_date'?: string;
+    /**
+     * Lookup id for JOB_PRIORITY (HIGH, MEDIUM, LOW)
+     */
+    'job_priority'?: number;
+    'notes'?: string;
+    'attribute'?: object;
 }
 export interface UpdateLookupDto {
     'lookup_type'?: string;
@@ -1474,6 +1749,985 @@ export class HealthApi extends BaseAPI {
      */
     public appControllerGetHealth(options?: RawAxiosRequestConfig) {
         return HealthApiFp(this.configuration).appControllerGetHealth(options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
+ * JobOffsetPrinterTaiyoApi - axios parameter creator
+ */
+export const JobOffsetPrinterTaiyoApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary Batch create jobs from reviewed JSON array
+         * @param {Array<object>} requestBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        jobOffsetPrinterTaiyoControllerBatchCreate: async (requestBody: Array<object>, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'requestBody' is not null or undefined
+            assertParamExists('jobOffsetPrinterTaiyoControllerBatchCreate', 'requestBody', requestBody)
+            const localVarPath = `/api/jobs/offset-printer-taiyo/batch-create`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(requestBody, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Allowed transition: RELEASED/COMPLETED -> CLOSED
+         * @summary Close job
+         * @param {string} id Job ID (UUID)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        jobOffsetPrinterTaiyoControllerClose: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('jobOffsetPrinterTaiyoControllerClose', 'id', id)
+            const localVarPath = `/api/jobs/offset-printer-taiyo/{id}/close`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Allowed transition: RUNNING/SUSPENDED -> COMPLETED
+         * @summary Complete job
+         * @param {string} id Job ID (UUID)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        jobOffsetPrinterTaiyoControllerComplete: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('jobOffsetPrinterTaiyoControllerComplete', 'id', id)
+            const localVarPath = `/api/jobs/offset-printer-taiyo/{id}/complete`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Business rules: work_order must be unique; planned_start_time cannot be the same if work_center is the same. Initial lifecycle is always SCHEDULED.
+         * @summary Create job
+         * @param {CreateJobOffsetPrinterTaiyoDto} createJobOffsetPrinterTaiyoDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        jobOffsetPrinterTaiyoControllerCreate: async (createJobOffsetPrinterTaiyoDto: CreateJobOffsetPrinterTaiyoDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createJobOffsetPrinterTaiyoDto' is not null or undefined
+            assertParamExists('jobOffsetPrinterTaiyoControllerCreate', 'createJobOffsetPrinterTaiyoDto', createJobOffsetPrinterTaiyoDto)
+            const localVarPath = `/api/jobs/offset-printer-taiyo`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createJobOffsetPrinterTaiyoDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Download excel template for job import
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        jobOffsetPrinterTaiyoControllerDownloadExcelTemplate: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/jobs/offset-printer-taiyo/excel/template`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get all jobs
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        jobOffsetPrinterTaiyoControllerGetAll: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/jobs/offset-printer-taiyo`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get job by id
+         * @param {string} id Job ID (UUID)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        jobOffsetPrinterTaiyoControllerGetById: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('jobOffsetPrinterTaiyoControllerGetById', 'id', id)
+            const localVarPath = `/api/jobs/offset-printer-taiyo/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Job dashboard summary
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        jobOffsetPrinterTaiyoControllerGetDashboard: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/jobs/offset-printer-taiyo/dashboard`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Allowed transition: SCHEDULED -> RELEASED
+         * @summary Release job
+         * @param {string} id Job ID (UUID)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        jobOffsetPrinterTaiyoControllerRelease: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('jobOffsetPrinterTaiyoControllerRelease', 'id', id)
+            const localVarPath = `/api/jobs/offset-printer-taiyo/{id}/release`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Delete is allowed only when job status is SCHEDULED.
+         * @summary Delete job
+         * @param {string} id Job ID (UUID)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        jobOffsetPrinterTaiyoControllerRemove: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('jobOffsetPrinterTaiyoControllerRemove', 'id', id)
+            const localVarPath = `/api/jobs/offset-printer-taiyo/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Allowed transition: RELEASED -> RUNNING
+         * @summary Run job
+         * @param {string} id Job ID (UUID)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        jobOffsetPrinterTaiyoControllerRun: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('jobOffsetPrinterTaiyoControllerRun', 'id', id)
+            const localVarPath = `/api/jobs/offset-printer-taiyo/{id}/run`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Allowed transition: RELEASED/RUNNING -> SUSPENDED
+         * @summary Suspend job
+         * @param {string} id Job ID (UUID)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        jobOffsetPrinterTaiyoControllerSuspend: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('jobOffsetPrinterTaiyoControllerSuspend', 'id', id)
+            const localVarPath = `/api/jobs/offset-printer-taiyo/{id}/suspend`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Edit is allowed only when job status is SCHEDULED.
+         * @summary Edit job
+         * @param {string} id Job ID (UUID)
+         * @param {UpdateJobOffsetPrinterTaiyoDto} updateJobOffsetPrinterTaiyoDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        jobOffsetPrinterTaiyoControllerUpdate: async (id: string, updateJobOffsetPrinterTaiyoDto: UpdateJobOffsetPrinterTaiyoDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('jobOffsetPrinterTaiyoControllerUpdate', 'id', id)
+            // verify required parameter 'updateJobOffsetPrinterTaiyoDto' is not null or undefined
+            assertParamExists('jobOffsetPrinterTaiyoControllerUpdate', 'updateJobOffsetPrinterTaiyoDto', updateJobOffsetPrinterTaiyoDto)
+            const localVarPath = `/api/jobs/offset-printer-taiyo/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(updateJobOffsetPrinterTaiyoDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Upload excel (.xlsx/.xls) and preview valid jobs + row errors
+         * @param {File} file 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        jobOffsetPrinterTaiyoControllerUploadExcelPreview: async (file: File, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'file' is not null or undefined
+            assertParamExists('jobOffsetPrinterTaiyoControllerUploadExcelPreview', 'file', file)
+            const localVarPath = `/api/jobs/offset-printer-taiyo/excel/upload-preview`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+            const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
+
+
+            if (file !== undefined) { 
+                localVarFormParams.append('file', file as any);
+            }
+            localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = localVarFormParams;
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * JobOffsetPrinterTaiyoApi - functional programming interface
+ */
+export const JobOffsetPrinterTaiyoApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = JobOffsetPrinterTaiyoApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary Batch create jobs from reviewed JSON array
+         * @param {Array<object>} requestBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async jobOffsetPrinterTaiyoControllerBatchCreate(requestBody: Array<object>, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<JobOffsetPrinterTaiyoBatchCreateResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.jobOffsetPrinterTaiyoControllerBatchCreate(requestBody, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['JobOffsetPrinterTaiyoApi.jobOffsetPrinterTaiyoControllerBatchCreate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Allowed transition: RELEASED/COMPLETED -> CLOSED
+         * @summary Close job
+         * @param {string} id Job ID (UUID)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async jobOffsetPrinterTaiyoControllerClose(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<JobOffsetPrinterTaiyoLifecycleResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.jobOffsetPrinterTaiyoControllerClose(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['JobOffsetPrinterTaiyoApi.jobOffsetPrinterTaiyoControllerClose']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Allowed transition: RUNNING/SUSPENDED -> COMPLETED
+         * @summary Complete job
+         * @param {string} id Job ID (UUID)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async jobOffsetPrinterTaiyoControllerComplete(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<JobOffsetPrinterTaiyoLifecycleResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.jobOffsetPrinterTaiyoControllerComplete(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['JobOffsetPrinterTaiyoApi.jobOffsetPrinterTaiyoControllerComplete']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Business rules: work_order must be unique; planned_start_time cannot be the same if work_center is the same. Initial lifecycle is always SCHEDULED.
+         * @summary Create job
+         * @param {CreateJobOffsetPrinterTaiyoDto} createJobOffsetPrinterTaiyoDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async jobOffsetPrinterTaiyoControllerCreate(createJobOffsetPrinterTaiyoDto: CreateJobOffsetPrinterTaiyoDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<JobOffsetPrinterTaiyoCreateResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.jobOffsetPrinterTaiyoControllerCreate(createJobOffsetPrinterTaiyoDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['JobOffsetPrinterTaiyoApi.jobOffsetPrinterTaiyoControllerCreate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Download excel template for job import
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async jobOffsetPrinterTaiyoControllerDownloadExcelTemplate(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.jobOffsetPrinterTaiyoControllerDownloadExcelTemplate(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['JobOffsetPrinterTaiyoApi.jobOffsetPrinterTaiyoControllerDownloadExcelTemplate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Get all jobs
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async jobOffsetPrinterTaiyoControllerGetAll(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<JobOffsetPrinterTaiyoListResponseDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.jobOffsetPrinterTaiyoControllerGetAll(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['JobOffsetPrinterTaiyoApi.jobOffsetPrinterTaiyoControllerGetAll']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Get job by id
+         * @param {string} id Job ID (UUID)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async jobOffsetPrinterTaiyoControllerGetById(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<JobOffsetPrinterTaiyoGetResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.jobOffsetPrinterTaiyoControllerGetById(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['JobOffsetPrinterTaiyoApi.jobOffsetPrinterTaiyoControllerGetById']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Job dashboard summary
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async jobOffsetPrinterTaiyoControllerGetDashboard(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<JobOffsetPrinterTaiyoDashboardResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.jobOffsetPrinterTaiyoControllerGetDashboard(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['JobOffsetPrinterTaiyoApi.jobOffsetPrinterTaiyoControllerGetDashboard']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Allowed transition: SCHEDULED -> RELEASED
+         * @summary Release job
+         * @param {string} id Job ID (UUID)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async jobOffsetPrinterTaiyoControllerRelease(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<JobOffsetPrinterTaiyoLifecycleResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.jobOffsetPrinterTaiyoControllerRelease(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['JobOffsetPrinterTaiyoApi.jobOffsetPrinterTaiyoControllerRelease']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Delete is allowed only when job status is SCHEDULED.
+         * @summary Delete job
+         * @param {string} id Job ID (UUID)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async jobOffsetPrinterTaiyoControllerRemove(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<JobOffsetPrinterTaiyoDeleteResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.jobOffsetPrinterTaiyoControllerRemove(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['JobOffsetPrinterTaiyoApi.jobOffsetPrinterTaiyoControllerRemove']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Allowed transition: RELEASED -> RUNNING
+         * @summary Run job
+         * @param {string} id Job ID (UUID)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async jobOffsetPrinterTaiyoControllerRun(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<JobOffsetPrinterTaiyoLifecycleResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.jobOffsetPrinterTaiyoControllerRun(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['JobOffsetPrinterTaiyoApi.jobOffsetPrinterTaiyoControllerRun']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Allowed transition: RELEASED/RUNNING -> SUSPENDED
+         * @summary Suspend job
+         * @param {string} id Job ID (UUID)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async jobOffsetPrinterTaiyoControllerSuspend(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<JobOffsetPrinterTaiyoLifecycleResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.jobOffsetPrinterTaiyoControllerSuspend(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['JobOffsetPrinterTaiyoApi.jobOffsetPrinterTaiyoControllerSuspend']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Edit is allowed only when job status is SCHEDULED.
+         * @summary Edit job
+         * @param {string} id Job ID (UUID)
+         * @param {UpdateJobOffsetPrinterTaiyoDto} updateJobOffsetPrinterTaiyoDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async jobOffsetPrinterTaiyoControllerUpdate(id: string, updateJobOffsetPrinterTaiyoDto: UpdateJobOffsetPrinterTaiyoDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<JobOffsetPrinterTaiyoUpdateResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.jobOffsetPrinterTaiyoControllerUpdate(id, updateJobOffsetPrinterTaiyoDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['JobOffsetPrinterTaiyoApi.jobOffsetPrinterTaiyoControllerUpdate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Upload excel (.xlsx/.xls) and preview valid jobs + row errors
+         * @param {File} file 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async jobOffsetPrinterTaiyoControllerUploadExcelPreview(file: File, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<JobOffsetPrinterTaiyoUploadPreviewResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.jobOffsetPrinterTaiyoControllerUploadExcelPreview(file, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['JobOffsetPrinterTaiyoApi.jobOffsetPrinterTaiyoControllerUploadExcelPreview']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * JobOffsetPrinterTaiyoApi - factory interface
+ */
+export const JobOffsetPrinterTaiyoApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = JobOffsetPrinterTaiyoApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary Batch create jobs from reviewed JSON array
+         * @param {Array<object>} requestBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        jobOffsetPrinterTaiyoControllerBatchCreate(requestBody: Array<object>, options?: RawAxiosRequestConfig): AxiosPromise<JobOffsetPrinterTaiyoBatchCreateResponseDto> {
+            return localVarFp.jobOffsetPrinterTaiyoControllerBatchCreate(requestBody, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Allowed transition: RELEASED/COMPLETED -> CLOSED
+         * @summary Close job
+         * @param {string} id Job ID (UUID)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        jobOffsetPrinterTaiyoControllerClose(id: string, options?: RawAxiosRequestConfig): AxiosPromise<JobOffsetPrinterTaiyoLifecycleResponseDto> {
+            return localVarFp.jobOffsetPrinterTaiyoControllerClose(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Allowed transition: RUNNING/SUSPENDED -> COMPLETED
+         * @summary Complete job
+         * @param {string} id Job ID (UUID)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        jobOffsetPrinterTaiyoControllerComplete(id: string, options?: RawAxiosRequestConfig): AxiosPromise<JobOffsetPrinterTaiyoLifecycleResponseDto> {
+            return localVarFp.jobOffsetPrinterTaiyoControllerComplete(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Business rules: work_order must be unique; planned_start_time cannot be the same if work_center is the same. Initial lifecycle is always SCHEDULED.
+         * @summary Create job
+         * @param {CreateJobOffsetPrinterTaiyoDto} createJobOffsetPrinterTaiyoDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        jobOffsetPrinterTaiyoControllerCreate(createJobOffsetPrinterTaiyoDto: CreateJobOffsetPrinterTaiyoDto, options?: RawAxiosRequestConfig): AxiosPromise<JobOffsetPrinterTaiyoCreateResponseDto> {
+            return localVarFp.jobOffsetPrinterTaiyoControllerCreate(createJobOffsetPrinterTaiyoDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Download excel template for job import
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        jobOffsetPrinterTaiyoControllerDownloadExcelTemplate(options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.jobOffsetPrinterTaiyoControllerDownloadExcelTemplate(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get all jobs
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        jobOffsetPrinterTaiyoControllerGetAll(options?: RawAxiosRequestConfig): AxiosPromise<Array<JobOffsetPrinterTaiyoListResponseDto>> {
+            return localVarFp.jobOffsetPrinterTaiyoControllerGetAll(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get job by id
+         * @param {string} id Job ID (UUID)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        jobOffsetPrinterTaiyoControllerGetById(id: string, options?: RawAxiosRequestConfig): AxiosPromise<JobOffsetPrinterTaiyoGetResponseDto> {
+            return localVarFp.jobOffsetPrinterTaiyoControllerGetById(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Job dashboard summary
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        jobOffsetPrinterTaiyoControllerGetDashboard(options?: RawAxiosRequestConfig): AxiosPromise<JobOffsetPrinterTaiyoDashboardResponseDto> {
+            return localVarFp.jobOffsetPrinterTaiyoControllerGetDashboard(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Allowed transition: SCHEDULED -> RELEASED
+         * @summary Release job
+         * @param {string} id Job ID (UUID)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        jobOffsetPrinterTaiyoControllerRelease(id: string, options?: RawAxiosRequestConfig): AxiosPromise<JobOffsetPrinterTaiyoLifecycleResponseDto> {
+            return localVarFp.jobOffsetPrinterTaiyoControllerRelease(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Delete is allowed only when job status is SCHEDULED.
+         * @summary Delete job
+         * @param {string} id Job ID (UUID)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        jobOffsetPrinterTaiyoControllerRemove(id: string, options?: RawAxiosRequestConfig): AxiosPromise<JobOffsetPrinterTaiyoDeleteResponseDto> {
+            return localVarFp.jobOffsetPrinterTaiyoControllerRemove(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Allowed transition: RELEASED -> RUNNING
+         * @summary Run job
+         * @param {string} id Job ID (UUID)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        jobOffsetPrinterTaiyoControllerRun(id: string, options?: RawAxiosRequestConfig): AxiosPromise<JobOffsetPrinterTaiyoLifecycleResponseDto> {
+            return localVarFp.jobOffsetPrinterTaiyoControllerRun(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Allowed transition: RELEASED/RUNNING -> SUSPENDED
+         * @summary Suspend job
+         * @param {string} id Job ID (UUID)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        jobOffsetPrinterTaiyoControllerSuspend(id: string, options?: RawAxiosRequestConfig): AxiosPromise<JobOffsetPrinterTaiyoLifecycleResponseDto> {
+            return localVarFp.jobOffsetPrinterTaiyoControllerSuspend(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Edit is allowed only when job status is SCHEDULED.
+         * @summary Edit job
+         * @param {string} id Job ID (UUID)
+         * @param {UpdateJobOffsetPrinterTaiyoDto} updateJobOffsetPrinterTaiyoDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        jobOffsetPrinterTaiyoControllerUpdate(id: string, updateJobOffsetPrinterTaiyoDto: UpdateJobOffsetPrinterTaiyoDto, options?: RawAxiosRequestConfig): AxiosPromise<JobOffsetPrinterTaiyoUpdateResponseDto> {
+            return localVarFp.jobOffsetPrinterTaiyoControllerUpdate(id, updateJobOffsetPrinterTaiyoDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Upload excel (.xlsx/.xls) and preview valid jobs + row errors
+         * @param {File} file 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        jobOffsetPrinterTaiyoControllerUploadExcelPreview(file: File, options?: RawAxiosRequestConfig): AxiosPromise<JobOffsetPrinterTaiyoUploadPreviewResponseDto> {
+            return localVarFp.jobOffsetPrinterTaiyoControllerUploadExcelPreview(file, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * JobOffsetPrinterTaiyoApi - object-oriented interface
+ */
+export class JobOffsetPrinterTaiyoApi extends BaseAPI {
+    /**
+     * 
+     * @summary Batch create jobs from reviewed JSON array
+     * @param {Array<object>} requestBody 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public jobOffsetPrinterTaiyoControllerBatchCreate(requestBody: Array<object>, options?: RawAxiosRequestConfig) {
+        return JobOffsetPrinterTaiyoApiFp(this.configuration).jobOffsetPrinterTaiyoControllerBatchCreate(requestBody, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Allowed transition: RELEASED/COMPLETED -> CLOSED
+     * @summary Close job
+     * @param {string} id Job ID (UUID)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public jobOffsetPrinterTaiyoControllerClose(id: string, options?: RawAxiosRequestConfig) {
+        return JobOffsetPrinterTaiyoApiFp(this.configuration).jobOffsetPrinterTaiyoControllerClose(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Allowed transition: RUNNING/SUSPENDED -> COMPLETED
+     * @summary Complete job
+     * @param {string} id Job ID (UUID)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public jobOffsetPrinterTaiyoControllerComplete(id: string, options?: RawAxiosRequestConfig) {
+        return JobOffsetPrinterTaiyoApiFp(this.configuration).jobOffsetPrinterTaiyoControllerComplete(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Business rules: work_order must be unique; planned_start_time cannot be the same if work_center is the same. Initial lifecycle is always SCHEDULED.
+     * @summary Create job
+     * @param {CreateJobOffsetPrinterTaiyoDto} createJobOffsetPrinterTaiyoDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public jobOffsetPrinterTaiyoControllerCreate(createJobOffsetPrinterTaiyoDto: CreateJobOffsetPrinterTaiyoDto, options?: RawAxiosRequestConfig) {
+        return JobOffsetPrinterTaiyoApiFp(this.configuration).jobOffsetPrinterTaiyoControllerCreate(createJobOffsetPrinterTaiyoDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Download excel template for job import
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public jobOffsetPrinterTaiyoControllerDownloadExcelTemplate(options?: RawAxiosRequestConfig) {
+        return JobOffsetPrinterTaiyoApiFp(this.configuration).jobOffsetPrinterTaiyoControllerDownloadExcelTemplate(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get all jobs
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public jobOffsetPrinterTaiyoControllerGetAll(options?: RawAxiosRequestConfig) {
+        return JobOffsetPrinterTaiyoApiFp(this.configuration).jobOffsetPrinterTaiyoControllerGetAll(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get job by id
+     * @param {string} id Job ID (UUID)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public jobOffsetPrinterTaiyoControllerGetById(id: string, options?: RawAxiosRequestConfig) {
+        return JobOffsetPrinterTaiyoApiFp(this.configuration).jobOffsetPrinterTaiyoControllerGetById(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Job dashboard summary
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public jobOffsetPrinterTaiyoControllerGetDashboard(options?: RawAxiosRequestConfig) {
+        return JobOffsetPrinterTaiyoApiFp(this.configuration).jobOffsetPrinterTaiyoControllerGetDashboard(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Allowed transition: SCHEDULED -> RELEASED
+     * @summary Release job
+     * @param {string} id Job ID (UUID)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public jobOffsetPrinterTaiyoControllerRelease(id: string, options?: RawAxiosRequestConfig) {
+        return JobOffsetPrinterTaiyoApiFp(this.configuration).jobOffsetPrinterTaiyoControllerRelease(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Delete is allowed only when job status is SCHEDULED.
+     * @summary Delete job
+     * @param {string} id Job ID (UUID)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public jobOffsetPrinterTaiyoControllerRemove(id: string, options?: RawAxiosRequestConfig) {
+        return JobOffsetPrinterTaiyoApiFp(this.configuration).jobOffsetPrinterTaiyoControllerRemove(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Allowed transition: RELEASED -> RUNNING
+     * @summary Run job
+     * @param {string} id Job ID (UUID)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public jobOffsetPrinterTaiyoControllerRun(id: string, options?: RawAxiosRequestConfig) {
+        return JobOffsetPrinterTaiyoApiFp(this.configuration).jobOffsetPrinterTaiyoControllerRun(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Allowed transition: RELEASED/RUNNING -> SUSPENDED
+     * @summary Suspend job
+     * @param {string} id Job ID (UUID)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public jobOffsetPrinterTaiyoControllerSuspend(id: string, options?: RawAxiosRequestConfig) {
+        return JobOffsetPrinterTaiyoApiFp(this.configuration).jobOffsetPrinterTaiyoControllerSuspend(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Edit is allowed only when job status is SCHEDULED.
+     * @summary Edit job
+     * @param {string} id Job ID (UUID)
+     * @param {UpdateJobOffsetPrinterTaiyoDto} updateJobOffsetPrinterTaiyoDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public jobOffsetPrinterTaiyoControllerUpdate(id: string, updateJobOffsetPrinterTaiyoDto: UpdateJobOffsetPrinterTaiyoDto, options?: RawAxiosRequestConfig) {
+        return JobOffsetPrinterTaiyoApiFp(this.configuration).jobOffsetPrinterTaiyoControllerUpdate(id, updateJobOffsetPrinterTaiyoDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Upload excel (.xlsx/.xls) and preview valid jobs + row errors
+     * @param {File} file 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public jobOffsetPrinterTaiyoControllerUploadExcelPreview(file: File, options?: RawAxiosRequestConfig) {
+        return JobOffsetPrinterTaiyoApiFp(this.configuration).jobOffsetPrinterTaiyoControllerUploadExcelPreview(file, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

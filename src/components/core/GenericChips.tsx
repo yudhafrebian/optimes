@@ -21,9 +21,12 @@ interface StatusChipProps {
 const defaultColorMap: Record<string, ChipColor> = {
   "active": "success",
   "running": "success",
+  "released": "primary",
+  "closed": "error",
   "on hold": "warning", 
   "completed": "secondary",  
-  "created": "primary",        
+  "created": "primary",     
+  "scheduled": "default",  
   "urgent": "error",
   "suspended": "warning",
   "disabled": "error",

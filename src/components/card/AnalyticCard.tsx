@@ -30,19 +30,28 @@ const AnalyticCard: React.FunctionComponent<IAnalyticCardProps> = (props) => {
   } = props;
   const theme = useTheme();
 
-  // Fungsi pembantu untuk mengambil warna dari palet tema atau string hex
-  const resolveColor = (colorStr: string) => {
+  const defaultIconColor = theme.palette.text.primary;
+  const defaultBgColor = theme.palette.grey[500];
+
+  // Ambil warna dari palet tema / hex, dengan fallback aman jika key tidak ditemukan.
+  const resolveColor = (colorStr: string | undefined, fallback: string) => {
+    if (!colorStr) return fallback;
+
     const parts = colorStr.split(".");
-    // Cek apakah ini path palet (misal: 'success.light')
     if (parts.length === 2) {
       const [group, shade] = parts;
-      return (theme.palette as any)[group]?.[shade] || colorStr;
+      const paletteGroup = (theme.palette as any)[group];
+      if (paletteGroup?.[shade]) {
+        return paletteGroup[shade];
+      }
+      return fallback;
     }
+
     return colorStr;
   };
 
-  const baseIconColor = resolveColor(iconColor);
-  const baseBgColor = resolveColor(iconBackgroundColor || iconColor);
+  const baseIconColor = resolveColor(iconColor, defaultIconColor);
+  const baseBgColor = resolveColor(iconBackgroundColor ?? iconColor, defaultBgColor);
 
   return (
     <Card sx={{ borderRadius: 1 }}>

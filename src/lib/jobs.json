@@ -3,7 +3,7 @@
     "id": "job-8822-y1",
     "work_order": "WO/2026/02/002",
     "sales_order": "SO/MKT/2026/012",
-    "machine_id": {
+    "work_center": {
       "id": 14,
       "lookup_type": "MACHINE_LIST",
       "code": "OFFSET_PRINTER_2",
@@ -22,7 +22,7 @@
     "id": "job-8823-z2",
     "work_order": "WO/2026/02/003",
     "sales_order": "SO/MKT/2026/015",
-    "machine_id": {
+    "work_center": {
       "id": 13,
       "lookup_type": "MACHINE_LIST",
       "code": "OFFSET_PRINTER_1",
@@ -45,7 +45,7 @@
     "id": "job-8824-a3",
     "work_order": "WO/2026/02/004",
     "sales_order": "SO/MKT/2026/020",
-    "machine_id": {
+    "work_center": {
       "id": 13,
       "lookup_type": "MACHINE_LIST",
       "code": "OFFSET_PRINTER_1",
@@ -68,7 +68,7 @@
     "id": "job-8825-b4",
     "work_order": "WO/2026/02/005",
     "sales_order": "SO/MKT/2026/022",
-    "machine_id": {
+    "work_center": {
       "id": 13,
       "lookup_type": "MACHINE_LIST",
       "code": "OFFSET_PRINTER_1",
@@ -91,7 +91,7 @@
     "id": "job-8826-c5",
     "work_order": "WO/2026/02/006",
     "sales_order": "SO/MKT/2026/025",
-    "machine_id": {
+    "work_center": {
       "id": 13,
       "lookup_type": "MACHINE_LIST",
       "code": "OFFSET_PRINTER_1",

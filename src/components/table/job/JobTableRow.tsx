@@ -1,6 +1,7 @@
 "use client";
 import * as React from "react";
 import { TableRow, TableCell, IconButton, Button } from "@mui/material";
+import { alpha, useTheme } from "@mui/material/styles";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import GenericChips from "@/components/core/GenericChips";
 import dayjs from "dayjs";
@@ -9,7 +10,6 @@ import { usePathname } from "next/navigation";
 
 interface JobTableRowProps {
   row: JobRowData;
-  // isSelected, labelId, dan onSelect dihapus karena fitur select ditiadakan
   onOpenMenu: (
     event: React.MouseEvent<HTMLButtonElement>,
     row: JobRowData,
@@ -19,6 +19,27 @@ interface JobTableRowProps {
 const JobTableRow: React.FC<JobTableRowProps> = ({ row, onOpenMenu }) => {
   const pathname = usePathname();
   const isJobManagement = pathname.startsWith("/dashboard/ppic/job-management");
+  const theme = useTheme();
+  const status = row.job_lifecycle_state?.label?.toLowerCase() ?? "";
+  const machineLabel = row.work_center?.label ?? "-";
+  const quantityUnitLabel = row.quantity_unit?.label ?? "-";
+  const lifecycleLabel = row.job_lifecycle_state?.label ?? "-";
+  const priorityLabel = row.job_priority?.label ?? "-";
+  const quantityOrder = row.quantity_order ?? "-";
+  const getRowBg = (opacity: number) => {
+    const map: Record<string, string> = {
+      running: alpha(theme.palette.success.light, opacity),
+      released: alpha(theme.palette.primary.light, opacity),
+      scheduled: alpha(theme.palette.grey[500], opacity),
+      created: alpha(theme.palette.info.light, opacity),
+      "on hold": alpha(theme.palette.warning.light, opacity),
+      suspended: alpha(theme.palette.warning.light, opacity),
+      completed: alpha(theme.palette.secondary.light, opacity),
+      disabled: alpha(theme.palette.error.light, opacity),
+      closed: alpha(theme.palette.error.light, opacity),
+    };
+    return map[status] ?? "transparent";
+  };
   return (
     <TableRow
       hover
@@ -27,6 +48,8 @@ const JobTableRow: React.FC<JobTableRowProps> = ({ row, onOpenMenu }) => {
       sx={{
         cursor: "default",
         "&:last-child td, &:last-child th": { border: 0 },
+        backgroundColor: getRowBg(0.14),
+        "&.MuiTableRow-hover:hover": { backgroundColor: getRowBg(0.24) },
       }}
     >
       {/* TableCell padding="checkbox" dan Checkbox dihapus dari sini */}
@@ -45,7 +68,7 @@ const JobTableRow: React.FC<JobTableRowProps> = ({ row, onOpenMenu }) => {
       </TableCell>
 
       <TableCell align="left" padding="normal" sx={{ minWidth: 200 }}>
-        {row.machine_id.label}
+        {machineLabel}
       </TableCell>
 
       <TableCell
@@ -53,7 +76,7 @@ const JobTableRow: React.FC<JobTableRowProps> = ({ row, onOpenMenu }) => {
         padding="normal"
         sx={{ textTransform: "capitalize", minWidth: 200 }}
       >
-        {row.quantity_order} {row.quantity_unit.label}
+        {quantityOrder} {quantityUnitLabel}
       </TableCell>
 
       <TableCell align="left" padding="normal" sx={{ minWidth: 200 }}>
@@ -75,11 +98,11 @@ const JobTableRow: React.FC<JobTableRowProps> = ({ row, onOpenMenu }) => {
       </TableCell>
 
       <TableCell align="left" padding="normal" sx={{ minWidth: 200 }}>
-        <GenericChips value={row.job_lifecycle_state.label} variant="filled" />
+        <GenericChips value={lifecycleLabel} variant="outlined" />
       </TableCell>
 
       <TableCell align="left" padding="normal" sx={{ minWidth: 200 }}>
-        <GenericChips value={row.job_priority.label} variant="filled" />
+        <GenericChips value={priorityLabel} variant="filled" />
       </TableCell>
 
       <TableCell

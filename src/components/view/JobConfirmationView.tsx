@@ -1,38 +1,70 @@
 "use client";
 import WarningIcon from "@mui/icons-material/Warning";
-import { CreateJobFormValues } from "@/form/CreateJobForm";
 import { Box, Button, Typography } from "@mui/material";
 import * as React from "react";
 import GenericChips from "../core/GenericChips";
 import dayjs from "dayjs";
 import { valueConverter } from "@/utils/valueConverter";
 import { useSnackbar } from "@/hooks/useSnackbar";
-import { lookupApi } from "@/lib/api";
-import { LookupResponseDto } from "@/api-client";
+import { jobsApi, lookupApi } from "@/lib/api";
+import {
+  CreateJobOffsetPrinterTaiyoDto,
+  LookupResponseDto,
+  UpdateJobOffsetPrinterTaiyoDto,
+} from "@/api-client";
 
-interface IJobConfirmationViewProps {
-  data: CreateJobFormValues;
-  type: "create" | "edit";
-  onBack: () => void;
-  onSuccess: () => void;
-}
+type EditJobConfirmationData = UpdateJobOffsetPrinterTaiyoDto & {
+  id: string;
+  work_order: string;
+  sales_order: string;
+  quantity_order: number;
+  quantity_unit: number;
+  work_center: number;
+  planned_start_time: string;
+  job_priority: number;
+};
 
-const JobConfirmationView: React.FunctionComponent<
-  IJobConfirmationViewProps
-> = (props) => {
+type IJobConfirmationViewProps =
+  | {
+      data: CreateJobOffsetPrinterTaiyoDto;
+      type: "create";
+      onBack: () => void;
+      onSuccess: () => void;
+    }
+  | {
+      data: EditJobConfirmationData;
+      type: "edit";
+      onBack: () => void;
+      onSuccess: () => void;
+    };
+
+const JobConfirmationView: React.FunctionComponent<IJobConfirmationViewProps> = (
+  props,
+) => {
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [machine, setMachine] = React.useState<LookupResponseDto>();
+  const [workCenter, setWorkCenter] = React.useState<LookupResponseDto>();
+  const [quantityUnit, setQuantityUnit] = React.useState<LookupResponseDto>();
+  const [jobPriority, setJobPriority] = React.useState<LookupResponseDto>();
   const showSnackbar = useSnackbar();
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     try {
       setLoading(true);
-      // call api
+      if (props.type === "create") {
+        await jobsApi.jobOffsetPrinterTaiyoControllerCreate(props.data);
+      } else {
+        await jobsApi.jobOffsetPrinterTaiyoControllerUpdate(
+          props.data.id,
+          props.data,
+        );
+      }
 
       props.onSuccess();
-      props.type === "create"
-        ? showSnackbar("Job created successfully", "success")
-        : showSnackbar("Job updated successfully", "success");
+      if (props.type === "create") {
+        showSnackbar("Job created successfully", "success");
+      } else {
+        showSnackbar("Job updated successfully", "success");
+      }
     } catch (error: any) {
       console.log(error);
       showSnackbar(error.response.data.message, "error");
@@ -44,18 +76,27 @@ const JobConfirmationView: React.FunctionComponent<
   React.useEffect(() => {
     const getMachineId = async () => {
       try {
-        const res = await lookupApi.lookupControllerFindOne(
-          props.data.machine_id,
-        );
-        console.log(res.data);
-        setMachine(res.data);
+        const [workCenterRes, quantityUnitRes, jobPriorityRes] =
+          await Promise.all([
+            lookupApi.lookupControllerFindOne(props.data.work_center.toString()),
+            lookupApi.lookupControllerFindOne(props.data.quantity_unit.toString()),
+            lookupApi.lookupControllerFindOne(props.data.job_priority.toString()),
+          ]);
+        setWorkCenter(workCenterRes.data);
+        setQuantityUnit(quantityUnitRes.data);
+        setJobPriority(jobPriorityRes.data);
       } catch (error: any) {
         console.log(error);
         showSnackbar(error.response.data.message, "error");
       }
     };
     getMachineId();
-  }, []);
+  }, [
+    props.data.job_priority,
+    props.data.quantity_unit,
+    props.data.work_center,
+    showSnackbar,
+  ]);
 
   return (
     <Box>
@@ -76,14 +117,14 @@ const JobConfirmationView: React.FunctionComponent<
           <strong>Sales Order:</strong> {props.data.sales_order}
         </Typography>
         <Typography variant="body2">
-          <strong>Machine:</strong> {machine?.label ?? "N/A"}
+          <strong>Machine:</strong> {workCenter?.label ?? "N/A"}
         </Typography>
         <Typography variant="body2">
           <strong>Quantity Order:</strong> {props.data.quantity_order}
         </Typography>
         <Typography variant="body2">
           <strong>Quantity Unit:</strong>{" "}
-          {valueConverter(props.data.quantity_unit, "unit")}
+          {valueConverter(String(quantityUnit?.label ?? "N/A"), "unit")}
         </Typography>
         <Typography variant="body2">
           <strong>Planned Start Time:</strong>{" "}
@@ -100,7 +141,10 @@ const JobConfirmationView: React.FunctionComponent<
             <strong>Job Priority:</strong>
           </Typography>
           <GenericChips
-            value={valueConverter(props.data.job_priority, "priority") ?? "-"}
+            value={
+              valueConverter(String(jobPriority?.label ?? "N/A"), "priority") ??
+              "-"
+            }
             variant="filled"
           />
         </Box>
