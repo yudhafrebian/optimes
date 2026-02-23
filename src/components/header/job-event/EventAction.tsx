@@ -11,14 +11,14 @@ import {
   getEventSubColor,
 } from "@/atoms/event.atom";
 
-interface IEventActionCardProps {}
+interface IEventActionCardProps {
+  isExpanded: boolean;
+}
 
 const EventActionCard: React.FunctionComponent<IEventActionCardProps> = (
-  props,
+  { isExpanded },
 ) => {
   const [event, setEvent] = useAtom(eventAtom);
-
-  console.log("EventActionCard event:", event);
 
   const handleEvent = (name: "Production" | "Setup" | "Idle") => {
     setEvent({
@@ -29,21 +29,38 @@ const EventActionCard: React.FunctionComponent<IEventActionCardProps> = (
   };
 
   return (
-    <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, height: "100%" }}>
+    <Paper
+      variant="outlined"
+      sx={{
+        p: isExpanded ? 2 : 1,
+        borderRadius: 2,
+        height: "100%",
+      }}
+    >
       <Typography variant="subtitle1" fontWeight="700">
         Event Actions
       </Typography>
-      <Stack sx={{ mt: 2 }}>
+      <Stack
+        direction={isExpanded ? "column" : "row"}
+        spacing={1}
+        sx={{ mt: 2 }}
+      >
         <Button
           startIcon={<ConstructionIcon />}
+          size="small"
           variant="contained"
           color="primary"
-          sx={{ mb: 1 }}
+          sx={{
+            mb: isExpanded ? 1 : 0,
+            flex: isExpanded ? "unset" : 1,
+            minWidth: 0,
+          }}
           onClick={() => handleEvent("Setup")}
         >
-          Create Setup Event
+          {isExpanded ? "Create Setup Event" : "Setup"}
         </Button>
         <Button
+        size="small"
           startIcon={
             <ProductionIcon
               fontSize={16}
@@ -55,18 +72,27 @@ const EventActionCard: React.FunctionComponent<IEventActionCardProps> = (
           }
           variant="contained"
           color="success"
-          sx={{ mb: 1 }}
+          sx={{
+            mb: isExpanded ? 1 : 0,
+            flex: isExpanded ? "unset" : 1,
+            minWidth: 0,
+          }}
           onClick={() => handleEvent("Production")}
         >
-          Create Production Event
+          {isExpanded ? "Create Production Event" : "Prod"}
         </Button>
         <Button
+        size="small"
           startIcon={<PauseIcon />}
           variant="contained"
           color="warning"
+          sx={{
+            flex: isExpanded ? "unset" : 1,
+            minWidth: 0,
+          }}
           onClick={() => handleEvent("Idle")}
         >
-          Create Idle Event
+          {isExpanded ? "Create Idle Event" : "Idle"}
         </Button>
       </Stack>
     </Paper>

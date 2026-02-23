@@ -19,7 +19,7 @@ export default function JobExecutionHeader() {
     >
       <Grid container spacing={3}>
         <Grid size={6}>
-          <MachineInfoCard />
+          <MachineInfoCard isExpanded />
         </Grid>
 
         <Grid size={6}>

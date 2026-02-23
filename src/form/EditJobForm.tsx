@@ -135,6 +135,10 @@ React.useEffect(() => {
           setFieldValue,
         } = prop;
 
+        const plannedStart = values.planned_start_time
+          ? dayjs(values.planned_start_time)
+          : null;
+
         return (
           <Form style={{ display: "flex", gap: 20 }}>
             {onValuesChange && <FormObserver onChange={onValuesChange} />}
@@ -244,17 +248,21 @@ React.useEffect(() => {
                   <DateTimePicker
                     ampm={false}
                     label="Planned Date"
-                    value={
-                      values.planned_start_time
-                        ? dayjs(values.planned_start_time)
-                        : null
-                    }
-                    onChange={(value) =>
+                    value={plannedStart}
+                    onChange={(value) => {
                       setFieldValue(
                         "planned_start_time",
                         value ? value.toDate() : null,
-                      )
-                    }
+                      );
+
+                      if (
+                        value &&
+                        values.due_date &&
+                        dayjs(values.due_date).isBefore(value)
+                      ) {
+                        setFieldValue("due_date", null);
+                      }
+                    }}
                     slotProps={{
                       textField: {
                         fullWidth: true,
@@ -280,6 +288,7 @@ React.useEffect(() => {
                     ampm={false}
                     label="Due Date"
                     value={values.due_date ? dayjs(values.due_date) : null}
+                    minDateTime={plannedStart ?? undefined}
                     onChange={(value) =>
                       setFieldValue("due_date", value ? value.toDate() : null)
                     }

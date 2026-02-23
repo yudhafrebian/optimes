@@ -143,8 +143,21 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 
   const workOrderList = useMemo(() => {
     const seen = new Set<string>();
+    const filtered = isJobManagement
+      ? (filterData?.orders ?? []).filter(
+          (state) =>
+            state.job_lifecycle_state.label !== "Completed" &&
+            state.job_lifecycle_state.label !== "Closed",
+        )
+      : (filterData?.orders ?? []).filter(
+          (state) =>
+            state.job_lifecycle_state.label !== "Scheduled" &&
+            state.job_lifecycle_state.label !== "Released" &&
+            state.job_lifecycle_state.label !== "Running" &&
+            state.job_lifecycle_state.label !== "Suspended",
+        );
 
-    return (filterData?.orders ?? [])
+    return filtered
       .map((item) => item.work_order)
       .filter((workOrder): workOrder is string => Boolean(workOrder))
       .filter((workOrder) => {
@@ -161,7 +174,21 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const salesOrderList = useMemo(() => {
     const seen = new Set<string>();
 
-    return (filterData?.orders ?? [])
+    const filtered = isJobManagement
+      ? (filterData?.orders ?? []).filter(
+          (state) =>
+            state.job_lifecycle_state.label !== "Completed" &&
+            state.job_lifecycle_state.label !== "Closed",
+        )
+      : (filterData?.orders ?? []).filter(
+          (state) =>
+            state.job_lifecycle_state.label !== "Scheduled" &&
+            state.job_lifecycle_state.label !== "Released" &&
+            state.job_lifecycle_state.label !== "Running" &&
+            state.job_lifecycle_state.label !== "Suspended",
+        );
+
+    return filtered
       .map((item) => item.sales_order)
       .filter((salesOrder): salesOrder is string => Boolean(salesOrder))
       .filter((salesOrder) => {

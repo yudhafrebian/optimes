@@ -50,13 +50,13 @@ export function ProfileMenu() {
 
   return (
     <>
-      {isOperator && (
+      {/* {isOperator && (
         <Link href={"#"} target="_blank">
           <Button variant="contained" color="error" startIcon={<WarningIcon />}>
             Report Trouble
           </Button>
         </Link>
-      )}
+      )} */}
       <Box
         onClick={handleOpen}
         sx={{
