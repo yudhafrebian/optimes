@@ -3,11 +3,7 @@
 import * as React from "react";
 import { Box, CircularProgress, Typography } from "@mui/material";
 
-interface IWorkCenterManagerPageProps {}
-
-const WorkCenterManagerPage: React.FunctionComponent<
-  IWorkCenterManagerPageProps
-> = (props) => {
+const WorkCenterManagerPage = () => {
   const [isLoading, setIsLoading] = React.useState(true);
 
   return (
@@ -24,7 +20,7 @@ const WorkCenterManagerPage: React.FunctionComponent<
             zIndex: 1,
           }}
         >
-          <CircularProgress sx={{mr:1}} />
+          <CircularProgress sx={{ mr: 1 }} />
           <Typography variant="body2">Loading...</Typography>
         </Box>
       )}

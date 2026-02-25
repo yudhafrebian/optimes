@@ -22,8 +22,8 @@ import PersonIcon from "@mui/icons-material/Person";
 import LockIcon from "@mui/icons-material/Lock";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { accountsApi } from "@/lib/api";
-import { LoginDto } from "@/api-client";
+import { commonApi } from "@/lib/api";
+import { LoginDto } from "@/api/generated/common-service";
 import { passwordAtom } from "@/atoms/password.atom";
 
 const LoginForm = () => {
@@ -44,56 +44,56 @@ const LoginForm = () => {
     try {
       setLoading(true);
       setErrorMessage(null);
-      const res = await accountsApi.accountControllerLogin(values);
+      const res = await commonApi.accountControllerLogin(values);
 
       setAuth({
-        id: res.data.id,
-        username: res.data.username,
-        full_name: res.data.full_name,
-        email: res.data.email,
-        phone_number: res.data.phone_number,
+        id: res.id,
+        username: res.username,
+        full_name: res.full_name,
+        email: res.email,
+        phone_number: res.phone_number,
         account_role: {
-          code: res.data.account_role?.code || "",
-          label: res.data.account_role?.label || "",
-          description: res.data.account_role?.description || "",
-          id: res.data.account_role?.id || 0,
-          lookup_type: res.data.account_role?.lookup_type || "",
-          sort_order: res.data.account_role?.sort_order || 0,
-          is_active: res.data.account_role?.is_active || false,
+          code: res.account_role?.code || "",
+          label: res.account_role?.label || "",
+          description: res.account_role?.description || "",
+          id: res.account_role?.id || 0,
+          lookup_type: res.account_role?.lookup_type || "",
+          sort_order: res.account_role?.sort_order || 0,
+          is_active: res.account_role?.is_active || false,
         },
         account_type: {
-          code: res.data.account_type?.code || "",
-          label: res.data.account_type?.label || "",
-          description: res.data.account_type?.description || "",
-          id: res.data.account_type?.id || 0,
-          lookup_type: res.data.account_type?.lookup_type || "",
-          sort_order: res.data.account_type?.sort_order || 0,
-          is_active: res.data.account_type?.is_active || false,
+          code: res.account_type?.code || "",
+          label: res.account_type?.label || "",
+          description: res.account_type?.description || "",
+          id: res.account_type?.id || 0,
+          lookup_type: res.account_type?.lookup_type || "",
+          sort_order: res.account_type?.sort_order || 0,
+          is_active: res.account_type?.is_active || false,
         },
         account_lifecycle: {
-          code: res.data.account_lifecycle?.code || "",
-          label: res.data.account_lifecycle?.label || "",
-          description: res.data.account_lifecycle?.description || "",
-          id: res.data.account_lifecycle?.id || 0,
-          lookup_type: res.data.account_lifecycle?.lookup_type || "",
-          sort_order: res.data.account_lifecycle?.sort_order || 0,
-          is_active: res.data.account_lifecycle?.is_active || false,
+          code: res.account_lifecycle?.code || "",
+          label: res.account_lifecycle?.label || "",
+          description: res.account_lifecycle?.description || "",
+          id: res.account_lifecycle?.id || 0,
+          lookup_type: res.account_lifecycle?.lookup_type || "",
+          sort_order: res.account_lifecycle?.sort_order || 0,
+          is_active: res.account_lifecycle?.is_active || false,
         },
-        account_expiry_date: res.data.account_expiry_date,
-        password_last_changed: res.data.password_last_changed,
-        password_expiry_time: res.data.password_expiry_time,
-        must_change_password: res.data.must_change_password,
-        last_login_time: res.data.last_login_time,
+        account_expiry_date: res.account_expiry_date,
+        password_last_changed: res.password_last_changed,
+        password_expiry_time: res.password_expiry_time,
+        must_change_password: res.must_change_password,
+        last_login_time: res.last_login_time,
       });
 
       setPassword(values.password);
 
-      if (res.data.must_change_password) {
+      if (res.must_change_password) {
         router.replace("/change-password");
       } else {
-        router.replace(`/dashboard/${res.data.account_role?.label.toLocaleLowerCase()}`);
+        router.replace(`/dashboard/${res.account_role?.label.toLocaleLowerCase()}`);
         showSnackbar(
-          `Login successful, welcome ${res.data.full_name}`,
+          `Login successful, welcome ${res.full_name}`,
           "success",
         );
       }

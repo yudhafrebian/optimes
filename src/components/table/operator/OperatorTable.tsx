@@ -14,22 +14,16 @@ import { useMemo, useState } from "react";
 import EnhancedTableToolbar from "./EnhancedTableToolbar";
 import EnhancedTableHead from "./EnhancedTableHead";
 import TableRowSkeleton from "../../skeleton/TableRowSkeleton";
-import GenericDialog from "../../dialog/GenericDialog";
 import { useSnackbar } from "@/hooks/useSnackbar";
 import useSwr from "swr";
 import { OperatorRowData } from "@/interface/row-table.interface";
 import { IJobOffsetPrinter } from "@/interface/job.interface";
-import { apiClient } from "@/utils/apiHelper";
-import JobTableRow from "./OperatorTableRow";
-import { filterJobs } from "@/utils/jobFilters";
+import { commonApi } from "@/lib/api";
 import { getJobDialogConfig } from "@/components/dialog/jobDialogConfig";
 import { operatorFilter } from "@/utils/operatorFilter";
 import OperatorTableRow from "./OperatorTableRow";
 
-const fetcher = () =>
-  apiClient.get("/job/all").then((res) => {
-    return res.data;
-  });
+const fetcher = () => commonApi.jobOffsetPrinterTaiyoControllerGetAll();
 
 function createData(user: IJobOffsetPrinter): OperatorRowData {
   return {
@@ -92,7 +86,7 @@ export default function OperatorTable() {
     mutate,
     isLoading,
     error,
-  } = useSwr<IJobOffsetPrinter[]>("/job/all", fetcher, {
+  } = useSwr<IJobOffsetPrinter[]>("jobs", fetcher, {
     refreshInterval: 5000,
     revalidateOnFocus: false,
     onError: (err) => {
@@ -167,7 +161,7 @@ export default function OperatorTable() {
   const handleDisableJob = async (id: string) => {
     try {
       setLoading(true);
-      // await accountsApi.accountControllerDisable(id);
+      // await commonApi.accountControllerDisable(id);
       showSnackbar("Job disabled successfully", "success");
       closeAll();
       mutate();
@@ -181,7 +175,7 @@ export default function OperatorTable() {
   const handleEnableJob = async (id: string) => {
     try {
       setLoading(true);
-      // await accountsApi.accountControllerEnable(id);
+      // await commonApi.accountControllerEnable(id);
       showSnackbar("Job reactivated successfully", "success");
       closeAll();
       mutate();
@@ -195,7 +189,7 @@ export default function OperatorTable() {
   const handleDeleteJob = async (id: string) => {
     try {
       setLoading(true);
-      // await accountsApi.accountControllerDelete(id);
+      // await commonApi.accountControllerDelete(id);
       showSnackbar("Job deleted successfully", "success");
       closeAll();
       mutate();

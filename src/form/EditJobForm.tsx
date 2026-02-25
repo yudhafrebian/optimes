@@ -1,7 +1,7 @@
-import { LookupResponseDto } from "@/api-client";
+import { LookupResponseDto } from "@/api/generated/common-service";
 import GenericChips from "@/components/core/GenericChips";
 import { useSnackbar } from "@/hooks/useSnackbar";
-import { lookupApi } from "@/lib/api";
+import { commonApi } from "@/lib/api";
 import {
   Box,
   Button,
@@ -103,13 +103,13 @@ React.useEffect(() => {
     const fetchUserOptions = async () => {
       try {
         const [workCenter, quantityUnit, priority] = await Promise.all([
-          lookupApi.lookupControllerFindAll("WORK_CENTER"),
-          lookupApi.lookupControllerFindAll("QUANTITY_UNIT"),
-          lookupApi.lookupControllerFindAll("JOB_PRIORITY"),
+          commonApi.lookupControllerFindAll({ type: "WORK_CENTER" }),
+          commonApi.lookupControllerFindAll({ type: "QUANTITY_UNIT" }),
+          commonApi.lookupControllerFindAll({ type: "JOB_PRIORITY" }),
         ]);
-        setWorkCenter(workCenter.data);
-        setQuantityUnit(quantityUnit.data);
-        setPriority(priority.data);
+        setWorkCenter(workCenter);
+        setQuantityUnit(quantityUnit);
+        setPriority(priority);
       } catch (error: any) {
         console.log(error);
         showSnackbar(error.response.data.message, "error");
@@ -147,7 +147,6 @@ React.useEffect(() => {
                 <Grid size={12}>
                   <TextField
                     fullWidth
-                    disabled
                     id="sales_order"
                     name="sales_order"
                     label="Sales Order"
@@ -161,7 +160,6 @@ React.useEffect(() => {
                 <Grid size={12}>
                   <TextField
                     fullWidth
-                    disabled
                     id="work_order"
                     name="work_order"
                     label="Work Order"
@@ -329,7 +327,6 @@ React.useEffect(() => {
                 <Grid size={12}>
                   <TextField
                     fullWidth
-                    disabled
                     multiline
                     rows={4}
                     label="Note"

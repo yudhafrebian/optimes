@@ -3,7 +3,7 @@ import { Box, Button, Typography } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import copy from "copy-to-clipboard";
 import dayjs from "dayjs";
-import { AccountCreateResponseDto } from "@/api-client";
+import { AccountCreateResponseDto } from "@/api/generated/common-service";
 import GenericChips from "../core/GenericChips";
 
 const SuccessRegistrationView = ({

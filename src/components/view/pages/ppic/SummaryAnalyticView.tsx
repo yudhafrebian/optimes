@@ -8,11 +8,11 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import PauseCircleOutlineIcon from "@mui/icons-material/PauseCircleOutline";
 
-import { accountsApi, jobsApi } from "@/lib/api";
+import { commonApi } from "@/lib/api";
 import useSWR from "swr";
 
 const SummaryAnalyticView = () => {
-  const fetcher = () => jobsApi.jobOffsetPrinterTaiyoControllerGetDashboard().then(res => res.data);
+  const fetcher = () => commonApi.jobOffsetPrinterTaiyoControllerGetDashboard().then(res => res);
 
   const { data, error, isLoading } = useSWR("dashboard-accounts", fetcher, {
     refreshInterval: 5000,

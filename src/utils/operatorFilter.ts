@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { JobFiltersData, JobRowData, OperatorRowData } from "@/interface/row-table.interface";
+import { OperatorRowData } from "@/interface/row-table.interface";
 
 export type JobFilters = {
   workOrderFilter: string;

@@ -1,13 +1,14 @@
 // src/lib/api.ts
-import { Configuration, AccountsApi, LookupsApi, JobOffsetPrinterTaiyoApi } from '../api-client';
+import { getOptimesNESTAPI } from "@/api/generated/common-service";
+import { AXIOS_INSTANCE_1 } from "@/api/mutator";
 
-const apiConfig = new Configuration({
-  basePath: 'http://192.168.68.99:2000', // Sesuaikan dengan URL Backend
-  baseOptions:{
-    withCredentials: true
-  }
-});
+const generatedApi = getOptimesNESTAPI();
 
-export const lookupApi = new LookupsApi(apiConfig);
-export const accountsApi = new AccountsApi(apiConfig);
-export const jobsApi = new JobOffsetPrinterTaiyoApi(apiConfig);
+export const commonApi = {
+  ...generatedApi,
+  jobOffsetPrinterTaiyoControllerDownloadExcelTemplate: () =>
+    AXIOS_INSTANCE_1.get<Blob>(
+      "/api/jobs/offset-printer-taiyo/excel/template",
+      { responseType: "blob" },
+    ),
+};

@@ -9,11 +9,11 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import EventBusyIcon from "@mui/icons-material/EventBusy"; 
 import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 
-import { accountsApi } from "@/lib/api";
+import { commonApi } from "@/lib/api";
 import useSWR from "swr";
 
 const SummaryAnalyticView = () => {
-  const fetcher = () => accountsApi.accountControllerGetDashboard().then(res => res.data);
+  const fetcher = () => commonApi.accountControllerGetDashboard().then(res => res);
 
   const { data, error, isLoading } = useSWR("dashboard-accounts", fetcher, {
     refreshInterval: 5000,

@@ -13,8 +13,8 @@ import { Form, Formik, FormikProps } from "formik";
 import { useEffect, useState } from "react";
 import { editValidationSchema } from "./validation/user.validation";
 import { useSnackbar } from "@/hooks/useSnackbar";
-import { accountsApi, lookupApi } from "@/lib/api";
-import { EditRoleDto, LookupResponseDto } from "@/api-client";
+import { commonApi } from "@/lib/api";
+import { EditRoleDto, LookupResponseDto } from "@/api/generated/common-service";
 import { useAtom } from "jotai";
 import { authAtom } from "@/atoms/auth.atom";
 
@@ -40,8 +40,8 @@ const EditForm = ({ data, onSuccess, onCancel }: IEditFormProps) => {
 
   const fetchRoles = async () => {
     try {
-      const res = await lookupApi.lookupControllerFindAll("ACCOUNT_ROLE");
-      setRoles(res.data);
+      const res = await commonApi.lookupControllerFindAll({ type: "ACCOUNT_ROLE" });
+      setRoles(res);
     } catch (error) {
       console.log(error);
     }
@@ -49,8 +49,8 @@ const EditForm = ({ data, onSuccess, onCancel }: IEditFormProps) => {
 
   const fetchId = async () => {
     try {
-      const res = await accountsApi.accountControllerGetById(data.id);
-      setRoleId(String(res.data.account_role?.id));
+      const res = await commonApi.accountControllerGetById(data.id);
+      setRoleId(String(res.account_role?.id));
     } catch (error) {
       console.log(error);
     }
@@ -70,7 +70,7 @@ const EditForm = ({ data, onSuccess, onCancel }: IEditFormProps) => {
         return;
       }
 
-      const response = await accountsApi.accountControllerEditRole(data.id, {
+      const response = await commonApi.accountControllerEditRole(data.id, {
         roleLookupId: values.roleLookupId,
       });
 

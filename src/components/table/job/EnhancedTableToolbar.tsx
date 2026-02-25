@@ -11,14 +11,7 @@ import {
   InputLabel,
   LinearProgress,
   MenuItem,
-  Paper,
   Select,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   TextField,
   Toolbar,
   Tooltip,
@@ -32,14 +25,14 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import AddIcon from "@mui/icons-material/Add";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import GenericModal from "@/components/modal/GenericModal";
-import { jobsApi, lookupApi } from "@/lib/api";
+import { commonApi } from "@/lib/api";
 import {
   CreateJobOffsetPrinterTaiyoDto,
   JobOffsetPrinterTaiyoImportErrorDto,
   JobOffsetPrinterTaiyoListResponseDto,
   JobOffsetPrinterTaiyoUploadPreviewResponseDto,
   LookupResponseDto,
-} from "@/api-client";
+} from "@/api/generated/common-service";
 import CreateJobForm, { defaultJobFormValues } from "@/form/CreateJobForm";
 import JobConfirmationView from "@/components/view/JobConfirmationView";
 import ImportForm from "@/form/ImportForm";
@@ -75,17 +68,17 @@ type FilterData = {
 const fetchFilterData = async (): Promise<FilterData> => {
   const [orderRes, workCenterRes, lifecycleRes, priorityRes] =
     await Promise.all([
-      jobsApi.jobOffsetPrinterTaiyoControllerGetAll(),
-      lookupApi.lookupControllerFindAll("WORK_CENTER"),
-      lookupApi.lookupControllerFindAll("JOB_LIFECYCLE_STATE"),
-      lookupApi.lookupControllerFindAll("JOB_PRIORITY"),
+      commonApi.jobOffsetPrinterTaiyoControllerGetAll(),
+      commonApi.lookupControllerFindAll({ type: "WORK_CENTER" }),
+      commonApi.lookupControllerFindAll({ type: "JOB_LIFECYCLE_STATE" }),
+      commonApi.lookupControllerFindAll({ type: "JOB_PRIORITY" }),
     ]);
 
   return {
-    orders: orderRes.data,
-    workCenters: workCenterRes.data,
-    lifecycles: lifecycleRes.data,
-    priorities: priorityRes.data,
+    orders: orderRes,
+    workCenters: workCenterRes,
+    lifecycles: lifecycleRes,
+    priorities: priorityRes,
   };
 };
 
@@ -273,8 +266,10 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
       setLoading(true);
       setErrMessage([]);
       const res =
-        await jobsApi.jobOffsetPrinterTaiyoControllerUploadExcelPreview(file);
-      const previewRes = res.data;
+        await commonApi.jobOffsetPrinterTaiyoControllerUploadExcelPreview({
+          file,
+        });
+      const previewRes = res;
       setPreviewData(previewRes);
 
       if (previewRes.errors.length > 0) {

@@ -23,8 +23,8 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { accountsApi } from "@/lib/api";
-import { ChangePasswordDto } from "@/api-client";
+import { commonApi } from "@/lib/api";
+import { ChangePasswordDto } from "@/api/generated/common-service";
 import { getCriteria } from "@/lib/criteria";
 import { passwordAtom } from "@/atoms/password.atom";
 
@@ -72,7 +72,7 @@ const ResetPassword = () => {
     try {
       setLoading(true);
       if (!auth?.id) throw new Error("User ID is required");
-      await accountsApi.accountControllerChangePassword(auth.id, {
+      await commonApi.accountControllerChangePassword(auth.id, {
         currentPassword: values.currentPassword || password[0] || "",
         newPassword: values.newPassword,
       });

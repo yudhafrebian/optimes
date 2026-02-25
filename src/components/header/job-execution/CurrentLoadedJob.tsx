@@ -10,11 +10,7 @@ import { Box, Button, Grid, Paper, Stack, Typography } from "@mui/material";
 import { useAtom } from "jotai";
 import * as React from "react";
 
-interface ICurrentLoadedJobCardProps {}
-
-const CurrentLoadedJobCard: React.FunctionComponent<
-  ICurrentLoadedJobCardProps
-> = (props) => {
+const CurrentLoadedJobCard = () => {
   const [loader, setLoader] = useAtom(loaderAtom);
   const [isBreak, setIsBreak] = React.useState<boolean>(true);
 
@@ -36,7 +32,7 @@ const CurrentLoadedJobCard: React.FunctionComponent<
     <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, height: "100%" }}>
       <Stack
         direction="row"
-        justifyContent="space-between"  
+        justifyContent="space-between"
         alignItems="center"
         sx={{ mb: 1 }}
       >

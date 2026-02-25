@@ -12,8 +12,8 @@ import {
   editProfileValidationSchema,
 } from "./validation/user.validation";
 import { useSnackbar } from "@/hooks/useSnackbar";
-import { accountsApi } from "@/lib/api";
-import { EditAccountDto } from "@/api-client";
+import { commonApi } from "@/lib/api";
+import { EditAccountDto } from "@/api/generated/common-service";
 import { useAtom } from "jotai";
 import { authAtom } from "@/atoms/auth.atom";
 
@@ -38,7 +38,7 @@ const EditProfileForm = ({ onSuccess, onCancel }: IEditFormProps) => {
 
       if (!id) throw new Error("User ID is required");
 
-      await accountsApi.accountControllerEditAccount(id, values);
+      await commonApi.accountControllerEditAccount(id, values);
 
       if(auth){
         setAuth({

@@ -20,19 +20,18 @@ import TableActionMenu from "./TableActionMenu";
 import useSwr from "swr";
 import { JobRowData } from "@/interface/row-table.interface";
 import { IJobOffsetPrinter } from "@/interface/job.interface";
-import { apiClient } from "@/utils/apiHelper";
 import JobTableRow from "./JobTableRow";
 import GenericModal from "@/components/modal/GenericModal";
 import EditJobForm from "@/form/EditJobForm";
 import JobConfirmationView from "@/components/view/JobConfirmationView";
 import { filterJobs } from "@/utils/jobFilters";
 import { getJobDialogConfig } from "@/components/dialog/jobDialogConfig";
-import { jobsApi } from "@/lib/api";
+import { commonApi } from "@/lib/api";
 import { usePathname } from "next/navigation";
 
 const fetcher = () =>
-  jobsApi.jobOffsetPrinterTaiyoControllerGetAll().then((res) => {
-    return res.data;
+  commonApi.jobOffsetPrinterTaiyoControllerGetAll().then((res) => {
+    return res;
   });
 
 function createData(user: IJobOffsetPrinter): JobRowData {
@@ -197,7 +196,7 @@ export default function JobTableManagement() {
   const handleCloseJob = async (id: string) => {
     try {
       setLoading(true);
-      await jobsApi.jobOffsetPrinterTaiyoControllerClose(id);
+      await commonApi.jobOffsetPrinterTaiyoControllerClose(id);
       showSnackbar("Job closed successfully", "success");
       closeAll();
       mutate();
@@ -212,7 +211,7 @@ export default function JobTableManagement() {
   const handleReleaseJob = async (id: string) => {
     try {
       setLoading(true);
-      await jobsApi.jobOffsetPrinterTaiyoControllerRelease(id);
+      await commonApi.jobOffsetPrinterTaiyoControllerRelease(id);
       showSnackbar("Job reactivated successfully", "success");
       closeAll();
       mutate();
@@ -227,7 +226,7 @@ export default function JobTableManagement() {
   const handleDeleteJob = async (id: string) => {
     try {
       setLoading(true);
-      await jobsApi.jobOffsetPrinterTaiyoControllerRemove(id);
+      await commonApi.jobOffsetPrinterTaiyoControllerRemove(id);
       showSnackbar("Job deleted successfully", "success");
       closeAll();
       mutate();

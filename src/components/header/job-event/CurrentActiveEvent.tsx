@@ -4,7 +4,6 @@ import {
   Box,
   Button,
   Grid,
-  IconButton,
   Paper,
   Stack,
   Typography,
@@ -16,6 +15,7 @@ import { useAtom } from "jotai";
 import { eventAtom } from "@/atoms/event.atom";
 import ConstructionIcon from "@mui/icons-material/Construction";
 import PauseIcon from "@mui/icons-material/Pause";
+import GenericDialog from "@/components/dialog/GenericDialog";
 
 interface ICurrentActiveEventCardProps {
   isExpanded: boolean;
@@ -63,6 +63,7 @@ const CurrentActiveEventCard: React.FunctionComponent<
   ICurrentActiveEventCardProps
 > = (props) => {
   const [event, setEvent] = useAtom(eventAtom);
+  const [open, setOpen] = React.useState<boolean>(false);
 
   const activeEventRender = () => {
     return event.name === "Production" ? (
@@ -127,102 +128,122 @@ const CurrentActiveEventCard: React.FunctionComponent<
   }
 
   return (
-    <Paper
-      variant="outlined"
-      sx={{
-        p: props.isExpanded ? 2 : 1,
-        borderRadius: 2,
-        height: props.isExpanded ? "100%" : "100%",
-        bgcolor: `${event.bgColor}`,
-      }}
-    >
-      <Stack
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        sx={{ mb: 1 }}
-      >
-        <Typography variant="subtitle1" fontWeight="700" color="white">
-          Current Active Event
-        </Typography>
-        {!props.isExpanded ? (
-          <Box sx={{ display: "flex", gap: 1 }}>
-            {activeEventRender()}
-            <Typography variant="body1" fontWeight="700" color="white">
-              {event.name}
-            </Typography>
-          </Box>
-        ) : (
-          <GenericChips value="Active" variant="filled" />
-        )}
-      </Stack>
-      <Box
+    <>
+      <Paper
+        variant="outlined"
         sx={{
-          display: "flex",
-          flexDirection: props.isExpanded ? "column" : "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: 1,
+          p: props.isExpanded ? 2 : 1,
+          borderRadius: 2,
+          height: props.isExpanded ? "100%" : "100%",
+          bgcolor: `${event.bgColor}`,
         }}
       >
-        {props.isExpanded ? (
-          <Stack direction="column" spacing={1} my={2} alignItems="center">
-            {activeEventRender()}
-            <Typography variant="h5" fontWeight="700" color="white">
-              {event.name}
-            </Typography>
-          </Stack>
-        ): null}
-        <Grid container size={12} spacing={1}>
-          <Grid size={6}>
-            <Stack
-              alignItems="center"
-              sx={{ bgcolor: event.subColor, p: props.isExpanded ? 1 : 0.5, borderRadius: 1 }}
-            >
-              <Typography sx={{ fontSize: 12 }} variant="body2" color="white">
-                Start Time
-              </Typography>
-              <Typography
-                sx={{ fontSize: 12 }}
-                variant={props.isExpanded ? "h6" : "body2"}
-                color="white"
-              >
-                13:00:00
-              </Typography>
-            </Stack>
-          </Grid>
-          <Grid size={6}>
-            <Stack
-              alignItems="center"
-              sx={{ bgcolor: event.subColor, p: props.isExpanded ? 1 : 0.5, borderRadius: 1 }}
-            >
-              <Typography sx={{ fontSize: 12 }} variant="body2" color="white">
-                Event Duration
-              </Typography>
-              <Typography
-                sx={{ fontSize: 12 }}
-                variant={props.isExpanded ? "h6" : "body2"}
-                color="white"
-              >
-                2h 30m 20s
-              </Typography>
-            </Stack>
-          </Grid>
-        </Grid>
-
-        <Button
-          startIcon={<StopIcon />}
-          fullWidth={props.isExpanded}
-          variant="contained"
-          size="small"
-          sx={{ mt: 1 }}
-          color="error"
-          onClick={() => setEvent({ name: null, bgColor: "", subColor: "" })}
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ mb: 1 }}
         >
-          {props.isExpanded ? "End Event" : "End"}
-        </Button>
-      </Box>
-    </Paper>
+          <Typography variant="subtitle1" fontWeight="700" color="white">
+            Current Active Event
+          </Typography>
+          {!props.isExpanded ? (
+            <Box sx={{ display: "flex", gap: 1 }}>
+              {activeEventRender()}
+              <Typography variant="body1" fontWeight="700" color="white">
+                {event.name}
+              </Typography>
+            </Box>
+          ) : (
+            <GenericChips value="Active" variant="filled" />
+          )}
+        </Stack>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: props.isExpanded ? "column" : "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: 1,
+          }}
+        >
+          {props.isExpanded ? (
+            <Stack direction="column" spacing={1} my={2} alignItems="center">
+              {activeEventRender()}
+              <Typography variant="h5" fontWeight="700" color="white">
+                {event.name}
+              </Typography>
+            </Stack>
+          ) : null}
+          <Grid container size={12} spacing={1}>
+            <Grid size={6}>
+              <Stack
+                alignItems="center"
+                sx={{
+                  bgcolor: event.subColor,
+                  p: props.isExpanded ? 1 : 0.5,
+                  borderRadius: 1,
+                }}
+              >
+                <Typography sx={{ fontSize: 12 }} variant="body2" color="white">
+                  Start Time
+                </Typography>
+                <Typography
+                  sx={{ fontSize: 12 }}
+                  variant={props.isExpanded ? "h6" : "body2"}
+                  color="white"
+                >
+                  13:00:00
+                </Typography>
+              </Stack>
+            </Grid>
+            <Grid size={6}>
+              <Stack
+                alignItems="center"
+                sx={{
+                  bgcolor: event.subColor,
+                  p: props.isExpanded ? 1 : 0.5,
+                  borderRadius: 1,
+                }}
+              >
+                <Typography sx={{ fontSize: 12 }} variant="body2" color="white">
+                  Event Duration
+                </Typography>
+                <Typography
+                  sx={{ fontSize: 12 }}
+                  variant={props.isExpanded ? "h6" : "body2"}
+                  color="white"
+                >
+                  2h 30m 20s
+                </Typography>
+              </Stack>
+            </Grid>
+          </Grid>
+
+          <Button
+            startIcon={<StopIcon />}
+            fullWidth={props.isExpanded}
+            variant="contained"
+            size="small"
+            sx={{ mt: 1 }}
+            color="error"
+            onClick={() => setOpen(true)}
+          >
+            {props.isExpanded ? "End Event" : "End"}
+          </Button>
+        </Box>
+      </Paper>
+
+      <GenericDialog
+        open={open}
+        onClose={() => setOpen(false)}
+        title="End Event"
+        content="Are you sure you want to end event?"
+        positiveText="End"
+        onConfirm={() => setEvent({ name: null, bgColor: "", subColor: "" })}
+        onRefresh={() => setOpen(false)}
+      />
+    </>
   );
 };
 

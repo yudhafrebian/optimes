@@ -20,8 +20,8 @@ import AddIcon from "@mui/icons-material/Add";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import GenericModal from "@/components/modal/GenericModal";
 import SuccessRegistrationView from "@/components/view/SuccessRegistrationView";
-import { lookupApi } from "@/lib/api";
-import { LookupResponseDto } from "@/api-client";
+import { commonApi } from "@/lib/api";
+import { LookupResponseDto } from "@/api/generated/common-service";
 
 interface EnhancedTableToolbarProps {
   // numSelected dihapus karena fitur select ditiadakan
@@ -93,13 +93,13 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     const fetchFilter = async () => {
       try {
         const [rolesRes, lifecycleRes, typeRes] = await Promise.all([
-          lookupApi.lookupControllerFindAll("ACCOUNT_ROLE"),
-          lookupApi.lookupControllerFindAll("ACCOUNT_LIFECYCLE"),
-          lookupApi.lookupControllerFindAll("ACCOUNT_TYPE")
+          commonApi.lookupControllerFindAll({ type: "ACCOUNT_ROLE" }),
+          commonApi.lookupControllerFindAll({ type: "ACCOUNT_LIFECYCLE" }),
+          commonApi.lookupControllerFindAll({ type: "ACCOUNT_TYPE" })
         ]);
-        setRoles(rolesRes.data);
-        setLifecycle(lifecycleRes.data);
-        setType(typeRes.data);
+        setRoles(rolesRes);
+        setLifecycle(lifecycleRes);
+        setType(typeRes);
       } catch (error) {
         console.error("Failed to fetch filters:", error);
       }

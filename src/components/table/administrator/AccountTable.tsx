@@ -26,14 +26,14 @@ import WarningIcon from "@mui/icons-material/Warning";
 import SuccessResetPasswordView from "@/components/view/SuccessResetPasswordView";
 import useSwr from "swr";
 import { UserRowData } from "@/interface/row-table.interface";
-import { accountsApi } from "@/lib/api";
-import { AccountResponseDto } from "@/api-client";
+import { AccountResponseDto } from "@/api/generated/common-service";
 import { filterAccounts } from "@/utils/accountFilters";
 import { getAccountDialogConfig } from "@/components/dialog/accountDialogConfig";
+import { commonApi } from "@/lib/api";
 
 const fetcher = () =>
-  accountsApi.accountControllerGetAll().then((res) => {
-    return res.data;
+  commonApi.accountControllerGetAll().then((res) => {
+    return res;
   });
 
 function createData(user: AccountResponseDto): UserRowData {
@@ -164,7 +164,7 @@ export default function AccountTableManagement() {
   const handleDisableUser = async (id: string) => {
     try {
       setLoading(true);
-      await accountsApi.accountControllerDisable(id);
+      await commonApi.accountControllerDisable(id);
       showSnackbar("User disabled successfully", "success");
       closeAll();
       mutate();
@@ -178,7 +178,7 @@ export default function AccountTableManagement() {
   const handleReactivateUser = async (id: string) => {
     try {
       setLoading(true);
-      await accountsApi.accountControllerEnable(id);
+      await commonApi.accountControllerEnable(id);
       showSnackbar("User reactivated successfully", "success");
       closeAll();
       mutate();
@@ -192,7 +192,7 @@ export default function AccountTableManagement() {
   const handleDeleteUser = async (id: string, status: string) => {
     try {
       setLoading(true);
-      await accountsApi.accountControllerDelete(id);
+      await commonApi.accountControllerDelete(id);
       showSnackbar("User deleted successfully", "success");
       closeAll();
       mutate();

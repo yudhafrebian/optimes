@@ -1,6 +1,6 @@
 "use client";
 
-import { jobsApi } from "@/lib/api";
+import { commonApi } from "@/lib/api";
 import { Box, Button, Grid, Typography } from "@mui/material";
 import { Form, Formik, FormikProps } from "formik";
 import { useRef, useState } from "react";
@@ -56,15 +56,12 @@ const ImportForm = ({
 
   const handleDownloadTemplate = async () => {
     try {
-      const res =
-        await jobsApi.jobOffsetPrinterTaiyoControllerDownloadExcelTemplate({
-          responseType: "blob",
-        });
+      const res = await commonApi.jobOffsetPrinterTaiyoControllerDownloadExcelTemplate();
 
       const contentType =
         res.headers["content-type"] ||
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-      const blob = new Blob([res.data as unknown as BlobPart], {
+      const blob = new Blob([res as unknown as BlobPart], {
         type: contentType,
       });
 

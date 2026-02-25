@@ -12,7 +12,7 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs";
 import { IResetPasswordAdmin } from "@/interface/user.interface";
 import { resetPasswordAdminValidationSchema } from "./validation/user.validation";
-import { accountsApi } from "@/lib/api";
+import { commonApi } from "@/lib/api";
 import { UserRowData } from "@/interface/row-table.interface";
 
 interface ISuspendFormProps {
@@ -32,13 +32,13 @@ const ResetPasswordAdminForm = ({ onSuccess, onCancel, data }: ISuspendFormProps
       setLoading(true);
       setErrorMessage(null);
 
-      const res = await accountsApi.accountControllerResetPassword(data.id, {
+      const res = await commonApi.accountControllerResetPassword(data.id, {
         password_expiry_time: values.password_expiry_time,
       });
 
       console.log(res);
 
-      onSuccess(res.data);
+      onSuccess(res);
       showSnackbar("Reset Password successful", "success");
     } catch (error: any) {
       setErrorMessage(

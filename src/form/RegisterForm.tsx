@@ -18,8 +18,8 @@ import { useEffect, useState } from "react";
 import { useSnackbar } from "@/hooks/useSnackbar";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs";
-import { CreateAccountDto, LookupResponseDto } from "@/api-client";
-import { accountsApi, lookupApi } from "@/lib/api";
+import { CreateAccountDto, LookupResponseDto } from "@/api/generated/common-service";
+import { commonApi } from "@/lib/api";
 
 interface IRegisterFormProps {
   onSuccess: (data: any) => void;
@@ -33,10 +33,10 @@ const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
   const [accountType, setAccountType] = useState<LookupResponseDto[]>([]);
 
   const fetchSelector = async () => {
-    const role = await lookupApi.lookupControllerFindAll("ACCOUNT_ROLE");
-    const accountType = await lookupApi.lookupControllerFindAll("ACCOUNT_TYPE");
-    setRole(role.data);
-    setAccountType(accountType.data);
+    const role = await commonApi.lookupControllerFindAll({ type: "ACCOUNT_ROLE" });
+    const accountType = await commonApi.lookupControllerFindAll({ type: "ACCOUNT_TYPE" });
+    setRole(role);
+    setAccountType(accountType);
   };
 
   const showSnackbar = useSnackbar();
@@ -47,9 +47,9 @@ const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
       setErrorMessage(null);
       console.log(values);
 
-      const res = await accountsApi.accountControllerCreate(values);
+      const res = await commonApi.accountControllerCreate(values);
 
-      onSuccess(res.data);
+      onSuccess(res);
       showSnackbar("Registration successful", "success");
     } catch (error: any) {
       setErrorMessage(

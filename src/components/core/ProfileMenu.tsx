@@ -7,7 +7,6 @@ import {
   ListItemIcon,
   Typography,
   Box,
-  Button,
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
@@ -17,9 +16,7 @@ import { useAtom } from "jotai";
 import { authAtom } from "@/atoms/auth.atom";
 import ProfileMenuSekeleton from "../skeleton/ProfileMenuSkeleton";
 import GenericDialog from "../dialog/GenericDialog";
-import { accountsApi } from "@/lib/api";
-import WarningIcon from "@mui/icons-material/Warning";
-import Link from "next/link";
+import { commonApi } from "@/lib/api";
 
 export function ProfileMenu() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -40,7 +37,7 @@ export function ProfileMenu() {
   };
 
   const handleLogout = async () => {
-    await accountsApi.accountControllerLogout();
+    await commonApi.accountControllerLogout();
     setAuth(null);
     handleClose();
     router.replace("/auth/login");

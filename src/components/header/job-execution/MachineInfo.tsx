@@ -21,7 +21,7 @@ const MachineInfoCard: React.FunctionComponent<IMachineInfoCardProps> = (
       <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
         <SettingsIcon sx={{ color: "#1976d2", fontSize: 20 }} />
         <Typography variant="subtitle1" fontWeight="700">
-          Machine Information {props.isExpanded ? "(Expanded)" : "(Collapsed)"}
+          Machine Information
         </Typography>
       </Stack>
 

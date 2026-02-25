@@ -1,4 +1,4 @@
-import { LookupResponseDto } from "@/api-client";
+import { LookupResponseDto } from "@/api/generated/common-service";
 import {
   Box,
   TableCell,

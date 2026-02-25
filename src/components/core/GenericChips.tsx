@@ -38,6 +38,9 @@ const defaultColorMap: Record<string, ChipColor> = {
   "high": "error",
   "medium": "warning",
   "low": "success",
+  "setup": "primary",
+  "production": "success",
+  "idle": "warning"
 };
 
 const GenericChips: React.FC<StatusChipProps> = ({

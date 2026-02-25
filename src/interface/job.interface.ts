@@ -1,6 +1,6 @@
 // src/interface/job.interface.ts
 
-import { LookupResponseDto } from "@/api-client";
+import { LookupResponseDto } from "@/api/generated/common-service";
 
 export interface IJobOffsetPrinter {
   id: string;

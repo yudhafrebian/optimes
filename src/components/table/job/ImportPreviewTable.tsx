@@ -15,9 +15,9 @@ import dayjs from "dayjs";
 import {
   JobOffsetPrinterTaiyoUploadPreviewResponseDto,
   LookupResponseDto,
-} from "@/api-client";
+} from "@/api/generated/common-service";
 import GenericChips from "@/components/core/GenericChips";
-import { jobsApi } from "@/lib/api";
+import { commonApi } from "@/lib/api";
 import { useSnackbar } from "@/hooks/useSnackbar";
 
 interface ImportPreviewTableProps {
@@ -114,7 +114,9 @@ const ImportPreviewTable: FunctionComponent<ImportPreviewTableProps> = (
 
   const handleSubmit = async () => {
     try {
-      await jobsApi.jobOffsetPrinterTaiyoControllerBatchCreate(unPopulatedRows);
+      await commonApi.jobOffsetPrinterTaiyoControllerBatchCreate(
+        unPopulatedRows as unknown as Record<string, unknown>[],
+      );
       showSnackbar("Job created successfully", "success");
       props.onClose();
     } catch (error: any) {

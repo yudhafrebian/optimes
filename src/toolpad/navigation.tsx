@@ -1,8 +1,8 @@
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
-import AssessmentIcon from '@mui/icons-material/Assessment';
-import HistoryIcon from '@mui/icons-material/History';
-import PrecisionManufacturingIcon from '@mui/icons-material/PrecisionManufacturing';
+import AssessmentIcon from "@mui/icons-material/Assessment";
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
 
 export const navigationByRole = {
   administrator: [
@@ -15,6 +15,11 @@ export const navigationByRole = {
   ],
   operator: [
     {
+      segment: "dashboard/operator",
+      title: "Dashboard",
+      icon: <DashboardIcon />,
+    },
+    {
       segment: "dashboard/operator/job-execution",
       title: "Jobs Execution",
       icon: <AssignmentIcon />,
@@ -23,12 +28,7 @@ export const navigationByRole = {
       segment: "dashboard/operator/job-event",
       title: "Jobs Event",
       icon: <AssessmentIcon />,
-    },
-    {
-      segment: "dashboard/operator/job-event-history",
-      title: "Jobs Event History",
-      icon: <HistoryIcon />,
-    },
+    }
   ],
   ppic: [
     {
@@ -40,13 +40,11 @@ export const navigationByRole = {
       segment: "dashboard/ppic/job-reports",
       title: "Job Reports",
       icon: <AssessmentIcon />,
-      
     },
     {
       segment: "dashboard/ppic/work-center-manager",
       title: "Work Center Manager",
       icon: <PrecisionManufacturingIcon />,
-      
     },
   ],
 };

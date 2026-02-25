@@ -6,12 +6,12 @@ import GenericChips from "../core/GenericChips";
 import dayjs from "dayjs";
 import { valueConverter } from "@/utils/valueConverter";
 import { useSnackbar } from "@/hooks/useSnackbar";
-import { jobsApi, lookupApi } from "@/lib/api";
+import { commonApi } from "@/lib/api";
 import {
   CreateJobOffsetPrinterTaiyoDto,
   LookupResponseDto,
   UpdateJobOffsetPrinterTaiyoDto,
-} from "@/api-client";
+} from "@/api/generated/common-service";
 
 type EditJobConfirmationData = UpdateJobOffsetPrinterTaiyoDto & {
   id: string;
@@ -51,9 +51,9 @@ const JobConfirmationView: React.FunctionComponent<IJobConfirmationViewProps> = 
     try {
       setLoading(true);
       if (props.type === "create") {
-        await jobsApi.jobOffsetPrinterTaiyoControllerCreate(props.data);
+        await commonApi.jobOffsetPrinterTaiyoControllerCreate(props.data);
       } else {
-        await jobsApi.jobOffsetPrinterTaiyoControllerUpdate(
+        await commonApi.jobOffsetPrinterTaiyoControllerUpdate(
           props.data.id,
           props.data,
         );
@@ -78,13 +78,13 @@ const JobConfirmationView: React.FunctionComponent<IJobConfirmationViewProps> = 
       try {
         const [workCenterRes, quantityUnitRes, jobPriorityRes] =
           await Promise.all([
-            lookupApi.lookupControllerFindOne(props.data.work_center.toString()),
-            lookupApi.lookupControllerFindOne(props.data.quantity_unit.toString()),
-            lookupApi.lookupControllerFindOne(props.data.job_priority.toString()),
+            commonApi.lookupControllerFindOne(props.data.work_center.toString()),
+            commonApi.lookupControllerFindOne(props.data.quantity_unit.toString()),
+            commonApi.lookupControllerFindOne(props.data.job_priority.toString()),
           ]);
-        setWorkCenter(workCenterRes.data);
-        setQuantityUnit(quantityUnitRes.data);
-        setJobPriority(jobPriorityRes.data);
+        setWorkCenter(workCenterRes);
+        setQuantityUnit(quantityUnitRes);
+        setJobPriority(jobPriorityRes);
       } catch (error: any) {
         console.log(error);
         showSnackbar(error.response.data.message, "error");
