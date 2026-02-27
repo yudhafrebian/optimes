@@ -35,6 +35,7 @@ function createData(user: IJobOffsetPrinter): OperatorRowData {
     planned_start_time: user.planned_start_time,
     notes: user.notes,
     job_lifecycle_state: user.job_lifecycle_state,
+    work_center: user.work_center,
   };
 }
 
@@ -99,7 +100,12 @@ export default function OperatorTable() {
 
     const jobsArray = Array.isArray(jobs) ? jobs : [jobs];
 
-    return jobsArray.map((job) => createData(job));
+    return jobsArray
+      .map((job) => createData(job))
+      .filter((item) => {
+        const lifecycleLabel = item.job_lifecycle_state?.label;
+        return lifecycleLabel === "Released" || lifecycleLabel === "Running";
+      });
   }, [jobs]);
 
   const showSnackbar = useSnackbar();
@@ -130,15 +136,6 @@ export default function OperatorTable() {
     setJobData(null);
   };
 
-  // const handleAction = (
-  //   type: "edit" | "delete" | "disable" | "enable",
-  //   row: OperatorRowData,
-  // ) => {
-  //   setAnchorEl(null);
-  //   setModalType(type);
-  //   setActiveRow(row);
-  // };
-
   const filteredRows = useMemo(
     () =>
       operatorFilter(rows, {
@@ -157,48 +154,6 @@ export default function OperatorTable() {
       priorityFilter,
     ],
   );
-
-  const handleDisableJob = async (id: string) => {
-    try {
-      setLoading(true);
-      // await commonApi.accountControllerDisable(id);
-      showSnackbar("Job disabled successfully", "success");
-      closeAll();
-      mutate();
-    } catch (error) {
-      showSnackbar("Failed to disable job", "error");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleEnableJob = async (id: string) => {
-    try {
-      setLoading(true);
-      // await commonApi.accountControllerEnable(id);
-      showSnackbar("Job reactivated successfully", "success");
-      closeAll();
-      mutate();
-    } catch (error) {
-      showSnackbar("Failed to reactivate job", "error");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDeleteJob = async (id: string) => {
-    try {
-      setLoading(true);
-      // await commonApi.accountControllerDelete(id);
-      showSnackbar("Job deleted successfully", "success");
-      closeAll();
-      mutate();
-    } catch (error) {
-      showSnackbar("Failed to delete job", "error");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -237,7 +192,7 @@ export default function OperatorTable() {
       <Box sx={{ width: "100%" }}>
         <Paper sx={{ width: "100%", mb: 2, boxShadow: 3, overflow: "hidden" }}>
           <EnhancedTableToolbar
-          data={rows}
+            data={rows}
             onRefresh={mutate}
             workOrderFilter={workOrderFilter}
             salesOrderFilter={salesOrderFilter}
@@ -284,11 +239,8 @@ export default function OperatorTable() {
                 {(isLoading && rows.length === 0) || loading ? (
                   <TableRowSkeleton rows={rowsPerPage} />
                 ) : (
-                  visibleRows.map((row, index) => (
-                    <OperatorTableRow
-                      key={index}
-                      row={row}
-                    />
+                  visibleRows.map((row) => (
+                    <OperatorTableRow key={row.id} row={row} />
                   ))
                 )}
               </TableBody>
@@ -309,58 +261,6 @@ export default function OperatorTable() {
           label="Dense padding"
         />
       </Box>
-
-      
-
-      {/* <GenericDialog
-        open={
-          modalType === "disable" ||
-          modalType === "delete" ||
-          modalType === "enable"
-        }
-        onClose={closeAll}
-        title={dialogConfig.title}
-        content={dialogConfig.content}
-        subContent={dialogConfig.subContent}
-        negativeText="Cancel"
-        positiveText={dialogConfig.positiveText}
-        onConfirm={() => {
-          if (!activeRow) return;
-          if (modalType === "disable") handleDisableJob(activeRow.id);
-          if (modalType === "enable") handleEnableJob(activeRow.id);
-          if (modalType === "delete") handleDeleteJob(activeRow.id);
-        }}
-        onRefresh={mutate}
-      /> */}
-
-      {/* <GenericModal
-        open={modalType === "edit"}
-        onClose={closeAll}
-        title="Edit Job"
-        maxWidth={step === "form" ? 1000 : 400}
-      >
-        {activeRow && (
-          <>
-            {step === "form" ? (
-              <EditJobForm
-                data={activeRow}
-                onSuccess={(data) => {
-                  handleSuccess(data);
-                  setStep("success");
-                }}
-                onCancel={closeAll}
-              />
-            ) : (
-              <JobConfirmationView
-                data={jobData}
-                onSuccess={closeAll}
-                onBack={() => setStep("form")}
-                type="edit"
-              />
-            )}
-          </>
-        )}
-      </GenericModal> */}
     </>
   );
 }

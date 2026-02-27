@@ -93,7 +93,7 @@ const EventPalleteModule = () => {
                     variant="contained"
                     onClick={() => setOpen(true)}
                   >
-                    Create
+                    Start
                   </Button>
                 </CardActions>
               </Card>
@@ -110,9 +110,9 @@ const EventPalleteModule = () => {
       </Paper>
 
       <GenericDialog
-        title="Create Event"
-        content="Are you sure you want to create new event?"
-        positiveText="Create"
+        title="Start Event"
+        content="Are you sure you want to start new event?"
+        positiveText="Start"
         open={open}
         onClose={() => setOpen(false)}
         onConfirm={() => setOpen(false)}

@@ -81,7 +81,7 @@ export default function JobTableManagement() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [activeRow, setActiveRow] = useState<JobRowData | null>(null);
   const [modalType, setModalType] = useState<
-    "edit" | "delete" | "close" | "release" | null
+    "edit" | "delete" | "close" | "release" | "completed" | null
   >(null);
   const [step, setStep] = useState<"form" | "success">("form");
   const [loading, setLoading] = useState<boolean>(false);
@@ -163,7 +163,7 @@ export default function JobTableManagement() {
   };
 
   const handleAction = (
-    type: "edit" | "delete" | "close" | "release",
+    type: "edit" | "delete" | "close" | "release" | "completed",
     row: JobRowData,
   ) => {
     setAnchorEl(null);
@@ -222,6 +222,19 @@ export default function JobTableManagement() {
       setLoading(false);
     }
   };
+
+  const handleCompletedJob = async (id: string) => {
+    try {
+      setLoading(true);
+      await commonApi.jobOffsetPrinterTaiyoControllerComplete(id);
+      showSnackbar("Job completed successfully", "success");
+      closeAll();
+      mutate();
+    } catch (error:any) {
+      console.log(error)
+      showSnackbar(error.response.data.message, "error")
+    }
+  }
 
   const handleDeleteJob = async (id: string) => {
     try {
@@ -356,13 +369,15 @@ export default function JobTableManagement() {
         onCloseJob={(row) => handleAction("close", row)}
         onRelease={(row) => handleAction("release", row)}
         onDelete={(row) => handleAction("delete", row)}
+        onComplete={(row) => handleAction("completed", row)}
       />
 
       <GenericDialog
         open={
           modalType === "close" ||
           modalType === "delete" ||
-          modalType === "release"
+          modalType === "release" ||
+          modalType === "completed"
         }
         onClose={closeAll}
         title={dialogConfig.title}
@@ -375,6 +390,7 @@ export default function JobTableManagement() {
           if (modalType === "close") handleCloseJob(activeRow.id);
           if (modalType === "release") handleReleaseJob(activeRow.id);
           if (modalType === "delete") handleDeleteJob(activeRow.id);
+          if (modalType === "completed") handleCompletedJob(activeRow.id);
         }}
         onRefresh={mutate}
       />

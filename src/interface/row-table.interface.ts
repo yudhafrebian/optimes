@@ -31,6 +31,7 @@ export interface JobRowData {
 
 export interface OperatorRowData {
   id: string;
+  work_center: LookupResponseDto;
   work_order: string;
   sales_order: string;
   quantity_order: number;
@@ -38,6 +39,18 @@ export interface OperatorRowData {
   planned_start_time: string;           // Isinya: { label: "High", code: "HIGH", ... }
   job_lifecycle_state: LookupResponseDto;     // Isinya: { label: "Created", code: "CREATED", ... }
   notes: string;
+}
+
+export interface ExecutionHistoryRowData {
+  id: string;
+  event_path: string;
+  start_ts: string;
+  end_ts?: string;
+  status: string;
+  severity: string;
+  context: string;
+  notes_on_open?: string;
+  notes_on_close?: string;
 }
 
 export interface JobFiltersData {

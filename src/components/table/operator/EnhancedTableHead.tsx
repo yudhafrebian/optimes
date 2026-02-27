@@ -10,6 +10,7 @@ import { visuallyHidden } from "@mui/utils";
 
 interface Data {
   id: string;
+  work_center: LookupResponseDto;
   work_order: string;
   sales_order: string;             // Isinya: { label: "Offset Printer 1", code: "OFFSET_PRINTER_1", ... }
   quantity_order: number;

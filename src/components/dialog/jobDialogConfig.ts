@@ -1,4 +1,4 @@
-export type JobDialogType = "edit" | "close" | "release" | "delete" | null;
+export type JobDialogType = "edit" | "close" | "release" | "delete" | "completed" | null;
 
 export const getJobDialogConfig = (modalType: JobDialogType) => {
   if (modalType === "edit") {
@@ -34,6 +34,15 @@ export const getJobDialogConfig = (modalType: JobDialogType) => {
       content: "Are you sure you want to delete this job?",
       positiveText: "Delete",
       subContent: "This job will be deleted permanently!",
+    };
+  }
+
+  if (modalType === "completed") {
+    return {
+      title: "Complete Job",
+      content: "Are you sure you want to complete this job?",
+      positiveText: "Completed",
+      subContent: "",
     };
   }
 

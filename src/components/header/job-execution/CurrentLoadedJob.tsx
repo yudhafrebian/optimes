@@ -1,4 +1,4 @@
-import loaderAtom from "@/atoms/loader.atom";
+import { loadedDataAtom, loaderAtom } from "@/atoms/loader.atom";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import PauseIcon from "@mui/icons-material/Pause";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
@@ -6,125 +6,243 @@ import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import GenericChips from "../../core/GenericChips";
 import { useSnackbar } from "@/hooks/useSnackbar";
-import { Box, Button, Grid, Paper, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Divider,
+  Grid,
+  Paper,
+  Stack,
+  TextField,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import { useAtom } from "jotai";
 import * as React from "react";
+import { assetsApi } from "@/lib/api";
+import { OperatorRowData } from "@/interface/row-table.interface";
+import { EventsQueryResponse } from "@/api/generated/assets-service";
+import dayjs from "dayjs";
+import GenericDialog from "@/components/dialog/GenericDialog";
+import { formatDateTime } from "@/utils/timeFormater";
 
-const CurrentLoadedJobCard = () => {
+interface CurrentLoadedJobCardProps {
+  row: OperatorRowData;
+  onRefresh: () => void;
+}
+
+const CurrentLoadedJobCard: React.FunctionComponent<
+  CurrentLoadedJobCardProps
+> = ({ row, onRefresh }) => {
   const [loader, setLoader] = useAtom(loaderAtom);
-  const [isBreak, setIsBreak] = React.useState<boolean>(true);
+  const [loaderData, setLoaderData] = useAtom(loadedDataAtom);
+  const [data, setData] = React.useState<EventsQueryResponse>({
+    count: 0,
+    total: 0,
+    rows: [],
+  });
+  const [open, setOpen] = React.useState<boolean>(false);
 
   const showSnackbar = useSnackbar();
 
-  const handleLoadJob = () => {
-    setLoader(!loader);
-    loader ? setIsBreak(true) : null;
+
+  const handleUnloadJob = async () => {
+    try {
+      console.log(loaderData.work_center.code);
+      const unload = await assetsApi.setAssetValuesByPath(
+        `${loaderData.work_center.code}.Job Lifecycle`,
+        { value: "unload" },
+      );
+
+      setLoader({
+        isLoaded: false,
+        id: "",
+      });
+
+      setOpen(false);
+      showSnackbar("Job unloaded successfully", "success");
+    } catch (error: any) {
+      console.log(error);
+      showSnackbar(error.response.data.message, "error");
+    }
   };
 
-  const handleBreak = () => {
-    if (!loader) {
-      showSnackbar("Please load the job first.", "warning");
-      return;
+  React.useEffect(() => {
+    const getLoadedJob = async () => {
+      try {
+        const res = await assetsApi.queryEvents({
+          pattern: `${loaderData.work_center.code}/Job/${loaderData.work_order}/Lifecycle/Running`,
+          status: "open",
+        });
+
+        setData(res);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    if (loader.isLoaded) {
+      getLoadedJob();
     }
-    setIsBreak(!isBreak);
-  };
-  return (
-    <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, height: "100%" }}>
-      <Stack
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        sx={{ mb: 1 }}
+  }, [loader.isLoaded]);
+
+  if (!loader.isLoaded && !loader.id) {
+    return (
+      <Paper
+        variant="outlined"
+        sx={{ p: 2, borderRadius: 2, height: "100%", bgcolor: "grey.200" }}
       >
-        <Stack direction="row" spacing={1} alignItems="center">
-          <AssignmentIcon sx={{ color: "success.main", fontSize: 20 }} />
-          <Typography variant="subtitle1" fontWeight="700">
-            Currently Loaded Job
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ mb: 1 }}
+        >
+          <Stack direction="row" spacing={1} alignItems="center">
+            <AssignmentIcon sx={{ color: "success.main", fontSize: 20 }} />
+            <Typography variant="subtitle1" fontWeight="700">
+              Currently Loaded Job
+            </Typography>
+          </Stack>
+          <GenericChips value="Offline" />
+        </Stack>
+
+        <Box
+          sx={{
+            height: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Typography variant="body1" color="text.secondary">
+            No active job at the moment.
+          </Typography>
+        </Box>
+      </Paper>
+    );
+  }
+
+  return (
+    <>
+      <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, height: "100%" }}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ mb: 1 }}
+        >
+          <Stack direction="row" spacing={1} alignItems="center">
+            <AssignmentIcon sx={{ color: "success.main", fontSize: 20 }} />
+            <Typography variant="subtitle1" fontWeight="700">
+              Currently Loaded Job
+            </Typography>
+          </Stack>
+          <GenericChips value={loader.isLoaded ? "Loaded" : "No Activity"} />
+        </Stack>
+
+        <Typography
+          sx={{
+            fontWeight: "bold",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+          }}
+          variant="body2"
+        >
+          {data.rows[0]?.event_path}
+        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            gap: 2,
+            mt: 2,
+          }}
+        >
+          <TextField
+            size="small"
+            label="Note on Open"
+            fullWidth
+            multiline
+            rows={2}
+            value={data.rows[0]?.notes_on_open || "-"}
+            sx={{
+              "& textarea": {
+                overflow: "auto",
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+              },
+              "& textarea::-webkit-scrollbar": {
+                display: "none",
+              },
+            }}
+            slotProps={{
+              input: {
+                sx: { fontSize: "0.75em" },
+                readOnly: true,
+              },
+            }}
+          />
+
+          <TextField
+            size="small"
+            label="Note on Close"
+            fullWidth
+            multiline
+            rows={2}
+            value={data.rows[0]?.notes_on_close || "-"}
+            sx={{
+              "& textarea": {
+                overflow: "auto",
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+              },
+              "& textarea::-webkit-scrollbar": {
+                display: "none",
+              },
+            }}
+            slotProps={{
+              input: {
+                sx: { fontSize: "0.75em" },
+                readOnly: true,
+              },
+            }}
+          />
+        </Box>
+
+        <Stack direction="column" sx={{ my: 2 }}>
+          <Typography>
+            <strong>Start Time:</strong>{" "}
+            {formatDateTime(data.rows[0]?.start_ts)}
           </Typography>
         </Stack>
-        <GenericChips value="Running" />
-      </Stack>
 
-      <Grid container spacing={1}>
-        <Grid size={6}>
-          <Typography variant="caption" color="text.secondary" display="block">
-            Work Order
-          </Typography>
-          <Typography variant="body2" fontWeight="700">
-            WO-2026-001
-          </Typography>
-        </Grid>
-        <Grid size={6}>
-          <Typography variant="caption" color="text.secondary" display="block">
-            Sales Order
-          </Typography>
-          <Typography variant="body2" fontWeight="700">
-            SO-2026-4521
-          </Typography>
-        </Grid>
-        <Grid size={6}>
-          <Typography variant="caption" color="text.secondary" display="block">
-            Target Quantity
-          </Typography>
-          <Typography variant="body2" fontWeight="700">
-            1200 pcs
-          </Typography>
-        </Grid>
-        <Grid size={6}>
-          <Typography variant="caption" color="text.secondary" display="block">
-            Started
-          </Typography>
-          <Typography variant="body2" fontWeight="700">
-            08:15
-          </Typography>
-        </Grid>
-      </Grid>
+        <Stack direction="row" spacing={1} sx={{ mt: 5 }}>
+          <Button
+            fullWidth
+            variant="outlined"
+            color="warning"
+            startIcon={
+              loader ? <FileUploadOutlinedIcon /> : <FileDownloadOutlinedIcon />
+            }
+            onClick={() => setOpen(true)}
+          >
+            Unload Job
+          </Button>
+        </Stack>
+      </Paper>
 
-      <Box sx={{ mt: 2, mb: 2 }}>
-        <Typography variant="caption" color="text.secondary" display="block">
-          Notes/Remark
-        </Typography>
-        <Typography variant="body2">
-          High priority order. Quality check every 100 units.
-        </Typography>
-      </Box>
-
-      <Stack direction="row" spacing={1} sx={{ mt: "auto" }}>
-        <Button
-          fullWidth
-          variant="outlined"
-          startIcon={isBreak ? <AssignmentIcon /> : <PauseIcon />}
-          sx={{
-            textTransform: "none",
-            color: "text.primary",
-            borderColor: "#e0e0e0",
-          }}
-          onClick={handleBreak}
-        >
-          {isBreak ? "Resume" : "Break"}
-        </Button>
-        <Button
-          fullWidth
-          variant={loader ? "outlined" : "contained"}
-          color={loader ? "inherit" : "primary"}
-          startIcon={
-            loader ? <FileUploadOutlinedIcon /> : <FileDownloadOutlinedIcon />
-          }
-          onClick={handleLoadJob}
-        >
-          {loader ? "Unload Job" : "Load Job"}
-        </Button>
-        <Button
-          fullWidth
-          variant="contained"
-          color="success"
-          startIcon={<CheckCircleOutlineIcon />}
-          sx={{ textTransform: "none", boxShadow: "none" }}
-        >
-          Complete
-        </Button>
-      </Stack>
-    </Paper>
+      <GenericDialog
+        open={open}
+        onClose={() => setOpen(false)}
+        title="Unload Job"
+        content="Are you sure you want to unload this job?"
+        positiveText="Unload"
+        onConfirm={handleUnloadJob}
+        onRefresh={() => {}}
+      />
+    </>
   );
 };
 

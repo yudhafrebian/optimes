@@ -13,6 +13,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import BlockIcon from '@mui/icons-material/Block';
 import DeleteIcon from "@mui/icons-material/Delete";
+import VerifiedIcon from '@mui/icons-material/Verified';
 import { JobRowData } from "@/interface/row-table.interface";
 
 interface TableActionMenuProps {
@@ -22,6 +23,7 @@ interface TableActionMenuProps {
   onEdit: (row: JobRowData) => void;
   onCloseJob: (row: JobRowData) => void;
   onRelease: (row: JobRowData) => void;
+  onComplete: (row: JobRowData) => void;
   onDelete: (row: JobRowData) => void;
 }
 
@@ -32,13 +34,14 @@ const TableActionMenu: React.FC<TableActionMenuProps> = ({
   onEdit,
   onCloseJob,
   onRelease,
+  onComplete,
   onDelete,
 }) => {
   const open = Boolean(anchorEl);
   const status = activeRow?.job_lifecycle_state.label?.toLowerCase();
   const isScheduled = status === "scheduled";
   const isCompleted = status === "completed";
-  const isClosed = status === "closed";
+  const isRunning = status === "running";
   const isReleased = status === "released";
   const canEditOrDelete = isScheduled;
   const canClose = isReleased || isCompleted;
@@ -94,6 +97,20 @@ const TableActionMenu: React.FC<TableActionMenuProps> = ({
             <BlockIcon fontSize="small" color="error" />
           </ListItemIcon>
           <ListItemText>Close Job</ListItemText>
+        </MenuItem>
+      )}
+      {isRunning && (
+        <MenuItem
+          sx={{ color: "secondary.main" }}
+          onClick={() => {
+            if (activeRow) onComplete(activeRow);
+            onClose();
+          }}
+        >
+          <ListItemIcon>
+            <VerifiedIcon fontSize="small" color="secondary" />
+          </ListItemIcon>
+          <ListItemText>Complete Job</ListItemText>
         </MenuItem>
       )}
 

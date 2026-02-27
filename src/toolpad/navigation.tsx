@@ -2,6 +2,7 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import HistoryIcon from '@mui/icons-material/History';
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
 
 export const navigationByRole = {
@@ -25,8 +26,13 @@ export const navigationByRole = {
       icon: <AssignmentIcon />,
     },
     {
-      segment: "dashboard/operator/job-event",
-      title: "Jobs Event",
+      segment: "dashboard/operator/job-history-execution",
+      title: "Jobs Execution History",
+      icon: <HistoryIcon />,
+    },
+    {
+      segment: "dashboard/operator/job-activity",
+      title: "Jobs Activity",
       icon: <AssessmentIcon />,
     }
   ],

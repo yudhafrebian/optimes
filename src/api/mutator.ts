@@ -7,10 +7,10 @@ export const AXIOS_INSTANCE_1 = axios.create({
 });
 
 // Instance untuk Service B (Baru)
-// export const AXIOS_INSTANCE_BARU = axios.create({
-//   baseURL: 'https://api-service-baru.com',
-//   withCredentials: true,
-// });
+export const AXIOS_INSTANCE_2 = axios.create({
+  baseURL: 'http://192.168.68.9:4000',
+  withCredentials: true,
+});
 
 // Mutator untuk Service Lama
 export const customInstance1 = <T>(config: AxiosRequestConfig): Promise<T> => {
@@ -18,6 +18,6 @@ export const customInstance1 = <T>(config: AxiosRequestConfig): Promise<T> => {
 };
 
 // Mutator untuk Service Baru
-// export const customInstance2 = <T>(config: AxiosRequestConfig): Promise<T> => {
-//   return AXIOS_INSTANCE_BARU(config).then((response: AxiosResponse<T>) => response.data);
-// };
+export const customInstance2 = <T>(config: AxiosRequestConfig): Promise<T> => {
+  return AXIOS_INSTANCE_2(config).then((response: AxiosResponse<T>) => response.data);
+};

@@ -2,6 +2,7 @@
 "use client";
 import React from "react";
 import { Chip } from "@mui/material";
+import { SxProps, Theme } from "@mui/material/styles";
 
 type ChipColor =
   | "default"
@@ -16,6 +17,7 @@ interface StatusChipProps {
   value: string;
   variant?: "filled" | "outlined";
   colorMap?: Record<string, ChipColor>;
+  sx?: SxProps<Theme>;
 }
 
 const defaultColorMap: Record<string, ChipColor> = {
@@ -40,13 +42,17 @@ const defaultColorMap: Record<string, ChipColor> = {
   "low": "success",
   "setup": "primary",
   "production": "success",
-  "idle": "warning"
+  "idle": "warning",
+  "loaded": "secondary",
+  "info": "primary",
+  "open": "success",
 };
 
 const GenericChips: React.FC<StatusChipProps> = ({
   value,
   variant = "outlined",
   colorMap = {},
+  sx,
 }) => {
   // Gabungkan mapping default dengan mapping kustom dari props
   const combinedMap = { ...defaultColorMap, ...colorMap };
@@ -61,12 +67,15 @@ const GenericChips: React.FC<StatusChipProps> = ({
       color={statusColor}
       size="small"
       variant={variant}
-      sx={{
-        fontWeight: "600",
-        fontSize: "0.75rem",
-        textTransform: "capitalize",
-        minWidth: "80px",
-      }}
+      sx={[
+        {
+          fontWeight: "600",
+          fontSize: "0.75rem",
+          textTransform: "capitalize",
+          minWidth: "80px",
+        },
+        ...(Array.isArray(sx) ? sx : sx ? [sx] : []),
+      ]}
     />
   );
 };
