@@ -141,8 +141,8 @@ const EditForm = ({ data, onSuccess, onCancel }: IEditFormProps) => {
                   </Typography>
                 </Grid>
               )}
-              <Grid container size={12}>
-                <Grid size={6}>
+              <Grid container size={12} spacing={2}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <Button
                     variant="outlined"
                     color="error"
@@ -152,7 +152,7 @@ const EditForm = ({ data, onSuccess, onCancel }: IEditFormProps) => {
                     Cancel
                   </Button>
                 </Grid>
-                <Grid size={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <Button
                     type="submit"
                     fullWidth

@@ -1,4 +1,4 @@
-export type JobDialogType = "edit" | "close" | "release" | "delete" | "completed" | null;
+export type JobDialogType = "edit" | "cancel" | "close" | "release" | "delete" | "completed" | null;
 
 export const getJobDialogConfig = (modalType: JobDialogType) => {
   if (modalType === "edit") {
@@ -10,11 +10,11 @@ export const getJobDialogConfig = (modalType: JobDialogType) => {
     };
   }
 
-  if (modalType === "close") {
+  if (modalType === "cancel") {
     return {
-      title: "Close Job",
-      content: "Are you sure you want to close this job?",
-      positiveText: "Close",
+      title: "Cancel Job",
+      content: "Are you sure you want to cancel this job?",
+      positiveText: "Cancel",
       subContent: "",
     };
   }

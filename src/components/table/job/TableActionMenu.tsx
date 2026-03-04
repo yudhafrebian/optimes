@@ -10,10 +10,11 @@ import {
   Box,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import PlayCircleIcon from '@mui/icons-material/PlayCircle';
-import BlockIcon from '@mui/icons-material/Block';
+import PlayCircleIcon from "@mui/icons-material/PlayCircle";
+import BlockIcon from "@mui/icons-material/Block";
 import DeleteIcon from "@mui/icons-material/Delete";
-import VerifiedIcon from '@mui/icons-material/Verified';
+
+import CancelIcon from '@mui/icons-material/Cancel';
 import { JobRowData } from "@/interface/row-table.interface";
 
 interface TableActionMenuProps {
@@ -21,7 +22,7 @@ interface TableActionMenuProps {
   activeRow: JobRowData | null;
   onClose: () => void;
   onEdit: (row: JobRowData) => void;
-  onCloseJob: (row: JobRowData) => void;
+  onCancel: (row: JobRowData) => void;
   onRelease: (row: JobRowData) => void;
   onComplete: (row: JobRowData) => void;
   onDelete: (row: JobRowData) => void;
@@ -32,7 +33,7 @@ const TableActionMenu: React.FC<TableActionMenuProps> = ({
   activeRow,
   onClose,
   onEdit,
-  onCloseJob,
+  onCancel,
   onRelease,
   onComplete,
   onDelete,
@@ -44,9 +45,7 @@ const TableActionMenu: React.FC<TableActionMenuProps> = ({
   const isRunning = status === "running";
   const isReleased = status === "released";
   const canEditOrDelete = isScheduled;
-  const canClose = isReleased || isCompleted;
-
-  
+  const canCancel = isReleased;
 
   return (
     <Menu
@@ -85,32 +84,26 @@ const TableActionMenu: React.FC<TableActionMenuProps> = ({
           <Divider />
         </Box>
       )}
-      {canClose && (
+      {canCancel && (
         <MenuItem
           sx={{ color: "error.main" }}
           onClick={() => {
-            if (activeRow) onCloseJob(activeRow);
+            if (activeRow) onCancel(activeRow);
             onClose();
           }}
         >
           <ListItemIcon>
-            <BlockIcon fontSize="small" color="error" />
+            <CancelIcon fontSize="small" color="error" />
           </ListItemIcon>
-          <ListItemText>Close Job</ListItemText>
+          <ListItemText>Cancel Job</ListItemText>
         </MenuItem>
       )}
       {isRunning && (
-        <MenuItem
-          sx={{ color: "secondary.main" }}
-          onClick={() => {
-            if (activeRow) onComplete(activeRow);
-            onClose();
-          }}
-        >
+        <MenuItem disabled>
           <ListItemIcon>
-            <VerifiedIcon fontSize="small" color="secondary" />
+            <BlockIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>Complete Job</ListItemText>
+          <ListItemText>No Action</ListItemText>
         </MenuItem>
       )}
 

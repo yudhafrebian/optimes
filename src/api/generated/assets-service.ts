@@ -3,7 +3,7 @@
  * Do not edit manually.
  * Kufayeka Runtime API
  * Runtime API for asset system, attribute values, hierarchy, finder, event system, historian, and global store.
- * OpenAPI spec version: 1.1.0
+ * OpenAPI spec version: 1.4.0
  */
 import { customInstance2 } from '../mutator';
 /**
@@ -32,9 +32,6 @@ export const HistorianTargetTimestampUnit = {
 export interface HistorianTarget {
   id: string;
   name: string;
-  udpHost: string;
-  udpPort: number;
-  httpBaseUrl: string;
   timestampUnit: HistorianTargetTimestampUnit;
   enabled: boolean;
 }
@@ -220,7 +217,22 @@ export const EventRowSeverity = {
   critical: 'critical',
 } as const;
 
+/**
+ * Arbitrary context object (stored as JSONB in af_event).
+ */
 export type EventRowContext = {[key: string]: JsonValue};
+
+/**
+ * Captured payload at open time (stored as JSONB in af_event).
+ * @nullable
+ */
+export type EventRowCapturedDataOnOpen = {[key: string]: JsonValue} | null;
+
+/**
+ * Captured payload at close time (stored as JSONB in af_event).
+ * @nullable
+ */
+export type EventRowCapturedDataOnClose = {[key: string]: JsonValue} | null;
 
 /**
  * One event record in event table.
@@ -233,6 +245,7 @@ export interface EventRow {
   end_ts?: string | null;
   status: EventRowStatus;
   severity: EventRowSeverity;
+  /** Arbitrary context object (stored as JSONB in af_event). */
   context: EventRowContext;
   is_acknowledge: boolean;
   /** @nullable */
@@ -241,9 +254,28 @@ export interface EventRow {
   notes_on_open?: string | null;
   /** @nullable */
   notes_on_close?: string | null;
+  /**
+   * Captured payload at open time (stored as JSONB in af_event).
+   * @nullable
+   */
+  captured_data_on_open?: EventRowCapturedDataOnOpen;
+  /**
+   * Captured payload at close time (stored as JSONB in af_event).
+   * @nullable
+   */
+  captured_data_on_close?: EventRowCapturedDataOnClose;
 }
 
+/**
+ * Context object (stored as JSONB in af_event).
+ */
 export type OpenEventRequestContext = {[key: string]: JsonValue};
+
+/**
+ * Captured payload at open time (stored as JSONB in af_event).
+ * @nullable
+ */
+export type OpenEventRequestCapturedDataOnOpen = {[key: string]: JsonValue} | null;
 
 export type OpenEventRequestSeverity = typeof OpenEventRequestSeverity[keyof typeof OpenEventRequestSeverity];
 
@@ -266,8 +298,14 @@ export interface OpenEventRequest {
   path?: string;
   start_ts?: string;
   ts?: string;
+  /** Context object (stored as JSONB in af_event). */
   context?: OpenEventRequestContext;
   notes_on_open?: string;
+  /**
+   * Captured payload at open time (stored as JSONB in af_event).
+   * @nullable
+   */
+  captured_data_on_open?: OpenEventRequestCapturedDataOnOpen;
   notes?: string;
   severity?: OpenEventRequestSeverity;
 }
@@ -278,6 +316,12 @@ export interface OpenEventResponse {
 }
 
 /**
+ * Captured payload at close time (stored as JSONB in af_event).
+ * @nullable
+ */
+export type CloseEventsRequestCapturedDataOnClose = {[key: string]: JsonValue} | null;
+
+/**
  * Close open events by wildcard pattern.
  */
 export interface CloseEventsRequest {
@@ -286,8 +330,19 @@ export interface CloseEventsRequest {
   end_ts?: string;
   ts?: string;
   notes_on_close?: string;
+  /**
+   * Captured payload at close time (stored as JSONB in af_event).
+   * @nullable
+   */
+  captured_data_on_close?: CloseEventsRequestCapturedDataOnClose;
   notes?: string;
 }
+
+/**
+ * Captured payload at close time (stored as JSONB in af_event).
+ * @nullable
+ */
+export type CloseByIdRequestCapturedDataOnClose = {[key: string]: JsonValue} | null;
 
 /**
  * Close one event by row id.
@@ -297,8 +352,19 @@ export interface CloseByIdRequest {
   end_ts?: string;
   ts?: string;
   notes_on_close?: string;
+  /**
+   * Captured payload at close time (stored as JSONB in af_event).
+   * @nullable
+   */
+  captured_data_on_close?: CloseByIdRequestCapturedDataOnClose;
   notes?: string;
 }
+
+/**
+ * Captured payload at close time (stored as JSONB in af_event).
+ * @nullable
+ */
+export type CloseEventsResponseCapturedDataOnClose = {[key: string]: JsonValue} | null;
 
 export interface CloseEventsResponse {
   ok: boolean;
@@ -308,6 +374,11 @@ export interface CloseEventsResponse {
   ts: string;
   /** @nullable */
   notes_on_close?: string | null;
+  /**
+   * Captured payload at close time (stored as JSONB in af_event).
+   * @nullable
+   */
+  captured_data_on_close?: CloseEventsResponseCapturedDataOnClose;
 }
 
 /**
@@ -565,6 +636,8 @@ export const HistorianAggQueryParameter = {
   first: 'first',
   last: 'last',
   count: 'count',
+  delta: 'delta',
+  reverseDelta: 'reverseDelta',
 } as const;
 
 export type GetOpenApiJson200 = { [key: string]: unknown };
@@ -748,7 +821,7 @@ time?: HistorianTimeQueryParameter;
  */
 bucketMs?: HistorianBucketMsQueryParameter;
 /**
- * Aggregation function for range query.
+ * Aggregation function for range query. delta=last-first, reverseDelta=first-last (per matched path in selected window).
  */
 agg?: HistorianAggQueryParameter;
 };
@@ -758,6 +831,25 @@ export type HistorianLastParams = {
  * Wildcard path query. Supports '*' per segment. Example: 'Taiyo1.Line1.*.Speed' or comma-separated list for historian path APIs.
  */
 path: PathQueryRequiredParameter;
+/**
+ * Output timestamp format from historian response.
+ */
+time?: HistorianTimeQueryParameter;
+};
+
+export type HistorianFirstParams = {
+/**
+ * Wildcard path query. Supports '*' per segment. Example: 'Taiyo1.Line1.*.Speed' or comma-separated list for historian path APIs.
+ */
+path: PathQueryRequiredParameter;
+/**
+ * Historian query start time. Pass ISO or epoch based on target system.
+ */
+from?: HistorianFromQueryParameter;
+/**
+ * Historian query end time. Pass ISO or epoch based on target system.
+ */
+to?: HistorianToQueryParameter;
 /**
  * Output timestamp format from historian response.
  */
@@ -1118,6 +1210,7 @@ const deleteEventById = (
     }
   
 /**
+ * Returns raw historian points in selected window. Requires 'path', 'from', and 'to'.
  * @summary Historian raw query
  */
 const historianRaw = (
@@ -1131,6 +1224,7 @@ const historianRaw = (
     }
   
 /**
+ * Returns aggregated buckets for selected window. Supports agg=min|max|avg|first|last|count|delta|reverseDelta. Requires 'path', 'from', and 'to'.
  * @summary Historian range query
  */
 const historianRange = (
@@ -1144,6 +1238,7 @@ const historianRange = (
     }
   
 /**
+ * Returns latest value for each matched path (current snapshot style, no window required).
  * @summary Historian last query
  */
 const historianLast = (
@@ -1151,6 +1246,20 @@ const historianLast = (
  ) => {
       return customInstance2<HistorianQueryResponse>(
       {url: `/api/historian/last`, method: 'GET',
+        params
+    },
+      );
+    }
+  
+/**
+ * Returns first value in selected window per matched path. Internally mapped to raw query with order=asc&limit=1. Requires 'path', 'from', and 'to'.
+ * @summary Historian first query
+ */
+const historianFirst = (
+    params: HistorianFirstParams,
+ ) => {
+      return customInstance2<HistorianQueryResponse>(
+      {url: `/api/historian/first`, method: 'GET',
         params
     },
       );
@@ -1273,7 +1382,7 @@ const deleteGlobalValue = (
       );
     }
   
-return {getDocsPage,getOpenApiJson,getDocsPageAlias,getOpenApiJsonAlias,getAssetSystem,replaceAssetSystem,getAssetSystemAlias,replaceAssetSystemAlias,getAssetHierarchy,queryAssets,findAssetsByValue,findAssetsByValueAlias,getAssetValuesByPath,setAssetValuesByPath,setAssetValuesBatch,getHistorianTags,queryEvents,deleteEventsByFilter,openEvent,closeEvents,closeEventById,ackEventById,deleteEventById,historianRaw,historianRange,historianLast,historianTargets,historianTargetMetrics,historianTargetLogs,historianDeleteAttribute,historianDeleteTemplateAttribute,getGlobalEntries,getGlobalValue,setGlobalValue,deleteGlobalValue}};
+return {getDocsPage,getOpenApiJson,getDocsPageAlias,getOpenApiJsonAlias,getAssetSystem,replaceAssetSystem,getAssetSystemAlias,replaceAssetSystemAlias,getAssetHierarchy,queryAssets,findAssetsByValue,findAssetsByValueAlias,getAssetValuesByPath,setAssetValuesByPath,setAssetValuesBatch,getHistorianTags,queryEvents,deleteEventsByFilter,openEvent,closeEvents,closeEventById,ackEventById,deleteEventById,historianRaw,historianRange,historianLast,historianFirst,historianTargets,historianTargetMetrics,historianTargetLogs,historianDeleteAttribute,historianDeleteTemplateAttribute,getGlobalEntries,getGlobalValue,setGlobalValue,deleteGlobalValue}};
 export type GetDocsPageResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['getDocsPage']>>>
 export type GetOpenApiJsonResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['getOpenApiJson']>>>
 export type GetDocsPageAliasResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['getDocsPageAlias']>>>
@@ -1300,6 +1409,7 @@ export type DeleteEventByIdResult = NonNullable<Awaited<ReturnType<ReturnType<ty
 export type HistorianRawResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['historianRaw']>>>
 export type HistorianRangeResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['historianRange']>>>
 export type HistorianLastResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['historianLast']>>>
+export type HistorianFirstResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['historianFirst']>>>
 export type HistorianTargetsResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['historianTargets']>>>
 export type HistorianTargetMetricsResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['historianTargetMetrics']>>>
 export type HistorianTargetLogsResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['historianTargetLogs']>>>

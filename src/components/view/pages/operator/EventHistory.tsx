@@ -13,7 +13,6 @@ import {
   Grid,
   Paper,
   TextField,
-  Tooltip,
   Typography,
 } from "@mui/material";
 import * as React from "react";
@@ -22,16 +21,7 @@ import { loadedDataAtom } from "@/atoms/loader.atom";
 import { useAtom } from "jotai";
 import { assetsApi } from "@/lib/api";
 import useSWR from "swr";
-import dayjs from "dayjs";
 import { formatDateTime } from "@/utils/timeFormater";
-
-const formatUtcDateTime = (value?: string | null) => {
-  if (!value) {
-    return "-";
-  }
-
-  const date = new Date(value);
-};
 
 const formatEventName = (value: string) =>
   value
@@ -39,7 +29,13 @@ const formatEventName = (value: string) =>
     .replace(/([A-Z])([A-Z][a-z])/g, "$1 $2")
     .trim();
 
-const EventHistoryModule = () => {
+interface EventHistoryModuleProps {
+  refreshKey?: number;
+}
+
+const EventHistoryModule: React.FC<EventHistoryModuleProps> = ({
+  refreshKey = 0,
+}) => {
   const [open, setOpen] = React.useState<boolean>(false);
   const [selectedEvent, setSelectedEvent] = React.useState<string>("");
   const [loaderData] = useAtom(loadedDataAtom);
@@ -55,10 +51,14 @@ const EventHistoryModule = () => {
         pattern: eventPattern,
       }),
     {
-      refreshInterval: 5000,
+      refreshInterval: 2000,
       revalidateOnFocus: false,
     },
   );
+
+  React.useEffect(() => {
+    mutate();
+  }, [mutate, refreshKey]);
 
   const handleCloseEvent = async (id: string) => {
     try {
@@ -79,7 +79,7 @@ const EventHistoryModule = () => {
       <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, height: "100%" }}>
         <Typography variant="h6">Event History</Typography>
         <Divider sx={{ my: 2, mt: 3 }} />
-        <Grid container spacing={2} sx={{ maxHeight: 460, overflow: "auto" }}>
+        <Grid container spacing={2} sx={{ maxHeight: 330, overflow: "auto" }}>
           {(data?.rows ?? []).map((event) => {
             const isLifecycle = event.event_path.includes("Lifecycle/Running");
             const isClosed = (event.status ?? "").toLowerCase() === "closed";
@@ -93,13 +93,13 @@ const EventHistoryModule = () => {
                       ? "gray"
                       : isLifecycle
                         ? "secondary.main"
-                        : severityColor(event.severity),
+                        : severityColor(chipValue),
                     borderRight: "10px solid",
                     borderRightColor: isClosed
                       ? "gray"
                       : isLifecycle
                         ? "secondary.main"
-                        : severityColor(event.severity),
+                        : severityColor(chipValue),
                   }}
                 >
                   <CardContent sx={{ pb: 1, pt: 1 }}>
@@ -122,7 +122,7 @@ const EventHistoryModule = () => {
                       />
                     </Box>
                     <Divider sx={{ my: 1 }} />
-                    <Tooltip title={event.event_path} arrow>
+                    {/* <Tooltip title={event.event_path} arrow>
                       <Typography
                         sx={{
                           fontWeight: "bold",
@@ -132,19 +132,24 @@ const EventHistoryModule = () => {
                         }}
                         variant="body2"
                       >
-                        {event.event_path}
+                        {event.event_path.trim()}
                       </Typography>
-                    </Tooltip>
+                    </Tooltip> */}
+                    <Typography variant="body2">Notes:</Typography>
                     <Box
                       sx={{
                         display: "flex",
+                        flexDirection: { xs: "column", sm: "row" },
+                        gap: 1,
                         justifyContent: "space-between",
-                        mt: 1.5,
+                        mt: 2,
                       }}
                     >
                       <TextField
                         size="small"
-                        label="Note on Open"
+                        label="On Start"
+                        variant="outlined"
+                        InputLabelProps={{ shrink: true }}
                         multiline
                         rows={2}
                         value={event.notes_on_open}
@@ -158,9 +163,11 @@ const EventHistoryModule = () => {
                             display: "none",
                           },
                         }}
+                        fullWidth
                         slotProps={{
                           input: {
-                            sx: { fontSize: "0.75em" },
+                            notched: true,
+                            sx: { fontSize: "0.9em" },
                             readOnly: true,
                           },
                         }}
@@ -168,7 +175,9 @@ const EventHistoryModule = () => {
 
                       <TextField
                         size="small"
-                        label="Note on Close"
+                        label="On Finish"
+                        variant="outlined"
+                        InputLabelProps={{ shrink: true }}
                         multiline
                         rows={2}
                         value={event.notes_on_close || "-"}
@@ -182,9 +191,11 @@ const EventHistoryModule = () => {
                             display: "none",
                           },
                         }}
+                        fullWidth
                         slotProps={{
                           input: {
-                            sx: { fontSize: "0.75em" },
+                            notched: true,
+                            sx: { fontSize: "0.9em" },
                             readOnly: true,
                           },
                         }}
@@ -194,7 +205,9 @@ const EventHistoryModule = () => {
                   <CardActions
                     sx={{
                       justifyContent: "space-between",
-                      alignItems: "end",
+                      alignItems: { xs: "flex-start", sm: "end" },
+                      flexDirection: { xs: "column", sm: "row" },
+                      gap: 1,
                       pt: 1,
                       pb: 1,
                     }}

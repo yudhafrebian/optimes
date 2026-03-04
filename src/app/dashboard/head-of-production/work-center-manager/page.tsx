@@ -7,7 +7,15 @@ const WorkCenterManagerPage = () => {
   const [isLoading, setIsLoading] = React.useState(true);
 
   return (
-    <Box sx={{ position: "relative", width: "100%", height: "600px" }}>
+    <Box
+      sx={{
+        position: "relative",
+        width: "100%",
+        height: { xs: "calc(100vh - 220px)", sm: "calc(100vh - 180px)" },
+        minHeight: { xs: 420, sm: 560 },
+        maxHeight: "100vh",
+      }}
+    >
       {isLoading && (
         <Box
           sx={{

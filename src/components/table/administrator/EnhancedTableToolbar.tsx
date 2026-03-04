@@ -5,6 +5,7 @@ import {
   alpha,
   Box,
   Button,
+  Drawer,
   FormControl,
   Grid,
   IconButton,
@@ -13,11 +14,13 @@ import {
   Select,
   Toolbar,
   Tooltip,
+  Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import AddIcon from "@mui/icons-material/Add";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import FilterListIcon from "@mui/icons-material/FilterList";
 import GenericModal from "@/components/modal/GenericModal";
 import SuccessRegistrationView from "@/components/view/SuccessRegistrationView";
 import { commonApi } from "@/lib/api";
@@ -52,6 +55,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const [step, setStep] = useState<"form" | "success">("form");
   const [userData, setUserData] = useState<any>({});
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState<boolean>(false);
   const [roles, setRoles] = useState<LookupResponseDto[]>([]);
   const [lifecycle, setLifecycle] = useState<LookupResponseDto[]>([]);
   const [type, setType] = useState<LookupResponseDto[]>([]);
@@ -108,82 +112,242 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   }, []);
 
   return (
-    <Toolbar sx={{ pl: { sm: 2 }, pr: { xs: 1, sm: 1 } }}>
-      <Grid container spacing={2} alignItems="center" sx={{ p: 2, width: '100%' }}>
-        <Box sx={{ display: "flex", gap: 2, alignItems: "center", flexWrap: "wrap", width: '100%' }}>
-          
-          {/* Filter Role */}
-          <FormControl size="small" sx={{ minWidth: "150px" }}>
-            <InputLabel id="filter-role-label">Role</InputLabel>
-            <Select
-              labelId="filter-role-label"
-              label="Role"
-              value={roleFilter}
-              onChange={(e) => onFilterRole(e.target.value)}
+    <Toolbar sx={{ pl: { xs: 1, sm: 2 }, pr: { xs: 1, sm: 1 }, alignItems: "flex-start" }}>
+      <Grid container spacing={2} alignItems="center" sx={{ p: { xs: 1, sm: 2 }, width: '100%' }}>
+        <Box sx={{ display: "flex", gap: 1.5, alignItems: "center", flexWrap: "wrap", width: '100%' }}>
+          <Box
+            sx={{
+              display: { xs: "none", md: "flex" },
+              gap: 1.5,
+              alignItems: "center",
+              flexWrap: "wrap",
+            }}
+          >
+            <FormControl
+              size="small"
+              sx={{
+                minWidth: { md: 150 },
+                width: { md: 170 },
+              }}
             >
-              <MenuItem value="All">All Roles</MenuItem>
-              {roles.map((role) => (
-                <MenuItem key={role.code} value={role.label}>{role.label}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+              <InputLabel id="filter-role-label">Role</InputLabel>
+              <Select
+                labelId="filter-role-label"
+                label="Role"
+                value={roleFilter}
+                onChange={(e) => onFilterRole(e.target.value)}
+              >
+                <MenuItem value="All">All Roles</MenuItem>
+                {roles.map((role) => (
+                  <MenuItem key={role.code} value={role.label}>
+                    {role.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-          {/* Filter Lifecycle */}
-          <FormControl size="small" sx={{ minWidth: "150px" }}>
-            <InputLabel id="filter-lifecycle-label">Lifecycle</InputLabel>
-            <Select
-              labelId="filter-lifecycle-label"
-              label="Lifecycle"
-              value={lifecycleFilter}
-              onChange={(e) => onFilterLifecycle(e.target.value)}
+            <FormControl
+              size="small"
+              sx={{
+                minWidth: { md: 150 },
+                width: { md: 170 },
+              }}
             >
-              <MenuItem value="All">All Lifecycle</MenuItem>
-              {lifecycle.map((lc) => (
-                <MenuItem key={lc.code} value={lc.label}>{lc.label}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+              <InputLabel id="filter-lifecycle-label">Lifecycle</InputLabel>
+              <Select
+                labelId="filter-lifecycle-label"
+                label="Lifecycle"
+                value={lifecycleFilter}
+                onChange={(e) => onFilterLifecycle(e.target.value)}
+              >
+                <MenuItem value="All">All Lifecycle</MenuItem>
+                {lifecycle.map((lc) => (
+                  <MenuItem key={lc.code} value={lc.label}>
+                    {lc.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-          {/* Filter Type */}
-          <FormControl size="small" sx={{ minWidth: "150px" }}>
-            <InputLabel id="filter-type-label">Account Type</InputLabel>
-            <Select
-              labelId="filter-type-label"
-              label="Account Type"
-              value={typeFilter}
-              onChange={(e) => onFilterType(e.target.value)}
+            <FormControl
+              size="small"
+              sx={{
+                minWidth: { md: 150 },
+                width: { md: 170 },
+              }}
             >
-              <MenuItem value="All">All Type</MenuItem>
-              {type.map((t) => (
-                <MenuItem key={t.code} value={t.label}>{t.label}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+              <InputLabel id="filter-type-label">Account Type</InputLabel>
+              <Select
+                labelId="filter-type-label"
+                label="Account Type"
+                value={typeFilter}
+                onChange={(e) => onFilterType(e.target.value)}
+              >
+                <MenuItem value="All">All Type</MenuItem>
+                {type.map((t) => (
+                  <MenuItem key={t.code} value={t.label}>
+                    {t.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-          {/* Reset Action */}
-          {isFiltered && (
-            <Tooltip title="Reset Filters">
-              <IconButton onClick={handleReset} color="error" 
-                sx={{ bgcolor: (theme) => alpha(theme.palette.error.main, 0.1) }}>
-                <RestartAltIcon />
-              </IconButton>
-            </Tooltip>
-          )}
+            {isFiltered && (
+              <Tooltip title="Reset Filters">
+                <IconButton
+                  onClick={handleReset}
+                  color="error"
+                  sx={{
+                    bgcolor: (theme) => alpha(theme.palette.error.main, 0.1),
+                  }}
+                >
+                  <RestartAltIcon />
+                </IconButton>
+              </Tooltip>
+            )}
+          </Box>
 
-          <Box sx={{ flexGrow: 1 }} /> {/* Spacer */}
+          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "block" } }} />
 
-          {/* Global Actions */}
+          <Tooltip title="Filter">
+            <IconButton
+              onClick={() => setFilterDrawerOpen(true)}
+              color={isFiltered ? "primary" : "default"}
+              sx={{
+                border: "1px solid",
+                borderColor: "divider",
+                width: { xs: 40, sm: "auto" },
+                height: 40,
+                display: { xs: "inline-flex", md: "none" },
+              }}
+            >
+              <FilterListIcon />
+            </IconButton>
+          </Tooltip>
+
           <Tooltip title="Refresh Data">
-            <IconButton onClick={onRefresh} color="primary" sx={{ border: "1px solid", borderColor: "divider" }}>
+            <IconButton
+              onClick={onRefresh}
+              color="primary"
+              sx={{
+                border: "1px solid",
+                borderColor: "divider",
+                width: { xs: 40, sm: "auto" },
+                height: 40,
+              }}
+            >
               <RefreshIcon />
             </IconButton>
           </Tooltip>
 
-          <Button variant="contained" startIcon={<AddIcon />} onClick={handleOpen}>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={handleOpen}
+            sx={{ flexGrow: { xs: 1, sm: 0 } }}
+          >
             Add Account
           </Button>
         </Box>
       </Grid>
+
+      <Drawer
+        anchor="bottom"
+        open={filterDrawerOpen}
+        onClose={() => setFilterDrawerOpen(false)}
+        PaperProps={{
+          sx: {
+            borderTopLeftRadius: 16,
+            borderTopRightRadius: 16,
+            p: 2,
+            pb: 3,
+          },
+        }}
+      >
+        <Box sx={{ width: "100%", maxWidth: 680, mx: "auto" }}>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Filters
+          </Typography>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0, 1fr))" },
+              gap: 1.5,
+            }}
+          >
+            <FormControl size="small">
+              <InputLabel id="mobile-filter-role-label">Role</InputLabel>
+              <Select
+                labelId="mobile-filter-role-label"
+                label="Role"
+                value={roleFilter}
+                onChange={(e) => onFilterRole(e.target.value)}
+              >
+                <MenuItem value="All">All Roles</MenuItem>
+                {roles.map((role) => (
+                  <MenuItem key={role.code} value={role.label}>
+                    {role.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <FormControl size="small">
+              <InputLabel id="mobile-filter-lifecycle-label">Lifecycle</InputLabel>
+              <Select
+                labelId="mobile-filter-lifecycle-label"
+                label="Lifecycle"
+                value={lifecycleFilter}
+                onChange={(e) => onFilterLifecycle(e.target.value)}
+              >
+                <MenuItem value="All">All Lifecycle</MenuItem>
+                {lifecycle.map((lc) => (
+                  <MenuItem key={lc.code} value={lc.label}>
+                    {lc.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <FormControl size="small">
+              <InputLabel id="mobile-filter-type-label">Account Type</InputLabel>
+              <Select
+                labelId="mobile-filter-type-label"
+                label="Account Type"
+                value={typeFilter}
+                onChange={(e) => onFilterType(e.target.value)}
+              >
+                <MenuItem value="All">All Type</MenuItem>
+                {type.map((t) => (
+                  <MenuItem key={t.code} value={t.label}>
+                    {t.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+
+          <Box sx={{ display: "flex", gap: 1, mt: 2 }}>
+            <Button
+              fullWidth
+              variant="outlined"
+              color="inherit"
+              onClick={() => setFilterDrawerOpen(false)}
+            >
+              Close
+            </Button>
+            <Button
+              fullWidth
+              variant="outlined"
+              color="error"
+              onClick={handleReset}
+              disabled={!isFiltered}
+            >
+              Reset
+            </Button>
+          </Box>
+        </Box>
+      </Drawer>
 
       <GenericModal
         open={open}

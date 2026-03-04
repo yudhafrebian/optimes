@@ -5,32 +5,42 @@ export async function middleware(req: NextRequest) {
   const userId = req.cookies.get("accountId")?.value;
 
   // 1. Bypass untuk file statis dan api internal (jika ada)
-  if (pathname.startsWith('/_next') || pathname.includes('/api/')) {
+  if (pathname.startsWith("/_next") || pathname.includes("/api/")) {
     return NextResponse.next();
   }
 
   // 2. Proteksi Dasar: Jika ke dashboard/change-password tapi tidak ada cookie userId
-  if ((pathname.startsWith("/dashboard") || pathname.startsWith("/change-password")) && !userId) {
+  if (
+    (pathname.startsWith("/dashboard") ||
+      pathname.startsWith("/change-password")) &&
+    !userId
+  ) {
     return NextResponse.redirect(new URL("/auth/login", req.url));
   }
 
   if (userId) {
     try {
       // 3. Ambil data user terbaru dari API
-      const response = await fetch(`http://192.168.68.99:2000/api/accounts/${userId}`, {
-        method: 'GET',
-        cache: 'no-store'
-      });
+      const response = await fetch(
+        `http://192.168.68.99:2000/api/accounts/${userId}`,
+        {
+          method: "GET",
+          cache: "no-store",
+        },
+      );
 
       if (!response.ok) throw new Error("User invalid");
 
       const resData = await response.json();
       const user = resData.data || resData;
-      
-      const role = user.account_role?.label?.toLowerCase();
+
+      const role = user.account_role?.label
+        ?.toLowerCase()
+        .trim()
+        .replace(/\s+/g, "-");
       // Pastikan field ini sesuai dengan response API Anda (boolean)
       const isBypassed = req.cookies.get("bypass_password")?.value === "true";
-      const mustChangePassword = isBypassed ? false : user.must_change_password; 
+      const mustChangePassword = isBypassed ? false : user.must_change_password;
 
       // 4. Logika Redirect Berdasarkan Status "Must Change Password"
       if (mustChangePassword) {
@@ -57,7 +67,6 @@ export async function middleware(req: NextRequest) {
           return NextResponse.redirect(new URL(`/dashboard/${role}`, req.url));
         }
       }
-
     } catch (error) {
       console.error("Auth Error:", error);
       const res = NextResponse.redirect(new URL("/auth/login", req.url));
@@ -70,5 +79,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/auth/:path*', '/change-password'],
+  matcher: ["/dashboard/:path*", "/auth/:path*", "/change-password"],
 };

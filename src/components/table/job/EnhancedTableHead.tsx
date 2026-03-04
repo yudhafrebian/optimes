@@ -7,19 +7,21 @@ import {
   TableSortLabel,
 } from "@mui/material";
 import { visuallyHidden } from "@mui/utils";
+import { usePathname } from "next/navigation";
 
 interface Data {
   id: string;
   work_order: string;
   sales_order: string;
-  work_center: LookupResponseDto;              // Isinya: { label: "Offset Printer 1", code: "OFFSET_PRINTER_1", ... }
+  work_center: LookupResponseDto; // Isinya: { label: "Offset Printer 1", code: "OFFSET_PRINTER_1", ... }
   quantity_order: number;
-  quantity_unit: LookupResponseDto;           // Isinya: { label: "BK", code: "BK", ... }
+  quantity_unit: LookupResponseDto; // Isinya: { label: "BK", code: "BK", ... }
   planned_start_time: string;
   release_date?: string;
   due_date: string;
-  job_priority: LookupResponseDto;            // Isinya: { label: "High", code: "HIGH", ... }
-  job_lifecycle_state: LookupResponseDto;     // Isinya: { label: "Created", code: "CREATED", ... }
+  completed_date: string;
+  job_priority: LookupResponseDto; // Isinya: { label: "High", code: "HIGH", ... }
+  job_lifecycle_state: LookupResponseDto; // Isinya: { label: "Created", code: "CREATED", ... }
   notes: string;
 }
 
@@ -86,6 +88,12 @@ const headCells: readonly HeadCell[] = [
     label: "Release Date",
   },
   {
+    id: "completed_date",
+    numeric: false,
+    disablePadding: false,
+    label: "Completed Date",
+  },
+  {
     id: "job_lifecycle_state",
     numeric: false,
     disablePadding: false,
@@ -114,6 +122,13 @@ const headCells: readonly HeadCell[] = [
 function EnhancedTableHead(props: EnhancedTableProps) {
   const { order, orderBy, onRequestSort } = props;
 
+  const pathname = usePathname();
+  const isJobManagement = pathname.startsWith("/dashboard/ppic/job-management");
+
+  const filteredHeadcell = !isJobManagement
+    ? headCells
+    : headCells.filter((cell) => cell.id !== "completed_date");
+
   const createSortHandler =
     (property: ColumnId) => (event: React.MouseEvent<unknown>) => {
       if (property !== "actions") {
@@ -126,7 +141,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
       <TableRow>
         {/* TableCell Checkbox dihapus dari sini */}
 
-        {headCells.map((headCell) => {
+        {filteredHeadcell.map((headCell) => {
           const isAction = headCell.id === "actions";
 
           return (
@@ -144,7 +159,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
               }}
             >
               {isAction ? (
-                headCell.label // Menampilkan label "Actions" tanpa sort link
+                headCell.label
               ) : (
                 <TableSortLabel
                   active={orderBy === headCell.id}

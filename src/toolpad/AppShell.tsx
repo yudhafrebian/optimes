@@ -83,26 +83,23 @@ export function AppShell({ children }: { children: ReactNode }) {
   const role = pathname.split("/")[2];
   const navigation =
     navigationByRole[role as keyof typeof navigationByRole] ?? [];
-  const isJobExecution = pathname.startsWith(
-    "/dashboard/operator/job-execution",
-  );
-  const isJobEvent = pathname.startsWith("/dashboard/operator/job-event");
-  const isJobEventHistory = pathname.startsWith(
-    "/dashboard/operator/job-event-history",
-  );
+  const isJobExecution =
+    pathname.startsWith("/dashboard/operator/job-list") ||
+    pathname.startsWith("/dashboard/operator/job-activity");
 
   return (
     <NextAppProvider theme={theme} branding={branding} navigation={navigation}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DashboardLayout
+        defaultSidebarCollapsed
           slots={{
             toolbarActions: ProfileMenu,
           }}
         >
           {isJobExecution ? (
-            <Box sx={{ px: 0 }}>
+            <Box sx={{ px: 0, mt:2 }}>
+              <Box sx={{ px: { xs: 2, sm: 3 }, mb: 1 }}>{children}</Box>
               <JobExecutionHeader />
-              <Box sx={{ px: { xs: 2, sm: 3 } }}>{children}</Box>
             </Box>
           ) : (
             <PageContainer title="">{children}</PageContainer>

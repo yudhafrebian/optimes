@@ -5,7 +5,7 @@ import SummaryAnalyticView from "@/components/view/pages/ppic/SummaryAnalyticVie
 
 const JobReportsPage = () => {
   return (
-    <Box>
+    <Box sx={{ width: "100%", px: { xs: 1, sm: 0 } }}>
       <SummaryAnalyticView />
       <JobTableManagement />
     </Box>

@@ -21,9 +21,9 @@ const SummaryAnalyticView = () => {
   });
 
   return (
-    <Grid container spacing={2} sx={{ mb: 2 }}>
+    <Grid container spacing={{ xs: 1.5, sm: 2 }} sx={{ mb: 2 }}>
       {/* ROW 1 */}
-      <Grid size={4}>
+      <Grid size={{ xs: 12, sm: 6, md: 4 }}>
         <AnalyticCard
           title="Total Accounts"
           value={isLoading ? "..." : data?.total || 0}
@@ -32,7 +32,7 @@ const SummaryAnalyticView = () => {
         />
       </Grid>
 
-      <Grid size={4}>
+      <Grid size={{ xs: 12, sm: 6, md: 4 }}>
         <AnalyticCard
           title="Active Account"
           value={isLoading ? "..." : data?.active || 0}
@@ -42,7 +42,7 @@ const SummaryAnalyticView = () => {
         />
       </Grid>
 
-      <Grid size={4}>
+      <Grid size={{ xs: 12, sm: 6, md: 4 }}>
         <AnalyticCard
           title="Disabled Accounts"
           value={isLoading ? "..." : data?.disabled || 0}
@@ -53,7 +53,7 @@ const SummaryAnalyticView = () => {
       </Grid>
 
       {/* ROW 2 - Created, Expired, Deleted */}
-      <Grid size={4}>
+      <Grid size={{ xs: 12, sm: 6, md: 4 }}>
         <AnalyticCard
           title="Recently Created"
           value={isLoading ? "..." : data?.created || 0}
@@ -63,7 +63,7 @@ const SummaryAnalyticView = () => {
         />
       </Grid>
 
-      <Grid size={4}>
+      <Grid size={{ xs: 12, sm: 6, md: 4 }}>
         <AnalyticCard
           title="Expired Accounts"
           value={isLoading ? "..." : data?.expired || 0}
@@ -73,7 +73,7 @@ const SummaryAnalyticView = () => {
         />
       </Grid>
 
-      <Grid size={4}>
+      <Grid size={{ xs: 12, sm: 6, md: 4 }}>
         <AnalyticCard
           title="Deleted Accounts"
           value={isLoading ? "..." : data?.deleted || 0}

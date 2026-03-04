@@ -47,23 +47,25 @@ const ProfileView = () => {
           sx={{
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "center",
+            alignItems: { xs: "flex-start", sm: "center" },
+            flexDirection: { xs: "column", sm: "row" },
+            gap: 2,
           }}
         >
-          <Box sx={{ display: "flex", gap: 4 }}>
+          <Box sx={{ display: "flex", gap: { xs: 2, sm: 4 }, alignItems: "center" }}>
             <Avatar
               sx={{
-                width: 100,
-                height: 100,
+                width: { xs: 68, sm: 100 },
+                height: { xs: 68, sm: 100 },
                 bgcolor: "primary.main",
                 boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                fontSize: "4rem",
+                fontSize: { xs: "2rem", sm: "4rem" },
               }}
             >
               {auth?.username?.charAt(0).toUpperCase()}
             </Avatar>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-              <Typography variant="h5" fontWeight={600}>
+              <Typography variant="h5" fontWeight={600} sx={{ fontSize: { xs: "1.1rem", sm: "1.5rem" } }}>
                 {auth?.full_name}
               </Typography>
               <Typography variant="body1" fontWeight={500}>
@@ -77,11 +79,12 @@ const ProfileView = () => {
               </Box>
             </Box>
           </Box>
-          <Box>
+          <Box sx={{ width: { xs: "100%", sm: "auto" } }}>
             <Button
               onClick={() => setOpen(true)}
               variant="contained"
               startIcon={<EditIcon />}
+              fullWidth
             >
               Edit Profile
             </Button>
@@ -89,7 +92,7 @@ const ProfileView = () => {
         </CardContent>
       </Card>
       <Grid container spacing={2} alignItems={"stretch"}>
-        <Grid size={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card sx={{ height: "100%" }}>
             <CardHeader
               title="User Profile"
@@ -137,7 +140,7 @@ const ProfileView = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid size={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card sx={{ height: "100%" }}>
             <CardHeader
               title="Security Information"
@@ -176,7 +179,7 @@ const ProfileView = () => {
           </Card>
         </Grid>
 
-        <Grid size={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card sx={{ height: "100%" }}>
             <CardHeader
               title="Activity Information"
@@ -215,7 +218,7 @@ const ProfileView = () => {
           </Card>
         </Grid>
 
-        <Grid size={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card sx={{ height: "100%" }}>
             <CardHeader
               title="Change Password"

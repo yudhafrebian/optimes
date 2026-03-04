@@ -5,21 +5,21 @@ const OperatorPage = () => {
   return (
     <Grid container spacing={2} sx={{ mb: 2 }}>
       <Grid container size={12} spacing={2}>
-        <Grid size={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Paper sx={{ p: 2, height: "100%", minHeight: 300 }}>
             <Typography variant="subtitle1" fontWeight="700">
               Material Consumption
             </Typography>
           </Paper>
         </Grid>
-        <Grid size={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Paper sx={{ p: 2, height: "100%", minHeight: 300 }}>
             <Typography variant="subtitle1" fontWeight="700">
               Current Machine Speed
             </Typography>
           </Paper>
         </Grid>
-        <Grid size={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Paper sx={{ p: 2, height: "100%", minHeight: 300 }}>
             <Typography variant="subtitle1" fontWeight="700">
               Speed Statistics
@@ -29,14 +29,14 @@ const OperatorPage = () => {
       </Grid>
 
       <Grid container size={12}>
-        <Grid size={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 2, height: "100%", minHeight: 500 }}>
             <Typography variant="subtitle1" fontWeight="700">
               Machine Speed Trend
             </Typography>
           </Paper>
         </Grid>
-        <Grid size={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 2, height: "100%", minHeight: 500 }}>
             <Typography variant="subtitle1" fontWeight="700">
               Event Timeline
@@ -44,14 +44,14 @@ const OperatorPage = () => {
           </Paper>
         </Grid>
 
-        <Grid size={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 2, height: "100%", minHeight: 500 }}>
             <Typography variant="subtitle1" fontWeight="700">
               Event Ratio
             </Typography>
           </Paper>
         </Grid>
-        <Grid size={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 2, height: "100%", minHeight: 500 }}>
             <Typography variant="subtitle1" fontWeight="700">
               Run & Stop Duration

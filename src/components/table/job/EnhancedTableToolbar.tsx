@@ -2,10 +2,12 @@
 
 import {
   Alert,
+  AlertTitle,
   alpha,
   Autocomplete,
   Box,
   Button,
+  Drawer,
   FormControl,
   IconButton,
   InputLabel,
@@ -24,6 +26,7 @@ import { useEffect, useMemo, useState } from "react";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import AddIcon from "@mui/icons-material/Add";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import FilterListIcon from "@mui/icons-material/FilterList";
 import GenericModal from "@/components/modal/GenericModal";
 import { commonApi } from "@/lib/api";
 import {
@@ -82,6 +85,18 @@ const fetchFilterData = async (): Promise<FilterData> => {
   };
 };
 
+const formatImportErrorValue = (
+  value?: JobOffsetPrinterTaiyoImportErrorDto["value"],
+): string => {
+  if (!value) return "-";
+
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return String(value);
+  }
+};
+
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const {
     onRefresh,
@@ -107,6 +122,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const [draftJobData, setDraftJobData] =
     useState<CreateJobOffsetPrinterTaiyoDto>(defaultJobFormValues);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState<boolean>(false);
   const [previewOpen, setPreviewOpen] = useState<boolean>(false);
   const [importOpen, setImportOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -162,7 +178,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         label: workOrder,
         value: workOrder,
       }));
-  }, [filterData?.orders]);
+  }, [filterData?.orders, isJobManagement]);
 
   const salesOrderList = useMemo(() => {
     const seen = new Set<string>();
@@ -193,12 +209,24 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         label: salesOrder,
         value: salesOrder,
       }));
-  }, [filterData?.orders]);
+  }, [filterData?.orders, isJobManagement]);
 
   const lifeCycleOptions = (filterData?.lifecycles ?? []).map((item) => ({
     label: item.label,
     value: item.label,
   }));
+
+  const filteredLifecycleOptions = isJobManagement
+    ? lifeCycleOptions.filter(
+        (item) => item.value !== "Closed" && item.value !== "Completed",
+      )
+    : lifeCycleOptions.filter(
+        (item) =>
+          item.value !== "Scheduled" &&
+          item.value !== "Released" &&
+          item.value !== "Running" &&
+          item.value !== "Suspended",
+      );
 
   const priorityOptions = (filterData?.priorities ?? []).map((item) => ({
     label: item.label,
@@ -288,7 +316,13 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   };
 
   return (
-    <Toolbar sx={{ pl: { sm: 2 }, pr: { xs: 1, sm: 1 } }}>
+    <Toolbar
+      sx={{
+        pl: { xs: 1, sm: 2 },
+        pr: { xs: 1, sm: 1 },
+        alignItems: "flex-start",
+      }}
+    >
       <Box
         sx={{
           display: "flex",
@@ -302,7 +336,8 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           sx={{
             display: "flex",
             gap: 2,
-            alignItems: "center",
+            flexDirection: { xs: "column", sm: "row" },
+            alignItems: { xs: "flex-start", sm: "center" },
             justifyContent: "space-between",
             width: "100%",
             marginBottom: 2,
@@ -311,14 +346,41 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           <Typography variant="h5" fontWeight={500}>
             {isJobManagement ? "Job List" : "Job Report List"}
           </Typography>
-          <Box sx={{ display: "flex", gap: 2 }}>
+          <Box
+            sx={{
+              display: "flex",
+              gap: 1.5,
+              width: { xs: "100%", sm: "auto" },
+              flexWrap: "wrap",
+            }}
+          >
             <Tooltip title="Refresh Data">
               <IconButton
                 onClick={onRefresh}
                 color="primary"
-                sx={{ border: "1px solid", borderColor: "divider" }}
+                sx={{
+                  border: "1px solid",
+                  borderColor: "divider",
+                  width: { xs: 40, sm: "auto" },
+                  height: 40,
+                }}
               >
                 <RefreshIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Filter">
+              <IconButton
+                onClick={() => setFilterDrawerOpen(true)}
+                color={isFiltered ? "primary" : "default"}
+                sx={{
+                  border: "1px solid",
+                  borderColor: "divider",
+                  width: { xs: 40, sm: "auto" },
+                  height: 40,
+                  display: { xs: "inline-flex", md: "none" },
+                }}
+              >
+                <FilterListIcon />
               </IconButton>
             </Tooltip>
             {isJobManagement && (
@@ -327,6 +389,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
                 startIcon={<DescriptionIcon />}
                 color="success"
                 onClick={() => setImportOpen(true)}
+                sx={{ flexGrow: { xs: 1, sm: 0 } }}
               >
                 Import Excel
               </Button>
@@ -336,6 +399,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
                 variant="contained"
                 startIcon={<AddIcon />}
                 onClick={handleOpen}
+                sx={{ flexGrow: { xs: 1, sm: 0 } }}
               >
                 Add Job
               </Button>
@@ -344,13 +408,15 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         </Box>
         <Box
           sx={{
-            display: "flex",
-            flexWrap: "nowrap",
+            display: { xs: "none", md: "flex" },
+            flexWrap: { xs: "wrap", md: "nowrap" },
             gap: 2,
             alignItems: "center",
             width: "100%",
-            p: 2,
-            overflowX: "auto",
+            p: { xs: 0, sm: 2 },
+            pt: { xs: 1, sm: 2 },
+            pb: { xs: 1, sm: 2 },
+            overflowX: { xs: "visible", md: "auto" },
           }}
         >
           <Autocomplete<{ label: string; value: string }, false, false, false>
@@ -367,7 +433,11 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
             isOptionEqualToValue={(option, value) =>
               option.value === value.value
             }
-            sx={{ minWidth: 150 }}
+            sx={{
+              minWidth: { xs: "100%", sm: 220, md: 150 },
+              width: { xs: "100%", sm: 220, md: 180 },
+              flex: "0 0 auto",
+            }}
             renderInput={(params) => (
               <TextField {...params} label="Work Order" />
             )}
@@ -388,13 +458,23 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
             isOptionEqualToValue={(option, value) =>
               option.value === value.value
             }
-            sx={{ minWidth: 150 }}
+            sx={{
+              minWidth: { xs: "100%", sm: 220, md: 150 },
+              width: { xs: "100%", sm: 220, md: 180 },
+              flex: "0 0 auto",
+            }}
             renderInput={(params) => (
               <TextField {...params} label="Sales Order" />
             )}
           />
 
-          <FormControl size="small" sx={{ minWidth: "150px" }}>
+          <FormControl
+            size="small"
+            sx={{
+              minWidth: { xs: "100%", sm: 220, md: 150 },
+              width: { xs: "100%", sm: 220, md: 170 },
+            }}
+          >
             <InputLabel id="filter-work_center-label">Work Center</InputLabel>
             <Select
               labelId="filter-work_center-label"
@@ -420,12 +500,20 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
             slotProps={{
               textField: {
                 size: "small",
-                sx: { width: 150 },
+                sx: {
+                  width: { xs: "100%", sm: 220, md: 150 },
+                },
               },
             }}
           />
           {/* Filter Lifecycle */}
-          <FormControl size="small" sx={{ minWidth: "150px" }}>
+          <FormControl
+            size="small"
+            sx={{
+              minWidth: { xs: "100%", sm: 220, md: 150 },
+              width: { xs: "100%", sm: 220, md: 170 },
+            }}
+          >
             <InputLabel id="filter-lifecycle-label">Lifecycle</InputLabel>
             <Select
               labelId="filter-lifecycle-label"
@@ -434,35 +522,21 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
               onChange={(e) => onFilterLifecycle(e.target.value)}
             >
               <MenuItem value="All">All Lifecycle</MenuItem>
-              {isJobManagement
-                ? lifeCycleOptions
-                    .map((l) => (
-                      <MenuItem key={l.label} value={l.label}>
-                        {l.label}
-                      </MenuItem>
-                    ))
-                    .filter(
-                      (t) =>
-                        t.props.value !== "Closed" &&
-                        t.props.value !== "Completed",
-                    )
-                : lifeCycleOptions
-                    .map((l) => (
-                      <MenuItem key={l.label} value={l.label}>
-                        {l.label}
-                      </MenuItem>
-                    ))
-                    .filter(
-                      (t) =>
-                        t.props.value !== "Scheduled" &&
-                        t.props.value !== "Released" &&
-                        t.props.value !== "Running" &&
-                        t.props.value !== "Suspended",
-                    )}
+              {filteredLifecycleOptions.map((l) => (
+                <MenuItem key={l.label} value={l.label}>
+                  {l.label}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
           {/* Filter Type */}
-          <FormControl size="small" sx={{ minWidth: "150px" }}>
+          <FormControl
+            size="small"
+            sx={{
+              minWidth: { xs: "100%", sm: 220, md: 150 },
+              width: { xs: "100%", sm: 220, md: 170 },
+            }}
+          >
             <InputLabel id="filter-priority-label">Priority</InputLabel>
             <Select
               labelId="filter-priority-label"
@@ -487,6 +561,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
                 sx={{
                   bgcolor: (theme) => alpha(theme.palette.error.main, 0.1),
                   flex: "0 0 auto",
+                  alignSelf: { xs: "flex-end", md: "center" },
                 }}
               >
                 <RestartAltIcon />
@@ -495,6 +570,169 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           )}
         </Box>
       </Box>
+
+      <Drawer
+        anchor="bottom"
+        open={filterDrawerOpen}
+        onClose={() => setFilterDrawerOpen(false)}
+        PaperProps={{
+          sx: {
+            borderTopLeftRadius: 16,
+            borderTopRightRadius: 16,
+            p: 2,
+            pb: 3,
+          },
+        }}
+      >
+        <Box
+          sx={{
+            width: "100%",
+            maxWidth: 680,
+            mx: "auto",
+          }}
+        >
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Filters
+          </Typography>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: {
+                xs: "1fr",
+                sm: "repeat(2, minmax(0, 1fr))",
+              },
+              gap: 1.5,
+            }}
+          >
+            <Autocomplete<{ label: string; value: string }, false, false, false>
+              disablePortal
+              size="small"
+              value={
+                workOrderOptions.find(
+                  (option) => option.value === workOrderFilter,
+                ) ?? null
+              }
+              onChange={(e, newValue) =>
+                onFilterWorkOrder(newValue?.value ?? "")
+              }
+              options={workOrderOptions}
+              getOptionLabel={(option) => option.label}
+              isOptionEqualToValue={(option, value) =>
+                option.value === value.value
+              }
+              renderInput={(params) => (
+                <TextField {...params} label="Work Order" />
+              )}
+            />
+            <Autocomplete<{ label: string; value: string }, false, false, false>
+              disablePortal
+              size="small"
+              value={
+                salesOrderOptions.find(
+                  (option) => option.value === salesOrderFilter,
+                ) ?? null
+              }
+              onChange={(e, newValue) =>
+                onFilterSalesOrder(newValue?.value ?? "")
+              }
+              options={salesOrderOptions}
+              getOptionLabel={(option) => option.label}
+              isOptionEqualToValue={(option, value) =>
+                option.value === value.value
+              }
+              renderInput={(params) => (
+                <TextField {...params} label="Sales Order" />
+              )}
+            />
+            <FormControl size="small">
+              <InputLabel id="mobile-filter-work_center-label">
+                Work Center
+              </InputLabel>
+              <Select
+                labelId="mobile-filter-work_center-label"
+                label="Work Center"
+                value={machineFilter}
+                onChange={(e) => onFilterMachine(e.target.value)}
+              >
+                <MenuItem value="All">All Work Center</MenuItem>
+                {(filterData?.workCenters ?? []).map((t) => (
+                  <MenuItem key={t.code} value={t.label}>
+                    {t.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <DatePicker
+              label="Planned Date"
+              value={plannedDateFilter ? dayjs(plannedDateFilter) : null}
+              onChange={(value) =>
+                onFilterPlannedDate(value ? value.format("YYYY-MM-DD") : "")
+              }
+              slotProps={{
+                textField: {
+                  size: "small",
+                  fullWidth: true,
+                },
+              }}
+            />
+            <FormControl size="small">
+              <InputLabel id="mobile-filter-lifecycle-label">
+                Lifecycle
+              </InputLabel>
+              <Select
+                labelId="mobile-filter-lifecycle-label"
+                label="Lifecycle"
+                value={lifecycleFilter}
+                onChange={(e) => onFilterLifecycle(e.target.value)}
+              >
+                <MenuItem value="All">All Lifecycle</MenuItem>
+                {filteredLifecycleOptions.map((l) => (
+                  <MenuItem key={l.label} value={l.label}>
+                    {l.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl size="small">
+              <InputLabel id="mobile-filter-priority-label">
+                Priority
+              </InputLabel>
+              <Select
+                labelId="mobile-filter-priority-label"
+                label="Priority"
+                value={priorityFilter}
+                onChange={(e) => onFilterPriority(e.target.value)}
+              >
+                <MenuItem value="All">All Priority</MenuItem>
+                {priorityOptions.map((t) => (
+                  <MenuItem key={t.label} value={t.label}>
+                    {t.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+          <Box sx={{ display: "flex", gap: 1, mt: 2 }}>
+            <Button
+              fullWidth
+              variant="outlined"
+              color="inherit"
+              onClick={() => setFilterDrawerOpen(false)}
+            >
+              Close
+            </Button>
+            <Button
+              fullWidth
+              variant="outlined"
+              color="error"
+              onClick={handleReset}
+              disabled={!isFiltered}
+            >
+              Reset
+            </Button>
+          </Box>
+        </Box>
+      </Drawer>
 
       <GenericModal
         open={open}
@@ -544,7 +782,10 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           {errMessage.length > 0 &&
             errMessage.map((e, idx) => (
               <Alert sx={{ mt: 1 }} key={idx} severity="error">
-                {e.message}
+                <Box>{e.message}</Box>
+                <Box sx={{ mt: 0.5 }}>
+                  Field: {e.field} - {formatImportErrorValue(e.value)} | Row: {e.row}
+                </Box>
               </Alert>
             ))}
         </Box>

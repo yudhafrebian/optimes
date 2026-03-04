@@ -68,10 +68,10 @@ const OperatorTableRow: React.FC<OperatorTableRowProps> = ({ row }) => {
     };
     try {
       await assetsApi.setAssetValuesBatch(values);
+      let latestJob = row;
 
-      if(row.job_lifecycle_state.label !== "Running"){
-
-        await commonApi.jobOffsetPrinterTaiyoControllerRun(row.id);
+      if (row.job_lifecycle_state.label !== "Running") {
+        latestJob = await commonApi.jobOffsetPrinterTaiyoControllerRun(row.id);
       }
 
       setLoader({
@@ -80,15 +80,15 @@ const OperatorTableRow: React.FC<OperatorTableRowProps> = ({ row }) => {
       });
 
       setLoaderData({
-        id: row.id,
-        work_center: row.work_center,
-        work_order: row.work_order,
-        sales_order: row.sales_order,
-        quantity_order: row.quantity_order,
-        quantity_unit: row.quantity_unit,
-        planned_start_time: row.planned_start_time,
-        job_lifecycle_state: row.job_lifecycle_state,
-        notes: row.notes,
+        id: latestJob.id,
+        work_center: latestJob.work_center,
+        work_order: latestJob.work_order,
+        sales_order: latestJob.sales_order,
+        quantity_order: latestJob.quantity_order,
+        quantity_unit: latestJob.quantity_unit,
+        planned_start_time: latestJob.planned_start_time,
+        job_lifecycle_state: latestJob.job_lifecycle_state,
+        notes: latestJob.notes,
       });
 
       showSnackbar("Job loaded successfully", "success");

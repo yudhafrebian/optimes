@@ -1,6 +1,7 @@
 "use client";
 import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
+import PpicSkeletonPage from "@/components/skeleton/PpicSkeletonPage";
 
 const AdministratorPage= () => {
   const pathname = usePathname();
@@ -11,9 +12,7 @@ const AdministratorPage= () => {
     }
   }, [pathname, navigate]);
   return (
-    <div>
-      <h1>Account Management</h1>
-    </div>
+    <PpicSkeletonPage />
   );
 };
 

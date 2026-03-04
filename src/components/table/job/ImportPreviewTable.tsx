@@ -129,7 +129,11 @@ const ImportPreviewTable: FunctionComponent<ImportPreviewTableProps> = (
       <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 600 }}>
         {title} ({rows.length})
       </Typography>
-      <TableContainer component={Paper} variant="outlined">
+      <TableContainer
+        component={Paper}
+        variant="outlined"
+        sx={{ overflowX: "auto", whiteSpace: "nowrap" }}
+      >
         <Table size="small" sx={{ minWidth: 1200 }}>
           <TableHead>
             <TableRow>
@@ -208,7 +212,9 @@ const ImportPreviewTable: FunctionComponent<ImportPreviewTableProps> = (
       </Box>
 
       {renderSection("Import Data", populatedRows)}
-      <Button onClick={handleSubmit} variant="contained">Import Job</Button>
+      <Button onClick={handleSubmit} variant="contained" fullWidth>
+        Import Job
+      </Button>
     </Fragment>
   );
 };

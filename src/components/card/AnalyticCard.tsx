@@ -63,9 +63,9 @@ const AnalyticCard: React.FunctionComponent<IAnalyticCardProps> = (props) => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                aspectRatio: "1/1",
+                width: { xs: 38, sm: 48 },
+                height: { xs: 38, sm: 48 },
                 borderRadius: 2,
-                p: 1.5,
                 // Sekarang alpha() menerima warna HEX murni dari tema
                 bgcolor: alpha(baseBgColor, 0.15),
                 border: `1px solid ${alpha(baseBgColor, 0.2)}`,
@@ -74,8 +74,8 @@ const AnalyticCard: React.FunctionComponent<IAnalyticCardProps> = (props) => {
               {React.isValidElement(icon)
                 ? React.cloneElement(icon as React.ReactElement<any>, {
                     sx: {
-                      width: "100%",
-                      height: "100%",
+                      ...(icon.props as { sx?: Record<string, unknown> }).sx,
+                      fontSize: { xs: 20, sm: 28 },
                       color: baseIconColor,
                     },
                   })

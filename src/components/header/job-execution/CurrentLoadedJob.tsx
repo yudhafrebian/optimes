@@ -1,9 +1,13 @@
-import { loadedDataAtom, loaderAtom } from "@/atoms/loader.atom";
+import {
+  INITIAL_LOADER_DATA,
+  loadedDataAtom,
+  loaderAtom,
+} from "@/atoms/loader.atom";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import PauseIcon from "@mui/icons-material/Pause";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import VerifiedIcon from "@mui/icons-material/Verified";
 import GenericChips from "../../core/GenericChips";
 import { useSnackbar } from "@/hooks/useSnackbar";
 import {
@@ -19,21 +23,15 @@ import {
 } from "@mui/material";
 import { useAtom } from "jotai";
 import * as React from "react";
-import { assetsApi } from "@/lib/api";
+import { assetsApi, commonApi } from "@/lib/api";
 import { OperatorRowData } from "@/interface/row-table.interface";
 import { EventsQueryResponse } from "@/api/generated/assets-service";
 import dayjs from "dayjs";
 import GenericDialog from "@/components/dialog/GenericDialog";
 import { formatDateTime } from "@/utils/timeFormater";
+import useSWR from "swr";
 
-interface CurrentLoadedJobCardProps {
-  row: OperatorRowData;
-  onRefresh: () => void;
-}
-
-const CurrentLoadedJobCard: React.FunctionComponent<
-  CurrentLoadedJobCardProps
-> = ({ row, onRefresh }) => {
+const CurrentLoadedJobCard = () => {
   const [loader, setLoader] = useAtom(loaderAtom);
   const [loaderData, setLoaderData] = useAtom(loadedDataAtom);
   const [data, setData] = React.useState<EventsQueryResponse>({
@@ -42,9 +40,29 @@ const CurrentLoadedJobCard: React.FunctionComponent<
     rows: [],
   });
   const [open, setOpen] = React.useState<boolean>(false);
+  const [dialogType, setDialogType] = React.useState<
+    "complete" | "unload" | null
+  >(null);
 
+  const fetcher = async ([, jobId]: [string, string]) => {
+    const res = await commonApi.jobOffsetPrinterTaiyoControllerGetById(jobId);
+    setLoaderData(res);
+    console.log(res);
+    return res;
+  };
+
+  const { mutate } = useSWR(
+    loader.isLoaded && loaderData.id ? ["loaded-job", loaderData.id] : null,
+    fetcher,
+    {
+      refreshInterval: 5000,
+      revalidateOnFocus: false,
+      onError: (err) => {
+        console.log(err);
+      },
+    },
+  );
   const showSnackbar = useSnackbar();
-
 
   const handleUnloadJob = async () => {
     try {
@@ -59,8 +77,35 @@ const CurrentLoadedJobCard: React.FunctionComponent<
         id: "",
       });
 
+      setLoaderData(INITIAL_LOADER_DATA);
+
       setOpen(false);
       showSnackbar("Job unloaded successfully", "success");
+    } catch (error: any) {
+      console.log(error);
+      showSnackbar(error.response.data.message, "error");
+    }
+  };
+
+  const handleCompletedJob = async () => {
+    try {
+      await assetsApi.setAssetValuesByPath(
+        `${loaderData.work_center.code}.Job Lifecycle`,
+        { value: "complete" },
+      );
+
+      await commonApi.jobOffsetPrinterTaiyoControllerComplete(loaderData.id);
+
+      setLoader({
+        isLoaded: false,
+        id: "",
+      });
+      setLoaderData(INITIAL_LOADER_DATA);
+      mutate();
+
+      setOpen(false);
+
+      showSnackbar("Job completed successfully", "success");
     } catch (error: any) {
       console.log(error);
       showSnackbar(error.response.data.message, "error");
@@ -90,7 +135,13 @@ const CurrentLoadedJobCard: React.FunctionComponent<
     return (
       <Paper
         variant="outlined"
-        sx={{ p: 2, borderRadius: 2, height: "100%", bgcolor: "grey.200" }}
+        sx={{
+          p: 2,
+          borderRadius: 2,
+          height: "100%",
+          bgcolor: "grey.200",
+          minWidth: 300,
+        }}
       >
         <Stack
           direction="row"
@@ -100,7 +151,7 @@ const CurrentLoadedJobCard: React.FunctionComponent<
         >
           <Stack direction="row" spacing={1} alignItems="center">
             <AssignmentIcon sx={{ color: "success.main", fontSize: 20 }} />
-            <Typography variant="subtitle1" fontWeight="700">
+            <Typography variant="subtitle2" fontWeight="700">
               Currently Loaded Job
             </Typography>
           </Stack>
@@ -125,7 +176,10 @@ const CurrentLoadedJobCard: React.FunctionComponent<
 
   return (
     <>
-      <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, height: "100%" }}>
+      <Paper
+        variant="outlined"
+        sx={{ p: 2, borderRadius: 2, height: "100%", minWidth: 300 }}
+      >
         <Stack
           direction="row"
           justifyContent="space-between"
@@ -134,14 +188,20 @@ const CurrentLoadedJobCard: React.FunctionComponent<
         >
           <Stack direction="row" spacing={1} alignItems="center">
             <AssignmentIcon sx={{ color: "success.main", fontSize: 20 }} />
-            <Typography variant="subtitle1" fontWeight="700">
+            <Typography variant="subtitle2" fontWeight="700">
               Currently Loaded Job
             </Typography>
           </Stack>
-          <GenericChips value={loader.isLoaded ? "Loaded" : "No Activity"} />
+          <GenericChips
+            value={
+              loader.isLoaded
+                ? loaderData.job_lifecycle_state.label
+                : "No Activity"
+            }
+          />
         </Stack>
 
-        <Typography
+        {/* <Typography
           sx={{
             fontWeight: "bold",
             textOverflow: "ellipsis",
@@ -151,18 +211,19 @@ const CurrentLoadedJobCard: React.FunctionComponent<
           variant="body2"
         >
           {data.rows[0]?.event_path}
-        </Typography>
+        </Typography> */}
         <Box
           sx={{
             display: "flex",
-            justifyContent: "space-between",
+            flexDirection: "column",
             gap: 2,
             mt: 2,
           }}
         >
+          <Typography variant="caption">Note:</Typography>
           <TextField
             size="small"
-            label="Note on Open"
+            label="On Start"
             fullWidth
             multiline
             rows={2}
@@ -179,7 +240,7 @@ const CurrentLoadedJobCard: React.FunctionComponent<
             }}
             slotProps={{
               input: {
-                sx: { fontSize: "0.75em" },
+                sx: { fontSize: "0.9em" },
                 readOnly: true,
               },
             }}
@@ -187,7 +248,7 @@ const CurrentLoadedJobCard: React.FunctionComponent<
 
           <TextField
             size="small"
-            label="Note on Close"
+            label="On Finish"
             fullWidth
             multiline
             rows={2}
@@ -204,7 +265,7 @@ const CurrentLoadedJobCard: React.FunctionComponent<
             }}
             slotProps={{
               input: {
-                sx: { fontSize: "0.75em" },
+                sx: { fontSize: "0.9em" },
                 readOnly: true,
               },
             }}
@@ -218,28 +279,47 @@ const CurrentLoadedJobCard: React.FunctionComponent<
           </Typography>
         </Stack>
 
-        <Stack direction="row" spacing={1} sx={{ mt: 5 }}>
+        <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
           <Button
             fullWidth
             variant="outlined"
             color="warning"
-            startIcon={
-              loader ? <FileUploadOutlinedIcon /> : <FileDownloadOutlinedIcon />
-            }
+            startIcon={<FileUploadOutlinedIcon />}
+            onClick={() => {
+              setOpen(true);
+              setDialogType("unload");
+            }}
+          >
+            Unload
+          </Button>
+          <Button
+            fullWidth
+            variant="contained"
+            color="secondary"
+            startIcon={<VerifiedIcon sx={{ color: "common.white" }} />}
             onClick={() => setOpen(true)}
           >
-            Unload Job
+            Complete
           </Button>
         </Stack>
       </Paper>
 
       <GenericDialog
         open={open}
-        onClose={() => setOpen(false)}
-        title="Unload Job"
-        content="Are you sure you want to unload this job?"
-        positiveText="Unload"
-        onConfirm={handleUnloadJob}
+        onClose={() => {
+          setOpen(false);
+          setDialogType(null);
+        }}
+        title={dialogType === "unload" ? "Unload Job" : "Complete Job"}
+        content={
+          dialogType === "unload"
+            ? "Are you sure you want to unload this job?"
+            : "Are you sure you want to complete this job?"
+        }
+        positiveText={dialogType === "unload" ? "Unload" : "Complete"}
+        onConfirm={
+          dialogType === "unload" ? handleUnloadJob : handleCompletedJob
+        }
         onRefresh={() => {}}
       />
     </>

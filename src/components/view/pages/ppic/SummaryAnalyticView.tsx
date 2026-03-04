@@ -20,8 +20,8 @@ const SummaryAnalyticView = () => {
   });
 
   return (
-      <Grid container spacing={2} sx={{ mb: 2 }}>
-        <Grid size={2.4}>
+      <Grid container spacing={{ xs: 1.5, sm: 2 }} sx={{ mb: 2 }}>
+        <Grid size={{ xs: 6, sm: 6, md: 4, lg: 2.4 }}>
           <AnalyticCard
             title="Scheduled"
             value={isLoading ? "..." : data?.scheduled || 0}
@@ -30,7 +30,7 @@ const SummaryAnalyticView = () => {
           />
         </Grid>
 
-        <Grid size={2.4}>
+        <Grid size={{ xs: 6, sm: 6, md: 4, lg: 2.4 }}>
           <AnalyticCard
             title="Released"
             value={isLoading ? "..." : data?.released || 0}
@@ -40,7 +40,7 @@ const SummaryAnalyticView = () => {
           />
         </Grid>
 
-        <Grid size={2.4}>
+        <Grid size={{ xs: 6, sm: 6, md: 4, lg: 2.4 }}>
           <AnalyticCard
             title="Running"
             value={isLoading ? "..." : data?.running || 0}
@@ -49,7 +49,7 @@ const SummaryAnalyticView = () => {
             iconBackgroundColor="success.light"
           />
         </Grid>
-        <Grid size={2.4}>
+        <Grid size={{ xs: 6, sm: 6, md: 4, lg: 2.4 }}>
           <AnalyticCard
             title="Completed"
             value={isLoading ? "..." : data?.completed || 0}
@@ -58,7 +58,7 @@ const SummaryAnalyticView = () => {
             iconBackgroundColor="secondary.light"
           />
         </Grid>
-        <Grid size={2.4}>
+        <Grid size={{ xs: 6, sm: 6, md: 4, lg: 2.4 }}>
           <AnalyticCard
             title="Suspended"
             value={isLoading ? "..." : data?.suspended || 0}

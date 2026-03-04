@@ -41,7 +41,6 @@ const JobTableRow: React.FC<JobTableRowProps> = ({ row, onOpenMenu }) => {
     return map[status] ?? "transparent";
   };
 
-  
   return (
     <TableRow
       hover
@@ -98,6 +97,14 @@ const JobTableRow: React.FC<JobTableRowProps> = ({ row, onOpenMenu }) => {
           ? dayjs(row.release_date).format("HH:mm:ss - DD/MM/YYYY")
           : "-"}
       </TableCell>
+
+      {!isJobManagement ? (
+        <TableCell align="left" padding="normal" sx={{ minWidth: 200 }}>
+          {dayjs(row.release_date).isValid()
+            ? dayjs(row.due_date).format("HH:mm:ss - DD/MM/YYYY")
+            : "-"}
+        </TableCell>
+      ): null}
 
       <TableCell align="left" padding="normal" sx={{ minWidth: 200 }}>
         <GenericChips value={lifecycleLabel} variant="outlined" />

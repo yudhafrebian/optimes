@@ -17,12 +17,19 @@ import { authAtom } from "@/atoms/auth.atom";
 import ProfileMenuSekeleton from "../skeleton/ProfileMenuSkeleton";
 import GenericDialog from "../dialog/GenericDialog";
 import { commonApi } from "@/lib/api";
+import { loadedDataAtom, loaderAtom } from "@/atoms/loader.atom";
+import GenericChips from "./GenericChips";
+import { formatDateTime } from "@/utils/timeFormater";
 
 export function ProfileMenu() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const router = useRouter();
   const [auth, setAuth] = useAtom(authAtom);
+  const [loaderData] = useAtom(loadedDataAtom);
+  const [loader] = useAtom(loaderAtom);
+
+  console.log(loaderData)
 
   const isOperator = auth?.account_role?.label === "Operator";
 
@@ -47,13 +54,37 @@ export function ProfileMenu() {
 
   return (
     <>
-      {/* {isOperator && (
-        <Link href={"#"} target="_blank">
-          <Button variant="contained" color="error" startIcon={<WarningIcon />}>
-            Report Trouble
-          </Button>
-        </Link>
-      )} */}
+      {isOperator && (
+        <Box
+          sx={{
+            bgcolor: "action.hover",
+            px: 1.5,
+            py: 0.5,
+            border: "1px solid",
+            borderColor: "gray",
+            borderRadius: 2,
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap:1
+            }}
+          >
+            <Typography variant="body2">Current Job</Typography>
+            <GenericChips
+              size="small"
+              value={loaderData.job_lifecycle_state.label || "Offline"}
+            />
+          </Box>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Typography variant="caption">{loaderData.work_order}</Typography>
+            <Typography variant="caption">{loaderData.sales_order}</Typography>
+          </Box>
+        </Box>
+      )}
       <Box
         onClick={handleOpen}
         sx={{

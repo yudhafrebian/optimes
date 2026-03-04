@@ -30,7 +30,6 @@ const headCells: readonly HeadCell[] = [
   { id: "start_ts", label: "Start Time" },
   { id: "end_ts", label: "End Time" },
   { id: "status", label: "Status" },
-  { id: "severity", label: "Severity" },
   { id: "notes_on_open", label: "Note on Open" },
   { id: "notes_on_close", label: "Note on Close" },
 ];

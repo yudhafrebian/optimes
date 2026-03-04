@@ -7,7 +7,7 @@ import SummaryAnalyticView from "@/components/view/pages/administrator/SummaryAn
 
 const AccountPage = () => {
   return (
-    <Box>
+    <Box sx={{ width: "100%", px: { xs: 1, sm: 0 } }}>
       <SummaryAnalyticView />
       <AccountTableManagement />
     </Box>

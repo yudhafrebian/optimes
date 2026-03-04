@@ -9,7 +9,7 @@ import TablePagination from "@mui/material/TablePagination";
 import Paper from "@mui/material/Paper";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
-import { LinearProgress } from "@mui/material";
+import { LinearProgress, useMediaQuery, useTheme } from "@mui/material";
 import { useMemo, useState } from "react";
 import EnhancedTableToolbar from "./EnhancedTableToolbar";
 import EnhancedTableHead from "./EnhancedTableHead";
@@ -31,6 +31,7 @@ import { usePathname } from "next/navigation";
 
 const fetcher = () =>
   commonApi.jobOffsetPrinterTaiyoControllerGetAll().then((res) => {
+    console.log(res)
     return res;
   });
 
@@ -44,6 +45,7 @@ function createData(user: IJobOffsetPrinter): JobRowData {
     quantity_unit: user.quantity_unit,
     planned_start_time: user.planned_start_time,
     release_date: user.release_date,
+    completed_date: user.due_date,
     due_date: user.due_date,
     notes: user.notes,
     job_priority: user.job_priority,
@@ -73,6 +75,8 @@ function getComparator<T>(
 }
 
 export default function JobTableManagement() {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof JobRowData>("sales_order");
   const [page, setPage] = useState<number>(0);
@@ -81,7 +85,7 @@ export default function JobTableManagement() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [activeRow, setActiveRow] = useState<JobRowData | null>(null);
   const [modalType, setModalType] = useState<
-    "edit" | "delete" | "close" | "release" | "completed" | null
+    "edit" | "delete" | "cancel" | "release" | "completed" | null
   >(null);
   const [step, setStep] = useState<"form" | "success">("form");
   const [loading, setLoading] = useState<boolean>(false);
@@ -163,7 +167,7 @@ export default function JobTableManagement() {
   };
 
   const handleAction = (
-    type: "edit" | "delete" | "close" | "release" | "completed",
+    type: "edit" | "delete" | "cancel" | "release" | "completed",
     row: JobRowData,
   ) => {
     setAnchorEl(null);
@@ -174,6 +178,7 @@ export default function JobTableManagement() {
   const filteredRows = useMemo(
     () =>
       filterJobs(rows, {
+        searchQuery,
         workOrderFilter,
         salesOrderFilter,
         machineFilter,
@@ -193,7 +198,7 @@ export default function JobTableManagement() {
     ],
   );
 
-  const handleCloseJob = async (id: string) => {
+  const handleCancelJob = async (id: string) => {
     try {
       setLoading(true);
       await commonApi.jobOffsetPrinterTaiyoControllerClose(id);
@@ -297,22 +302,28 @@ export default function JobTableManagement() {
             priorityFilter={priorityFilter}
             onSearch={(val) => setSearchQuery(val)}
             onFilterWorkOrder={(workOrder) => {
-              setWorkOrderFilter(workOrder), setPage(0);
+              setWorkOrderFilter(workOrder);
+              setPage(0);
             }}
             onFilterSalesOrder={(salesOrder) => {
-              setSalesOrderFilter(salesOrder), setPage(0);
+              setSalesOrderFilter(salesOrder);
+              setPage(0);
             }}
             onFilterMachine={(machine) => {
-              setMachineFilter(machine), setPage(0);
+              setMachineFilter(machine);
+              setPage(0);
             }}
             onFilterPlannedDate={(plannedDate) => {
-              setPlannedDateFilter(plannedDate), setPage(0);
+              setPlannedDateFilter(plannedDate);
+              setPage(0);
             }}
             onFilterLifecycle={(status) => {
-              setLifecycleFilter(status), setPage(0);
+              setLifecycleFilter(status);
+              setPage(0);
             }}
             onFilterPriority={(priority) => {
-              setPriorityFilter(priority), setPage(0);
+              setPriorityFilter(priority);
+              setPage(0);
             }}
           />
           <Box sx={{ height: 4 }}>{loading && <LinearProgress />}</Box>
@@ -320,7 +331,7 @@ export default function JobTableManagement() {
             sx={{ overflowX: "auto", whiteSpace: "nowrap", maxHeight: 600 }}
           >
             <Table
-              sx={{ minWidth: 1100, tableLayout: "auto" }}
+              sx={{ minWidth: isSmallScreen ? 900 : 1100, tableLayout: "auto" }}
               aria-labelledby="tableTitle"
               size={dense ? "small" : "medium"}
               stickyHeader
@@ -353,11 +364,20 @@ export default function JobTableManagement() {
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
+            sx={{
+              "& .MuiTablePagination-toolbar": {
+                flexWrap: { xs: "wrap", sm: "nowrap" },
+                justifyContent: { xs: "center", sm: "flex-end" },
+                rowGap: 1,
+                px: { xs: 1, sm: 2 },
+              },
+            }}
           />
         </Paper>
         <FormControlLabel
           control={<Switch checked={dense} onChange={handleChangeDense} />}
           label="Dense padding"
+          sx={{ display: { xs: "none", sm: "inline-flex" } }}
         />
       </Box>
 
@@ -366,7 +386,7 @@ export default function JobTableManagement() {
         activeRow={activeRow}
         onClose={handleCloseMenu}
         onEdit={(row) => handleAction("edit", row)}
-        onCloseJob={(row) => handleAction("close", row)}
+        onCancel={(row) => handleAction("cancel", row)}
         onRelease={(row) => handleAction("release", row)}
         onDelete={(row) => handleAction("delete", row)}
         onComplete={(row) => handleAction("completed", row)}
@@ -374,7 +394,7 @@ export default function JobTableManagement() {
 
       <GenericDialog
         open={
-          modalType === "close" ||
+          modalType === "cancel" ||
           modalType === "delete" ||
           modalType === "release" ||
           modalType === "completed"
@@ -387,7 +407,7 @@ export default function JobTableManagement() {
         positiveText={dialogConfig.positiveText}
         onConfirm={() => {
           if (!activeRow) return;
-          if (modalType === "close") handleCloseJob(activeRow.id);
+          if (modalType === "cancel") handleCancelJob(activeRow.id);
           if (modalType === "release") handleReleaseJob(activeRow.id);
           if (modalType === "delete") handleDeleteJob(activeRow.id);
           if (modalType === "completed") handleCompletedJob(activeRow.id);

@@ -9,7 +9,7 @@ import TablePagination from "@mui/material/TablePagination";
 import Paper from "@mui/material/Paper";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
-import { LinearProgress } from "@mui/material";
+import { LinearProgress, useMediaQuery, useTheme } from "@mui/material";
 import { useMemo, useState } from "react";
 import EnhancedTableToolbar from "./EnhancedTableToolbar";
 import EnhancedTableHead from "./EnhancedTableHead";
@@ -61,6 +61,8 @@ function getComparator<T>(
 }
 
 export default function OperatorTable() {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof OperatorRowData>("sales_order");
   const [page, setPage] = useState<number>(0);
@@ -69,7 +71,8 @@ export default function OperatorTable() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [activeRow, setActiveRow] = useState<OperatorRowData | null>(null);
   const [modalType, setModalType] = useState<
-    "edit" | "delete" | "release" | "close" | null
+    "edit" | "delete" | "release" | "close" |
+    "cancel" | null
   >(null);
   const [step, setStep] = useState<"form" | "success">("form");
   const [loading, setLoading] = useState<boolean>(false);
@@ -143,16 +146,7 @@ export default function OperatorTable() {
         salesOrderFilter,
         periodFilter,
       }),
-    [
-      rows,
-      searchQuery,
-      workOrderFilter,
-      salesOrderFilter,
-      machineFilter,
-      plannedDateFilter,
-      periodFilter,
-      priorityFilter,
-    ],
+    [rows, workOrderFilter, salesOrderFilter, periodFilter],
   );
 
   const handleRequestSort = (
@@ -202,22 +196,28 @@ export default function OperatorTable() {
             priorityFilter={priorityFilter}
             onSearch={(val) => setSearchQuery(val)}
             onFilterWorkOrder={(workOrder) => {
-              setWorkOrderFilter(workOrder), setPage(0);
+              setWorkOrderFilter(workOrder);
+              setPage(0);
             }}
             onFilterSalesOrder={(salesOrder) => {
-              setSalesOrderFilter(salesOrder), setPage(0);
+              setSalesOrderFilter(salesOrder);
+              setPage(0);
             }}
             onFilterMachine={(machine) => {
-              setMachineFilter(machine), setPage(0);
+              setMachineFilter(machine);
+              setPage(0);
             }}
             onFilterPlannedDate={(plannedDate) => {
-              setPlannedDateFilter(plannedDate), setPage(0);
+              setPlannedDateFilter(plannedDate);
+              setPage(0);
             }}
             onFilterPeriod={(period) => {
-              setPeriodFilter(period), setPage(0);
+              setPeriodFilter(period);
+              setPage(0);
             }}
             onFilterPriority={(priority) => {
-              setPriorityFilter(priority), setPage(0);
+              setPriorityFilter(priority);
+              setPage(0);
             }}
           />
           <Box sx={{ height: 4 }}>{loading && <LinearProgress />}</Box>
@@ -225,7 +225,7 @@ export default function OperatorTable() {
             sx={{ overflowX: "auto", whiteSpace: "nowrap", maxHeight: 600 }}
           >
             <Table
-              sx={{ minWidth: 1100, tableLayout: "auto" }}
+              sx={{ minWidth: isSmallScreen ? 900 : 1100, tableLayout: "auto" }}
               aria-labelledby="tableTitle"
               size={dense ? "small" : "medium"}
               stickyHeader
@@ -249,16 +249,25 @@ export default function OperatorTable() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={rows.length}
+            count={filteredRows.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
+            sx={{
+              "& .MuiTablePagination-toolbar": {
+                flexWrap: { xs: "wrap", sm: "nowrap" },
+                justifyContent: { xs: "center", sm: "flex-end" },
+                rowGap: 1,
+                px: { xs: 1, sm: 2 },
+              },
+            }}
           />
         </Paper>
         <FormControlLabel
           control={<Switch checked={dense} onChange={handleChangeDense} />}
           label="Dense padding"
+          sx={{ display: { xs: "none", sm: "inline-flex" } }}
         />
       </Box>
     </>

@@ -183,13 +183,15 @@ const ImportForm = ({
                   </Typography>
                 )}
               </Grid>
-              <Button variant="text" onClick={handleDownloadTemplate}>
-                Download Template
-              </Button>
+              <Grid size={12}>
+                <Button variant="text" onClick={handleDownloadTemplate}>
+                  Download Template
+                </Button>
+              </Grid>
 
               <Grid container size={12} spacing={2}>
                 {onCancel && (
-                  <Grid size={6}>
+                  <Grid size={{ xs: 12, sm: 6 }}>
                     <Button
                       variant="outlined"
                       color="error"
@@ -201,7 +203,7 @@ const ImportForm = ({
                     </Button>
                   </Grid>
                 )}
-                <Grid size={onCancel ? 6 : 12}>
+                <Grid size={{ xs: 12, sm: onCancel ? 6 : 12 }}>
                   <Button
                     type="submit"
                     fullWidth

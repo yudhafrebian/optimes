@@ -18,6 +18,7 @@ interface StatusChipProps {
   variant?: "filled" | "outlined";
   colorMap?: Record<string, ChipColor>;
   sx?: SxProps<Theme>;
+  size?: "small" | "medium" ;
 }
 
 const defaultColorMap: Record<string, ChipColor> = {
@@ -53,6 +54,7 @@ const GenericChips: React.FC<StatusChipProps> = ({
   variant = "outlined",
   colorMap = {},
   sx,
+  size = "small",
 }) => {
   // Gabungkan mapping default dengan mapping kustom dari props
   const combinedMap = { ...defaultColorMap, ...colorMap };
@@ -65,7 +67,7 @@ const GenericChips: React.FC<StatusChipProps> = ({
     <Chip
       label={formattedLabel}
       color={statusColor}
-      size="small"
+      size={size}
       variant={variant}
       sx={[
         {

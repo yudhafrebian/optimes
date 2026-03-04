@@ -121,7 +121,7 @@ const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
                 />
               </Grid>
               <Grid container size={12} spacing={2}>
-                <Grid size={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     id="phone_number"
                     name="phone_number"
@@ -135,7 +135,7 @@ const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
                   />
                 </Grid>
 
-                <Grid size={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     id="email"
                     name="email"
@@ -182,7 +182,7 @@ const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
                 </FormControl>
               </Grid>
               <Grid container size={12} spacing={2}>
-                <Grid size={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <FormControl
                     fullWidth
                     error={touched.account_type && Boolean(errors.account_type)}
@@ -222,7 +222,7 @@ const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
                     )}
                   </FormControl>
                 </Grid>
-                <Grid size={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <DateTimePicker
                     ampm={false}
                     disabled={values.account_type === 6 || !values.account_type}
@@ -289,8 +289,8 @@ const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
                 </Grid>
               )}
 
-              <Grid container size={12}>
-                <Grid size={6}>
+              <Grid container size={12} spacing={2}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <Button
                     variant="outlined"
                     color="error"
@@ -300,7 +300,7 @@ const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
                     Cancel
                   </Button>
                 </Grid>
-                <Grid size={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <Button
                     type="submit"
                     fullWidth

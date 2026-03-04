@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import { JobRowData } from "@/interface/row-table.interface";
 
 export type JobFilters = {
+  searchQuery?: string;
   workOrderFilter: string;
   salesOrderFilter: string;
   machineFilter: string;
@@ -13,6 +14,7 @@ export type JobFilters = {
 
 export const filterJobs = (rows: JobRowData[], filters: JobFilters) => {
   const {
+    searchQuery = "",
     workOrderFilter,
     salesOrderFilter,
     machineFilter,
@@ -23,9 +25,18 @@ export const filterJobs = (rows: JobRowData[], filters: JobFilters) => {
   } = filters;
 
   return rows.filter((row) => {
+    const normalizedSearch = searchQuery.trim().toLowerCase();
     const machineLabel = row.work_center?.label ?? "";
     const lifecycleLabel = row.job_lifecycle_state?.label ?? "";
     const priorityLabel = row.job_priority?.label ?? "";
+    const noteLabel = row.notes ?? "";
+
+    const matchesSearch =
+      normalizedSearch === "" ||
+      row.work_order?.toLowerCase().includes(normalizedSearch) ||
+      row.sales_order?.toLowerCase().includes(normalizedSearch) ||
+      machineLabel.toLowerCase().includes(normalizedSearch) ||
+      noteLabel.toLowerCase().includes(normalizedSearch);
 
     const matchesWorkOrder =
       workOrderFilter === "All" || row.work_order === workOrderFilter;
@@ -56,6 +67,7 @@ export const filterJobs = (rows: JobRowData[], filters: JobFilters) => {
 
     return (
       matchesLifecycle &&
+      matchesSearch &&
       matchesWorkOrder &&
       matchesSalesOrder &&
       matchesMachine &&

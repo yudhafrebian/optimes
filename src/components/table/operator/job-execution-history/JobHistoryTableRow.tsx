@@ -54,9 +54,6 @@ const JobHistoryTableRow: React.FC<JobHistoryTableRowProps> = ({ row }) => {
       <TableCell sx={{ minWidth: 120 }}>
         <GenericChips variant="filled" value={row.status} />
       </TableCell>
-      <TableCell sx={{ minWidth: 120 }}>
-        <GenericChips value={row.severity} />
-      </TableCell>
       <TableCell sx={{ minWidth: 220 }}>{row.notes_on_open || "-"}</TableCell>
       <TableCell sx={{ minWidth: 220 }}>{row.notes_on_close || "-"}</TableCell>
     </TableRow>

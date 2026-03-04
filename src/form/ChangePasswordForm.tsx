@@ -216,7 +216,7 @@ const ResetPassword = () => {
                   <Grid container spacing={1}>
                     {criteria.map((item, index) => (
                       <Grid
-                        size={6}
+                        size={{ xs: 12, sm: 6 }}
                         key={index}
                         sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
                       >

@@ -5,16 +5,21 @@ import EventHistoryModule from "./EventHistory";
 import EventPalleteModule from "./EventPalette";
 
 const OperatorView = () => {
+  const [historyRefreshKey, setHistoryRefreshKey] = React.useState(0);
+
+  const handleRefreshHistory = React.useCallback(() => {
+    setHistoryRefreshKey((prev) => prev + 1);
+  }, []);
+
   return (
     <Paper sx={{ p: 2 }}>
-      {/* <Alert severity="error" onClose={() => {}} sx={{ mb: 2 }}>Operator</Alert> */}
       <Grid container spacing={2}>
-        <Grid size={5}>
-          <EventHistoryModule />
+        <Grid size={{ xs: 12, lg: 5 }}>
+          <EventHistoryModule refreshKey={historyRefreshKey} />
         </Grid>
 
-        <Grid size={7}>
-          <EventPalleteModule />
+        <Grid size={{ xs: 12, lg: 7 }}>
+          <EventPalleteModule onRefresh={handleRefreshHistory} />
         </Grid>
       </Grid>
     </Paper>

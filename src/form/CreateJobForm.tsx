@@ -121,10 +121,17 @@ const CreateJobForm: React.FunctionComponent<ICreateJobFormProps> = ({
           : null;
 
         return (
-          <Form style={{ display: "flex", gap: 20 }}>
+          <Box
+            component={Form}
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", md: "row" },
+              gap: { xs: 2, md: 2.5 },
+            }}
+          >
             {onValuesChange && <FormObserver onChange={onValuesChange} />}
             <Box sx={{ flex: 1 }}>
-              <Grid container size={6} spacing={2}>
+              <Grid container spacing={2}>
                 <Grid size={12}>
                   <TextField
                     fullWidth
@@ -183,7 +190,7 @@ const CreateJobForm: React.FunctionComponent<ICreateJobFormProps> = ({
 
                 <Grid size={12}>
                   <Grid container spacing={2}>
-                    <Grid size={8}>
+                    <Grid size={{ xs: 12, sm: 8 }}>
                       <TextField
                         fullWidth
                         id="quantity_order"
@@ -203,7 +210,7 @@ const CreateJobForm: React.FunctionComponent<ICreateJobFormProps> = ({
                         }
                       />
                     </Grid>
-                    <Grid size={4}>
+                    <Grid size={{ xs: 12, sm: 4 }}>
                       <FormControl fullWidth>
                         <InputLabel id="quantity_unit">
                           Quantity Unit
@@ -277,10 +284,14 @@ const CreateJobForm: React.FunctionComponent<ICreateJobFormProps> = ({
               </Grid>
             </Box>
 
-            <Divider orientation="vertical" flexItem />
+            <Divider
+              orientation="vertical"
+              flexItem
+              sx={{ display: { xs: "none", md: "block" } }}
+            />
 
             <Box sx={{ flex: 1 }}>
-              <Grid container size={6} spacing={2}>
+              <Grid container spacing={2}>
                 <Grid size={12}>
                   <DateTimePicker
                     ampm={false}
@@ -345,7 +356,7 @@ const CreateJobForm: React.FunctionComponent<ICreateJobFormProps> = ({
                 </Grid>
                 <Grid size={12}>
                   <Grid container spacing={2}>
-                    <Grid size={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                       <Button
                         variant="outlined"
                         color="error"
@@ -355,7 +366,7 @@ const CreateJobForm: React.FunctionComponent<ICreateJobFormProps> = ({
                         Cancel
                       </Button>
                     </Grid>
-                    <Grid size={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                       <Button variant="contained" fullWidth type="submit">
                         {loading ? "Creating..." : "Create"}
                       </Button>
@@ -364,7 +375,7 @@ const CreateJobForm: React.FunctionComponent<ICreateJobFormProps> = ({
                 </Grid>
               </Grid>
             </Box>
-          </Form>
+          </Box>
         );
       }}
     </Formik>

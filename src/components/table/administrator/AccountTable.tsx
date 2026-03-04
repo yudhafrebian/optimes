@@ -9,7 +9,7 @@ import TablePagination from "@mui/material/TablePagination";
 import Paper from "@mui/material/Paper";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
-import { Divider, LinearProgress, Typography } from "@mui/material";
+import { Divider, LinearProgress, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { useMemo, useState } from "react";
 import EnhancedTableToolbar from "./EnhancedTableToolbar";
 import EnhancedTableHead from "./EnhancedTableHead";
@@ -74,6 +74,8 @@ function getComparator<Key extends keyof any>(
 }
 
 export default function AccountTableManagement() {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof UserRowData>("full_name");
   const [page, setPage] = useState<number>(0);
@@ -253,13 +255,16 @@ export default function AccountTableManagement() {
             typeFilter={typeFilter}
             onSearch={(val) => setSearchQuery(val)}
             onFilterRole={(role) => {
-              setRoleFilter(role), setPage(0);
+              setRoleFilter(role);
+              setPage(0);
             }}
             onFilterLifecycle={(status) => {
-              setLifecycleFilter(status), setPage(0);
+              setLifecycleFilter(status);
+              setPage(0);
             }}
             onFilterType={(type) => {
-              setTypeFilter(type), setPage(0);
+              setTypeFilter(type);
+              setPage(0);
             }}
             // onDelete={() => setModalType("bulk-delete")}
           />
@@ -268,7 +273,7 @@ export default function AccountTableManagement() {
             sx={{ overflowX: "auto", whiteSpace: "nowrap", maxHeight: 600 }}
           >
             <Table
-              sx={{ minWidth: 1100, tableLayout: "auto" }}
+              sx={{ minWidth: isSmallScreen ? 900 : 1100, tableLayout: "auto" }}
               aria-labelledby="tableTitle"
               size={dense ? "small" : "medium"}
               stickyHeader
@@ -302,16 +307,25 @@ export default function AccountTableManagement() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={rows.length}
+            count={filteredRows.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
+            sx={{
+              "& .MuiTablePagination-toolbar": {
+                flexWrap: { xs: "wrap", sm: "nowrap" },
+                justifyContent: { xs: "center", sm: "flex-end" },
+                rowGap: 1,
+                px: { xs: 1, sm: 2 },
+              },
+            }}
           />
         </Paper>
         <FormControlLabel
           control={<Switch checked={dense} onChange={handleChangeDense} />}
           label="Dense padding"
+          sx={{ display: { xs: "none", sm: "inline-flex" } }}
         />
       </Box>
 

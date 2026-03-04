@@ -31,7 +31,7 @@ const INITIAL_LOADER: ILoader = {
   isLoaded: false,
 };
 
-const INITIAL_LOADER_DATA: ILoaderData = {
+export const INITIAL_LOADER_DATA: ILoaderData = {
   id: "",
   work_center: EMPTY_LOOKUP,
   work_order: "",

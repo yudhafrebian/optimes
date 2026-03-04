@@ -9,7 +9,7 @@ import TablePagination from "@mui/material/TablePagination";
 import Paper from "@mui/material/Paper";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
-import { LinearProgress } from "@mui/material";
+import { LinearProgress, useMediaQuery, useTheme } from "@mui/material";
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
 import useSWR from "swr";
@@ -59,6 +59,8 @@ function getComparator<T>(
 }
 
 export default function JobHistoryTable() {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [order, setOrder] = useState<Order>("desc");
   const [orderBy, setOrderBy] = useState<keyof ExecutionHistoryRowData>("start_ts");
   const [page, setPage] = useState<number>(0);
@@ -178,7 +180,7 @@ export default function JobHistoryTable() {
           sx={{ overflowX: "auto", whiteSpace: "nowrap", maxHeight: 600 }}
         >
           <Table
-            sx={{ minWidth: 1100, tableLayout: "auto" }}
+            sx={{ minWidth: isSmallScreen ? 900 : 1100, tableLayout: "auto" }}
             aria-labelledby="tableTitle"
             size={dense ? "small" : "medium"}
             stickyHeader
@@ -201,17 +203,26 @@ export default function JobHistoryTable() {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={rows.length}
+          count={filteredRows.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
+          sx={{
+            "& .MuiTablePagination-toolbar": {
+              flexWrap: { xs: "wrap", sm: "nowrap" },
+              justifyContent: { xs: "center", sm: "flex-end" },
+              rowGap: 1,
+              px: { xs: 1, sm: 2 },
+            },
+          }}
         />
       </Paper>
 
       <FormControlLabel
         control={<Switch checked={dense} onChange={handleChangeDense} />}
         label="Dense padding"
+        sx={{ display: { xs: "none", sm: "inline-flex" } }}
       />
     </Box>
   );
