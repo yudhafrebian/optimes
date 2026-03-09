@@ -4,29 +4,22 @@ import {
   loaderAtom,
 } from "@/atoms/loader.atom";
 import AssignmentIcon from "@mui/icons-material/Assignment";
-import PauseIcon from "@mui/icons-material/Pause";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
-import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import GenericChips from "../../core/GenericChips";
 import { useSnackbar } from "@/hooks/useSnackbar";
 import {
   Box,
   Button,
-  Divider,
-  Grid,
   Paper,
   Stack,
   TextField,
-  Tooltip,
   Typography,
 } from "@mui/material";
 import { useAtom } from "jotai";
 import * as React from "react";
 import { assetsApi, commonApi } from "@/lib/api";
-import { OperatorRowData } from "@/interface/row-table.interface";
 import { EventsQueryResponse } from "@/api/generated/assets-service";
-import dayjs from "dayjs";
 import GenericDialog from "@/components/dialog/GenericDialog";
 import { formatDateTime } from "@/utils/timeFormater";
 import useSWR from "swr";
@@ -43,16 +36,16 @@ const CurrentLoadedJobCard = () => {
   const [dialogType, setDialogType] = React.useState<
     "complete" | "unload" | null
   >(null);
+  const activeJobId = loaderData.id || loader.id;
 
   const fetcher = async ([, jobId]: [string, string]) => {
     const res = await commonApi.jobOffsetPrinterTaiyoControllerGetById(jobId);
     setLoaderData(res);
-    console.log(res);
     return res;
   };
 
   const { mutate } = useSWR(
-    loader.isLoaded && loaderData.id ? ["loaded-job", loaderData.id] : null,
+    loader.isLoaded && activeJobId ? ["loaded-job", activeJobId] : null,
     fetcher,
     {
       refreshInterval: 5000,
@@ -66,7 +59,6 @@ const CurrentLoadedJobCard = () => {
 
   const handleUnloadJob = async () => {
     try {
-      console.log(loaderData.work_center.code);
       const unload = await assetsApi.setAssetValuesByPath(
         `${loaderData.work_center.code}.Job Lifecycle`,
         { value: "unload" },
@@ -112,24 +104,36 @@ const CurrentLoadedJobCard = () => {
     }
   };
 
+  const runningEventPattern =
+    loader.isLoaded && loaderData.work_center.code && loaderData.work_order
+      ? `${loaderData.work_center.code}/Job/${loaderData.work_order}/Lifecycle/Running`
+      : null;
+
   React.useEffect(() => {
     const getLoadedJob = async () => {
+      if (!runningEventPattern) {
+        setData({
+          count: 0,
+          total: 0,
+          rows: [],
+        });
+        return;
+      }
+
       try {
         const res = await assetsApi.queryEvents({
-          pattern: `${loaderData.work_center.code}/Job/${loaderData.work_order}/Lifecycle/Running`,
+          pattern: runningEventPattern,
           status: "open",
         });
-
+        console.log(res)
         setData(res);
       } catch (error) {
         console.log(error);
       }
     };
 
-    if (loader.isLoaded) {
-      getLoadedJob();
-    }
-  }, [loader.isLoaded]);
+    getLoadedJob();
+  }, [loadedDataAtom, runningEventPattern]);
 
   if (!loader.isLoaded && !loader.id) {
     return (
@@ -173,6 +177,7 @@ const CurrentLoadedJobCard = () => {
       </Paper>
     );
   }
+
 
   return (
     <>

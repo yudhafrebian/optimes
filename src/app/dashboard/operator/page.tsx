@@ -1,65 +1,86 @@
-import { Grid, Paper, Typography } from "@mui/material";
+"use client";
+import { loadedDataAtom, loaderAtom } from "@/atoms/loader.atom";
+import PendingActionsOutlinedIcon from "@mui/icons-material/PendingActionsOutlined";
+import { Box, Button, Grid, Paper, Stack, Typography } from "@mui/material";
+import { useAtom } from "jotai";
+import Link from "next/link";
 import * as React from "react";
 
 const OperatorPage = () => {
+  const [loaderData] = useAtom(loadedDataAtom);
+  const [loaded] = useAtom(loaderAtom);
+  const wo = loaderData.work_order;
+  const wc = loaderData.work_center.code;
+
+  if (!loaded.isLoaded) {
+    return (
+      <Grid
+        container
+        justifyContent="center"
+        alignItems="center"
+        sx={{ minHeight: "calc(100vh - 220px)", py: 2 }}
+      >
+        <Grid size={{ xs: 12, sm: 10, md: 8, lg: 6 }}>
+          <Paper
+            variant="outlined"
+            sx={{
+              p: { xs: 3, sm: 4 },
+              borderRadius: 3,
+              textAlign: "center",
+              bgcolor: "grey.100",
+            }}
+          >
+            <Stack spacing={2} alignItems="center">
+              <Box
+                sx={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: "50%",
+                  bgcolor: "warning.lighter",
+                  color: "warning.dark",
+                  display: "grid",
+                  placeItems: "center",
+                }}
+              >
+                <PendingActionsOutlinedIcon sx={{ fontSize: 34 }} />
+              </Box>
+
+              <Typography variant="h5" fontWeight={700}>
+                Load Job First
+              </Typography>
+
+              <Typography variant="body2" color="text.secondary">
+                Belum ada job yang aktif. Pilih job terlebih dulu dari Job List
+                untuk mulai melihat dashboard operator.
+              </Typography>
+
+              <Button
+                component={Link}
+                href="/dashboard/operator/job-list"
+                variant="contained"
+              >
+                Go to Job List
+              </Button>
+            </Stack>
+          </Paper>
+        </Grid>
+      </Grid>
+    );
+  }
+
   return (
-    <Grid container spacing={2} sx={{ mb: 2 }}>
-      <Grid container size={12} spacing={2}>
-        <Grid size={{ xs: 12, md: 4 }}>
-          <Paper sx={{ p: 2, height: "100%", minHeight: 300 }}>
-            <Typography variant="subtitle1" fontWeight="700">
-              Material Consumption
-            </Typography>
-          </Paper>
-        </Grid>
-        <Grid size={{ xs: 12, md: 4 }}>
-          <Paper sx={{ p: 2, height: "100%", minHeight: 300 }}>
-            <Typography variant="subtitle1" fontWeight="700">
-              Current Machine Speed
-            </Typography>
-          </Paper>
-        </Grid>
-        <Grid size={{ xs: 12, md: 4 }}>
-          <Paper sx={{ p: 2, height: "100%", minHeight: 300 }}>
-            <Typography variant="subtitle1" fontWeight="700">
-              Speed Statistics
-            </Typography>
-          </Paper>
-        </Grid>
-      </Grid>
-
-      <Grid container size={12}>
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Paper sx={{ p: 2, height: "100%", minHeight: 500 }}>
-            <Typography variant="subtitle1" fontWeight="700">
-              Machine Speed Trend
-            </Typography>
-          </Paper>
-        </Grid>
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Paper sx={{ p: 2, height: "100%", minHeight: 500 }}>
-            <Typography variant="subtitle1" fontWeight="700">
-              Event Timeline
-            </Typography>
-          </Paper>
-        </Grid>
-
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Paper sx={{ p: 2, height: "100%", minHeight: 500 }}>
-            <Typography variant="subtitle1" fontWeight="700">
-              Event Ratio
-            </Typography>
-          </Paper>
-        </Grid>
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Paper sx={{ p: 2, height: "100%", minHeight: 500 }}>
-            <Typography variant="subtitle1" fontWeight="700">
-              Run & Stop Duration
-            </Typography>
-          </Paper>
-        </Grid>
-      </Grid>
-    </Grid>
+    <Paper>
+      <iframe
+        // style="border:1px #FFFFFF none"
+        src={`http://192.168.68.9:3000/d/taiyojobreport/embed?wo=${wo}&wc=${wc}&scale=1`}
+        title="iFrame"
+        width="100%"
+        height="1500px"
+        scrolling="yes"
+        frameBorder="no"
+        allow="fullscreen"
+      ></iframe>
+    </Paper>
   );
 };
 

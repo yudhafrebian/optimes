@@ -182,7 +182,7 @@ export default function JobHistoryTable() {
           <Table
             sx={{ minWidth: isSmallScreen ? 900 : 1100, tableLayout: "auto" }}
             aria-labelledby="tableTitle"
-            size={dense ? "small" : "medium"}
+            size="small"
             stickyHeader
           >
             <EnhancedTableHead
@@ -219,11 +219,11 @@ export default function JobHistoryTable() {
         />
       </Paper>
 
-      <FormControlLabel
+      {/* <FormControlLabel
         control={<Switch checked={dense} onChange={handleChangeDense} />}
         label="Dense padding"
         sx={{ display: { xs: "none", sm: "inline-flex" } }}
-      />
+      /> */}
     </Box>
   );
 }

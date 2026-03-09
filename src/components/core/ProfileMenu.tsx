@@ -29,7 +29,6 @@ export function ProfileMenu() {
   const [loaderData] = useAtom(loadedDataAtom);
   const [loader] = useAtom(loaderAtom);
 
-  console.log(loaderData)
 
   const isOperator = auth?.account_role?.label === "Operator";
 
@@ -143,7 +142,7 @@ export function ProfileMenu() {
           onClick={() => {
             handleClose();
             router.push(
-              `/dashboard/${auth?.account_role?.label.toLowerCase()}/profile`,
+              `/dashboard/${auth?.account_role?.label.toLowerCase().split(" ").join("-")}/profile`,
             );
           }}
         >

@@ -1,7 +1,14 @@
 "use client";
 import { LookupResponseDto } from "@/api-client";
 import { loadedDataAtom } from "@/atoms/loader.atom";
+import GenericChips from "@/components/core/GenericChips";
+import { eventDialogConfig } from "@/components/dialog/eventDialogConfig";
 import GenericDialog from "@/components/dialog/GenericDialog";
+import GenericModal from "@/components/modal/GenericModal";
+import CreatEventLookupForm from "@/form/CreateEventLookupForm";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import CustomEventForm from "@/form/CustomEventForm";
 import { assetsApi, commonApi } from "@/lib/api";
 import SearchIcon from "@mui/icons-material/Search";
 import {
@@ -12,73 +19,147 @@ import {
   CardContent,
   Divider,
   Grid,
+  IconButton,
   Paper,
+  Switch,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { useAtom } from "jotai";
+import { usePathname } from "next/navigation";
 import * as React from "react";
+import { useSnackbar } from "@/hooks/useSnackbar";
+import EditEventLookupForm from "@/form/EditEventLookupForm";
 
 type EventCardProps = {
   item: LookupResponseDto;
+  isHeadProduction: boolean;
   onStart: (eventCode: string) => void;
+  onEdit?: (item: LookupResponseDto) => void;
+  onDelete?: (id: string) => void;
+  onChangeStatus: (id: string, isActive: boolean) => Promise<void>;
 };
 
-const EventCard = React.memo(({ item, onStart }: EventCardProps) => {
-  const category = item.label.split(" ")[0];
+type EventCategory = "Setup" | "Idle" | "Production";
 
-  const cardColor =
-    category === "Setup"
-      ? "primary.lighter"
-      : category === "Production"
-        ? "success.lighter"
-        : "warning.lighter";
+const EVENT_CATEGORIES: EventCategory[] = ["Production", "Setup", "Idle"];
 
-  const buttonColor =
-    category === "Setup"
-      ? "primary"
-      : category === "Production"
-        ? "success"
-        : "warning";
-  return (
-    <Grid size={{ xs: 12, sm: 6 }}>
-      <Card
-        sx={{
-          minHeight: 100,
-          border: "1px solid",
-          borderColor: "gray",
-          bgcolor: cardColor,
-        }}
-      >
-        <CardContent>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              minHeight: 20,
-            }}
-          >
-            <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-              {item.label}
-            </Typography>
-          </Box>
-          <Divider sx={{ my: 1 }} />
-          <Typography variant="caption">{item.description}</Typography>
-        </CardContent>
-        <CardActions sx={{ justifyContent: "flex-end" }}>
-          <Button
-            size="small"
-            variant="contained"
-            color={buttonColor}
-            onClick={() => onStart(item.code)}
-          >
-            Start
-          </Button>
-        </CardActions>
-      </Card>
-    </Grid>
-  );
-});
+const resolveEventCategory = (item: LookupResponseDto): EventCategory => {
+  const codeCategory = item.code?.split("/")[0]?.trim();
+
+  if (codeCategory === "Production") return "Production";
+  if (codeCategory === "Setup") return "Setup";
+  if (codeCategory === "Idle") return "Idle";
+
+  const labelCategory = item.label?.split(" ")[0]?.trim();
+  if (labelCategory === "Production") return "Production";
+  if (labelCategory === "Setup") return "Setup";
+
+  return "Idle";
+};
+
+const EventCard = React.memo(
+  ({
+    item,
+    isHeadProduction,
+    onStart,
+    onChangeStatus,
+    onEdit,
+    onDelete,
+  }: EventCardProps) => {
+    const category = resolveEventCategory(item);
+
+    const cardColor =
+      category === "Setup"
+        ? "primary.lighter"
+        : category === "Production"
+          ? "success.lighter"
+          : "warning.lighter";
+
+    const buttonColor =
+      category === "Setup"
+        ? "primary"
+        : category === "Production"
+          ? "success"
+          : "warning";
+    return (
+      <Grid size={{ xs: 12, sm: isHeadProduction ? 4 : 6 }}>
+        <Card
+          sx={{
+            minHeight: 100,
+            border: "1px solid",
+            borderColor: "gray",
+            bgcolor: cardColor,
+          }}
+        >
+          <CardContent>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                minHeight: 20,
+              }}
+            >
+              <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                {item.label}
+              </Typography>
+            </Box>
+            <Divider sx={{ my: 1 }} />
+            <Typography variant="caption">{item.description}</Typography>
+          </CardContent>
+          {isHeadProduction ? (
+            <CardActions sx={{ justifyContent: "space-between" }}>
+              <Box sx={{ display: "flex", gap: 1 }}>
+                <Tooltip title="Edit" placement="top">
+                  <IconButton
+                    color="primary"
+                    sx={{ bgcolor: "primary.lighter" }}
+                    size="small"
+                    onClick={() => onEdit?.(item)}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Delete" placement="top">
+                  <IconButton
+                    color="error"
+                    sx={{ bgcolor: "error.lighter" }}
+                    size="small"
+                    onClick={() => onDelete?.(String(item.id))}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+              <Box>
+                <Switch
+                  checked={item.is_active}
+                  onChange={() =>
+                    onChangeStatus(String(item.id), !item.is_active)
+                  }
+                />
+                <GenericChips value={item.is_active ? "Active" : "Inactive"} />
+              </Box>
+            </CardActions>
+          ) : (
+            <CardActions sx={{ justifyContent: "flex-end" }}>
+              <Button
+                size="small"
+                variant="contained"
+                color={buttonColor}
+                onClick={() => onStart(item.code)}
+                disabled={!item.is_active}
+              >
+                {item.is_active ? "Start" : "Inactive"}
+              </Button>
+            </CardActions>
+          )}
+        </Card>
+      </Grid>
+    );
+  },
+);
 
 EventCard.displayName = "EventCard";
 
@@ -90,21 +171,79 @@ const EventPalleteModule: React.FC<EventPalleteProps> = ({ onRefresh }) => {
   const [searchFilter, setSearchFilter] = React.useState<string>("");
   const [data, setData] = React.useState<LookupResponseDto[]>([]);
   const [open, setOpen] = React.useState<boolean>(false);
-  const [openModal, setOpenModal] = React.useState<boolean>(false);
+  const [editData, setEditData] = React.useState<any>(null);
+  const [dialogType, setDialogType] = React.useState<
+    "create" | "custom" | "start" | "delete" | null
+  >(null);
   const [selectedEvent, setSelectedEvent] = React.useState<string>("");
   const [loaderData] = useAtom(loadedDataAtom);
+
+  const showsnackbar = useSnackbar();
+  const pathname = usePathname();
+  const isHeadProduction = pathname.startsWith("/dashboard/head-of-production");
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchFilter(event.target.value);
   };
+  const deferredSearchFilter = React.useDeferredValue(searchFilter);
+
+  const dialogConfig = eventDialogConfig(dialogType);
 
   const handleStartEvent = React.useCallback((eventCode: string) => {
-    setOpen(true);
+    setDialogType("start");
     setSelectedEvent(eventCode);
   }, []);
 
+  const getData = React.useCallback(async () => {
+    try {
+      const res = await commonApi.lookupControllerFindAll({
+        type: "TAIYO_EVENT_PALETTE",
+      });
+      setData(res);
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
+  const handleDialogDelete = React.useCallback((id: string) => {
+    setDialogType("delete");
+    setSelectedEvent(id);
+  }, []);
+  const handleDialogEdit = React.useCallback((item: LookupResponseDto) => {
+    setEditData(item);
+    setOpen(true);
+  }, []);
+
+  const handleDeleteEvent = async (id: string) => {
+    try {
+      await commonApi.lookupControllerRemove(id);
+
+      showsnackbar("Event deleted successfully", "success");
+
+      getData();
+      setDialogType(null);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleChangeStatus = React.useCallback(
+    async (id: string, isActive: boolean) => {
+      try {
+        await commonApi.lookupControllerActivate(id, {
+          is_active: isActive,
+        });
+
+        await getData();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [getData],
+  );
+
   const filteredEventPallete = React.useMemo(() => {
-    const keyword = searchFilter.trim().toLowerCase();
+    const keyword = deferredSearchFilter.trim().toLowerCase();
 
     if (!keyword) {
       return data;
@@ -115,7 +254,23 @@ const EventPalleteModule: React.FC<EventPalleteProps> = ({ onRefresh }) => {
         value?.toLowerCase().includes(keyword),
       ),
     );
-  }, [data, searchFilter]);
+  }, [data, deferredSearchFilter]);
+
+  const eventByCategory = React.useMemo(() => {
+    return EVENT_CATEGORIES.reduce(
+      (acc, category) => {
+        acc[category] = filteredEventPallete.filter(
+          (item) => resolveEventCategory(item) === category,
+        );
+        return acc;
+      },
+      {
+        Setup: [] as LookupResponseDto[],
+        Idle: [] as LookupResponseDto[],
+        Production: [] as LookupResponseDto[],
+      },
+    );
+  }, [filteredEventPallete]);
 
   const handleCreateEvent = async () => {
     try {
@@ -124,26 +279,15 @@ const EventPalleteModule: React.FC<EventPalleteProps> = ({ onRefresh }) => {
         value: selectedEvent,
       });
       onRefresh();
-      setOpen(false);
+      setDialogType(null);
     } catch (error) {
       console.log(error);
     }
   };
 
   React.useEffect(() => {
-    const getData = async () => {
-      try {
-        const res = await commonApi.lookupControllerFindAll({
-          type: "TAIYO_EVENT_PALETTE",
-        });
-        setData(res);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
     getData();
-  }, []);
+  }, [getData]);
 
   return (
     <>
@@ -153,48 +297,122 @@ const EventPalleteModule: React.FC<EventPalleteProps> = ({ onRefresh }) => {
             display: "flex",
             justifyContent: "space-between",
             flexDirection: { xs: "column", sm: "row" },
+
             gap: 1,
           }}
         >
           <Typography variant="h6">Event Palette</Typography>
+          <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+            <Button
+              variant="contained"
+              onClick={() => setOpen(true)}
+              sx={{ whiteSpace: "nowrap", flexShrink: 0 }}
+            >
+              {isHeadProduction ? "New Event" : "Custom Event"}
+            </Button>
             <TextField
               size="small"
               label="Search"
               placeholder="Search Event..."
               value={searchFilter}
               onChange={handleSearchChange}
-              fullWidth
-              sx={{ maxWidth: { xs: "100%", sm: 280 } }}
+              sx={{ width: { xs: "100%", sm: 280 } }}
               slotProps={{
                 input: {
                   startAdornment: <SearchIcon />,
                 },
               }}
             />
+          </Box>
         </Box>
         <Divider sx={{ my: 2 }} />
-        <Grid container spacing={2} sx={{ maxHeight: 330, overflow: "auto" }}>
-          {filteredEventPallete.map((item) => (
-            <EventCard key={item.id} item={item} onStart={handleStartEvent} />
+        <Box
+          sx={{ maxHeight: isHeadProduction ? "100%" : 330, overflow: "auto" }}
+        >
+          {EVENT_CATEGORIES.map((category) => (
+            <Box key={category} sx={{ mb: 2.5 }}>
+              <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>
+                {category}
+              </Typography>
+
+              <Grid container spacing={2}>
+                {eventByCategory[category].map((item) => (
+                  <EventCard
+                    key={item.id}
+                    item={item}
+                    isHeadProduction={isHeadProduction}
+                    onEdit={handleDialogEdit}
+                    onDelete={handleDialogDelete}
+                    onStart={handleStartEvent}
+                    onChangeStatus={handleChangeStatus}
+                  />
+                ))}
+              </Grid>
+            </Box>
           ))}
+
           {filteredEventPallete.length === 0 && (
-            <Grid size={12}>
+            <Box>
               <Typography variant="body2" color="text.secondary">
                 Event not found.
               </Typography>
-            </Grid>
+            </Box>
           )}
-        </Grid>
+        </Box>
       </Paper>
 
       <GenericDialog
-        title="Start Event"
-        content="Are you sure you want to start new event?"
-        positiveText="Start"
-        open={open}
-        onClose={() => setOpen(false)}
-        onConfirm={handleCreateEvent}
+        title={dialogConfig.title}
+        content={dialogConfig.content}
+        positiveText={dialogConfig.positiveText}
+        open={
+          dialogType === "start" ||
+          dialogType === "custom" ||
+          dialogType === "create" ||
+          dialogType === "delete"
+        }
+        onClose={() => setDialogType(null)}
+        onConfirm={() => {
+          if (dialogType === "delete") {
+            void handleDeleteEvent(selectedEvent);
+            return;
+          }
+          void handleCreateEvent();
+        }}
         onRefresh={() => {}}
+      />
+
+      <GenericModal
+        open={open}
+        onClose={() => {
+          setOpen(false);
+          setEditData(null);
+        }}
+        title={
+          isHeadProduction && !editData
+            ? "Create New Event"
+            : isHeadProduction && editData
+              ? "Edit Event"
+              : "Create Custom Event"
+        }
+        children={
+          isHeadProduction && !editData ? (
+            <CreatEventLookupForm
+              onSuccess={() => {
+                setOpen(false), getData();
+              }}
+            />
+          ) : isHeadProduction && editData ? (
+            <EditEventLookupForm
+              onSuccess={() => {
+                setOpen(false), getData();
+              }}
+              data={editData}
+            />
+          ) : (
+            <CustomEventForm onSuccess={() => setOpen(false)} />
+          )
+        }
       />
     </>
   );

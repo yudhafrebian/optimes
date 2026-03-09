@@ -41,7 +41,6 @@ const ResetPassword = () => {
   const router = useRouter();
 
   const password = useAtom(passwordAtom);
-  console.log(password);
 
   const isForceChange = pathname === "/change-password";
 

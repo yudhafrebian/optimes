@@ -15,6 +15,9 @@ import * as React from "react";
 
 import MachineInfoCard from "./MachineInfo";
 import CurrentLoadedJobCard from "./CurrentLoadedJob";
+import TaiyoOperatorMachineEmbed from "@/components/embed/TaiyoOperatorMachine";
+import { usePathname } from "next/navigation";
+import TaiyoEventMachineEmbed from "@/components/embed/TaiyoEventMachine";
 
 export default function JobExecutionHeader() {
   const theme = useTheme();
@@ -22,10 +25,12 @@ export default function JobExecutionHeader() {
   const [expanded, setExpanded] = React.useState<boolean>(false);
   const isOpen = isMobile ? expanded : true;
 
+  const pathname = usePathname();
+  const isJobList = pathname.startsWith("/dashboard/operator/job-list");
+
   return (
     <Box
       sx={{
-        mb: { xs: 2, sm: 3, md: 4 },
         bgcolor: "#fff",
         p: { xs: 1.5, sm: 2 },
         width: "100%",
@@ -59,7 +64,11 @@ export default function JobExecutionHeader() {
       <Collapse in={isOpen}>
         <Grid container spacing={{ xs: 1.5, sm: 2, md: 3 }}>
           <Grid size={{ xs: 12, md: 12 }}>
-            <MachineInfoCard isExpanded />
+            {isJobList ? (
+              <TaiyoOperatorMachineEmbed isExpanded />
+            ) : (
+              <TaiyoEventMachineEmbed isExpanded />
+            )}
           </Grid>
 
           {/* <Grid size={{ xs: 12, md: 6 }}>

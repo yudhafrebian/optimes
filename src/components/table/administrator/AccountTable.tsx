@@ -80,7 +80,7 @@ export default function AccountTableManagement() {
   const [orderBy, setOrderBy] = useState<keyof UserRowData>("full_name");
   const [page, setPage] = useState<number>(0);
   const [dense, setDense] = useState<boolean>(false);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(5);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [activeRow, setActiveRow] = useState<UserRowData | null>(null);
   const [modalType, setModalType] = useState<
@@ -266,7 +266,6 @@ export default function AccountTableManagement() {
               setTypeFilter(type);
               setPage(0);
             }}
-            // onDelete={() => setModalType("bulk-delete")}
           />
           <Box sx={{ height: 4 }}>{loading && <LinearProgress />}</Box>
           <TableContainer
@@ -275,16 +274,13 @@ export default function AccountTableManagement() {
             <Table
               sx={{ minWidth: isSmallScreen ? 900 : 1100, tableLayout: "auto" }}
               aria-labelledby="tableTitle"
-              size={dense ? "small" : "medium"}
+              size="small"
               stickyHeader
             >
               <EnhancedTableHead
-                // numSelected={selected.length}
                 order={order}
                 orderBy={orderBy}
-                // onSelectAllClick={handleSelectAllClick}
                 onRequestSort={handleRequestSort}
-                // rowCount={rows.length}
               />
               <TableBody>
                 {(isLoading && rows.length === 0) || loading ? (
@@ -322,11 +318,11 @@ export default function AccountTableManagement() {
             }}
           />
         </Paper>
-        <FormControlLabel
+        {/* <FormControlLabel
           control={<Switch checked={dense} onChange={handleChangeDense} />}
           label="Dense padding"
           sx={{ display: { xs: "none", sm: "inline-flex" } }}
-        />
+        /> */}
       </Box>
 
       <TableActionMenu

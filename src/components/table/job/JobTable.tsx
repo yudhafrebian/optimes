@@ -81,7 +81,7 @@ export default function JobTableManagement() {
   const [orderBy, setOrderBy] = useState<keyof JobRowData>("sales_order");
   const [page, setPage] = useState<number>(0);
   const [dense, setDense] = useState<boolean>(false);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(5);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [activeRow, setActiveRow] = useState<JobRowData | null>(null);
   const [modalType, setModalType] = useState<
@@ -333,7 +333,7 @@ export default function JobTableManagement() {
             <Table
               sx={{ minWidth: isSmallScreen ? 900 : 1100, tableLayout: "auto" }}
               aria-labelledby="tableTitle"
-              size={dense ? "small" : "medium"}
+              size="small"
               stickyHeader
             >
               <EnhancedTableHead
@@ -374,11 +374,11 @@ export default function JobTableManagement() {
             }}
           />
         </Paper>
-        <FormControlLabel
+        {/* <FormControlLabel
           control={<Switch checked={dense} onChange={handleChangeDense} />}
           label="Dense padding"
           sx={{ display: { xs: "none", sm: "inline-flex" } }}
-        />
+        /> */}
       </Box>
 
       <TableActionMenu

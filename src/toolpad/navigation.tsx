@@ -49,6 +49,11 @@ export const navigationByRole = {
     },
   ],
   "head-of-production": [
+        {
+      segment: "dashboard/head-of-production",
+      title: "Dashboard",
+      icon: <DashboardIcon />,
+    },
     {
       segment: "dashboard/head-of-production/work-center-manager",
       title: "Work Center Manager",

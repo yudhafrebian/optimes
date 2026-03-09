@@ -1,17 +1,24 @@
 "use client";
+import { authAtom } from "@/atoms/auth.atom";
 import { loadedDataAtom } from "@/atoms/loader.atom";
 import { Avatar, Box, Grid, Paper, Stack, Typography } from "@mui/material";
 import { useAtom } from "jotai";
 import * as React from "react";
+import { json } from "stream/consumers";
 
-interface IMachineInfoCardProps {
+interface ITaiyoOperatorMachineEmbedProps {
   isExpanded: boolean;
 }
 
-const MachineInfoCard: React.FunctionComponent<IMachineInfoCardProps> = (
-  props,
-) => {
+const TaiyoOperatorMachineEmbed: React.FunctionComponent<
+  ITaiyoOperatorMachineEmbedProps
+> = (props) => {
   const [loaderData, setLoaderData] = useAtom(loadedDataAtom);
+  const [auth, setAuth] = useAtom(authAtom);
+  const op = {
+    label: auth?.full_name,
+    value: auth?.id,
+  };
   return (
     <Paper
       variant="outlined"
@@ -23,7 +30,7 @@ const MachineInfoCard: React.FunctionComponent<IMachineInfoCardProps> = (
     >
       <iframe
         // style="border:1px #FFFFFF none"
-        src={`http://192.168.68.9:3000/d/taiyooperatormachinedashboard/embed?wo=${loaderData.work_order}&wc=${loaderData.work_center.code}`}
+        src={`http://192.168.68.9:3000/d/taiyooperatormachinedashboard/view?wo=${loaderData.work_order}&wc=${loaderData.work_center.code}&operator=${JSON.stringify(op)}`}
         title="iFrame"
         width="100%"
         height="250px"
@@ -35,4 +42,4 @@ const MachineInfoCard: React.FunctionComponent<IMachineInfoCardProps> = (
   );
 };
 
-export default MachineInfoCard;
+export default TaiyoOperatorMachineEmbed;

@@ -54,7 +54,17 @@ const JobTableRow: React.FC<JobTableRowProps> = ({ row, onOpenMenu }) => {
       }}
     >
       {/* TableCell padding="checkbox" dan Checkbox dihapus dari sini */}
-
+      {!isJobManagement && (
+        <TableCell>
+          <Button
+            size="small"
+            variant="contained"
+            onClick={() => window.open(`/report/job/${row.work_order}/${row.work_center.code}`)}
+          >
+            Get Report
+          </Button>
+        </TableCell>
+      )}
       <TableCell
         component="th"
         scope="row"
@@ -104,7 +114,7 @@ const JobTableRow: React.FC<JobTableRowProps> = ({ row, onOpenMenu }) => {
             ? dayjs(row.due_date).format("HH:mm:ss - DD/MM/YYYY")
             : "-"}
         </TableCell>
-      ): null}
+      ) : null}
 
       <TableCell align="left" padding="normal" sx={{ minWidth: 200 }}>
         <GenericChips value={lifecycleLabel} variant="outlined" />
@@ -122,8 +132,8 @@ const JobTableRow: React.FC<JobTableRowProps> = ({ row, onOpenMenu }) => {
         {row.notes}
       </TableCell>
 
-      <TableCell align="center" sx={{ width: 50 }}>
-        {isJobManagement ? (
+      {isJobManagement && (
+        <TableCell align="center" sx={{ width: 50 }}>
           <IconButton
             size="small"
             onClick={(e) => {
@@ -133,15 +143,8 @@ const JobTableRow: React.FC<JobTableRowProps> = ({ row, onOpenMenu }) => {
           >
             <MoreVertIcon fontSize="small" />
           </IconButton>
-        ) : (
-          <Button
-            variant="contained"
-            onClick={() => window.open(`/report/job/${row.id}`)}
-          >
-            Get Report
-          </Button>
-        )}
-      </TableCell>
+        </TableCell>
+      )}
     </TableRow>
   );
 };

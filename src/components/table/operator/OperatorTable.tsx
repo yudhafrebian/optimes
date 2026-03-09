@@ -67,14 +67,7 @@ export default function OperatorTable() {
   const [orderBy, setOrderBy] = useState<keyof OperatorRowData>("sales_order");
   const [page, setPage] = useState<number>(0);
   const [dense, setDense] = useState<boolean>(false);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(5);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [activeRow, setActiveRow] = useState<OperatorRowData | null>(null);
-  const [modalType, setModalType] = useState<
-    "edit" | "delete" | "release" | "close" |
-    "cancel" | null
-  >(null);
-  const [step, setStep] = useState<"form" | "success">("form");
+  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [loading, setLoading] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [workOrderFilter, setWorkOrderFilter] = useState<string>("All");
@@ -83,7 +76,6 @@ export default function OperatorTable() {
   const [plannedDateFilter, setPlannedDateFilter] = useState<string>("");
   const [periodFilter, setPeriodFilter] = useState<string>("All");
   const [priorityFilter, setPriorityFilter] = useState<string>("All");
-  const [jobData, setJobData] = useState<any>(null);
 
   const {
     data: jobs,
@@ -111,33 +103,7 @@ export default function OperatorTable() {
       });
   }, [jobs]);
 
-  const showSnackbar = useSnackbar();
 
-  const handleSuccess = (data: any) => {
-    setJobData(data);
-    setStep("success");
-  };
-
-  const dialogConfig = getJobDialogConfig(modalType);
-
-  const handleOpenMenu = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    row: OperatorRowData,
-  ) => {
-    setAnchorEl(event.currentTarget);
-    setActiveRow(row);
-  };
-
-  const handleCloseMenu = () => {
-    setAnchorEl(null);
-  };
-
-  const closeAll = () => {
-    setModalType(null);
-    setActiveRow(null);
-    setStep("form");
-    setJobData(null);
-  };
 
   const filteredRows = useMemo(
     () =>
@@ -167,10 +133,6 @@ export default function OperatorTable() {
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
-  };
-
-  const handleChangeDense = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setDense(event.target.checked);
   };
 
   const visibleRows = React.useMemo(
@@ -227,7 +189,7 @@ export default function OperatorTable() {
             <Table
               sx={{ minWidth: isSmallScreen ? 900 : 1100, tableLayout: "auto" }}
               aria-labelledby="tableTitle"
-              size={dense ? "small" : "medium"}
+              size="small"
               stickyHeader
             >
               <EnhancedTableHead
@@ -264,11 +226,6 @@ export default function OperatorTable() {
             }}
           />
         </Paper>
-        <FormControlLabel
-          control={<Switch checked={dense} onChange={handleChangeDense} />}
-          label="Dense padding"
-          sx={{ display: { xs: "none", sm: "inline-flex" } }}
-        />
       </Box>
     </>
   );

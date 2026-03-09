@@ -4,11 +4,11 @@ import { Avatar, Box, Grid, Paper, Stack, Typography } from "@mui/material";
 import { useAtom } from "jotai";
 import * as React from "react";
 
-interface IMachineInfoCardProps {
+interface TaiyoEventMachineEmbedProps {
   isExpanded: boolean;
 }
 
-const MachineInfoCard: React.FunctionComponent<IMachineInfoCardProps> = (
+const TaiyoEventMachineEmbed: React.FunctionComponent<TaiyoEventMachineEmbedProps> = (
   props,
 ) => {
   const [loaderData, setLoaderData] = useAtom(loadedDataAtom);
@@ -23,7 +23,7 @@ const MachineInfoCard: React.FunctionComponent<IMachineInfoCardProps> = (
     >
       <iframe
         // style="border:1px #FFFFFF none"
-        src={`http://192.168.68.9:3000/d/taiyooperatormachinedashboard/embed?wo=${loaderData.work_order}&wc=${loaderData.work_center.code}`}
+        src={`http://192.168.68.9:3000/d/taiyooperatoreventdashboard/embed?wo=${loaderData.work_order}&wc=${loaderData.work_center.code}`}
         title="iFrame"
         width="100%"
         height="250px"
@@ -35,4 +35,4 @@ const MachineInfoCard: React.FunctionComponent<IMachineInfoCardProps> = (
   );
 };
 
-export default MachineInfoCard;
+export default TaiyoEventMachineEmbed;

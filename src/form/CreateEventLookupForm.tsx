@@ -12,11 +12,11 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Form, Formik, FormikProps } from "formik";
+import { Form, Formik } from "formik";
 import LoginIcon from "@mui/icons-material/Login";
 import { loginValidationSchema } from "./validation/auth.validation";
 import { useState } from "react";
-import { useAtom, useSetAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import { authAtom } from "@/atoms/auth.atom";
 import { useRouter } from "next/navigation";
 import { useSnackbar } from "@/hooks/useSnackbar";
@@ -24,64 +24,59 @@ import PersonIcon from "@mui/icons-material/Person";
 import LockIcon from "@mui/icons-material/Lock";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { assetsApi, commonApi } from "@/lib/api";
-import { LoginDto } from "@/api/generated/common-service";
+import { commonApi } from "@/lib/api";
+import { CreateLookupDto } from "@/api/generated/common-service";
 import { passwordAtom } from "@/atoms/password.atom";
-import { loadedDataAtom } from "@/atoms/loader.atom";
+import { lookupValidationSchema } from "./validation/lookup.validation";
 
-interface IFormValue {
-  code: string;
-  label: string;
-}
-
-interface CustomEventLookupFormProps {
+interface CreateEventLookupFormProps {
   onSuccess: () => void;
 }
 
-const CustomEventForm: React.FC<CustomEventLookupFormProps> = ({
-  onSuccess,
-}) => {
-  const [loaderData, setLoaderData] = useAtom(loadedDataAtom);
-
+const CreatEventLookupForm = ({ onSuccess }: CreateEventLookupFormProps) => {
   const showSnackbar = useSnackbar();
 
-  const onSubmit = async (values: IFormValue) => {
+  const handleCreateEvent = async (values: CreateLookupDto) => {
     try {
       const labelTrimer = values.label.trim().replace(/\s+/g, "");
-      const pathbuilder = `${loaderData.work_center.code}.Job Activity`;
       const codeBuilder = `${values.code}/${labelTrimer}`;
+      const labelBuilder = `${values.code} - ${values.label}`;
+      const payload = {
+        lookup_type: values.lookup_type,
+        code: codeBuilder,
+        label: labelBuilder,
+        description: values.description,
+        is_active: true,
+      };
 
-      const res = await assetsApi.setAssetValuesByPath(pathbuilder, {
-        value: codeBuilder,
-      });
+      await commonApi.lookupControllerCreate(payload);
 
       onSuccess();
 
-      showSnackbar("Custom Event created successfully", "success");
+      showSnackbar("Event created successfully", "success");
     } catch (error: any) {
       console.log(error);
-      showSnackbar(
-        error.response?.data?.message || "Create event failed",
-        "error",
-      );
+      showSnackbar(error.response.data.message, "error");
     }
   };
 
   return (
-    <Formik
+    <Formik<CreateLookupDto>
       initialValues={{
+        lookup_type: "TAIYO_EVENT_PALETTE",
         code: "",
         label: "",
+        description: "",
       }}
-      validationSchema={null}
-      onSubmit={onSubmit}
+      validationSchema={lookupValidationSchema}
+      onSubmit={(values) => handleCreateEvent(values)}
     >
-      {(props: FormikProps<IFormValue>) => {
-        const { errors, touched, handleBlur, handleChange } = props;
+      {(props) => {
+        const { errors, touched, handleBlur, handleChange, values } = props;
         return (
           <Form>
             <Grid container spacing={2}>
-              <Grid size={4}>
+              <Grid size={{ xs: 12 }}>
                 <FormControl fullWidth>
                   <InputLabel id="code" htmlFor="code">
                     Event Type
@@ -91,7 +86,7 @@ const CustomEventForm: React.FC<CustomEventLookupFormProps> = ({
                     id="code"
                     name="code"
                     label="Event Type"
-                    value={props.values.code}
+                    value={values.code}
                     onChange={handleChange}
                   >
                     <MenuItem value="Setup">Setup</MenuItem>
@@ -100,21 +95,36 @@ const CustomEventForm: React.FC<CustomEventLookupFormProps> = ({
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid size={8}>
+              <Grid size={{ xs: 12 }}>
                 <TextField
                   fullWidth
                   id="label"
                   name="label"
                   label="Label"
-                  value={props.values.label}
+                  value={values.label}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   error={touched.label && Boolean(errors.label)}
                   helperText={touched.label && errors.label}
                 />
               </Grid>
-              <Grid size={12}>
-                <Button fullWidth variant="contained" type="submit">
+              <Grid size={{ xs: 12 }}>
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={2}
+                  id="description"
+                  name="description"
+                  label="Description"
+                  value={values.description ?? ""}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={touched.description && Boolean(errors.description)}
+                  helperText={touched.description && errors.description}
+                />
+              </Grid>
+              <Grid size={{ xs: 12 }}>
+                <Button type="submit" variant="contained" fullWidth>
                   Submit
                 </Button>
               </Grid>
@@ -126,4 +136,4 @@ const CustomEventForm: React.FC<CustomEventLookupFormProps> = ({
   );
 };
 
-export default CustomEventForm;
+export default CreatEventLookupForm;

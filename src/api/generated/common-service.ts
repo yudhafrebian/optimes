@@ -64,6 +64,19 @@ export interface UpdateLookupDto {
   attribute?: UpdateLookupDtoAttribute;
 }
 
+export type LookupDeleteResponseDtoAttribute = { [key: string]: unknown };
+
+export interface LookupDeleteResponseDto {
+  id: number;
+  lookup_type: string;
+  code: string;
+  label: string;
+  description?: string;
+  sort_order?: number;
+  is_active: boolean;
+  attribute?: LookupDeleteResponseDtoAttribute;
+}
+
 export type AccountListResponseDtoAttribute = { [key: string]: unknown };
 
 export interface AccountListResponseDto {
@@ -695,6 +708,18 @@ const lookupControllerUpdate = (
     }
   
 /**
+ * @summary Delete lookup by id
+ */
+const lookupControllerRemove = (
+    id: string,
+ ) => {
+      return customInstance1<LookupDeleteResponseDto>(
+      {url: `/api/lookups/${id}`, method: 'DELETE'
+    },
+      );
+    }
+  
+/**
  * @summary Activate or deactivate a lookup
  */
 const lookupControllerActivate = (
@@ -1084,12 +1109,13 @@ const jobOffsetPrinterTaiyoControllerClose = (
       );
     }
   
-return {appControllerGetHealth,lookupControllerFindAll,lookupControllerCreate,lookupControllerFindOne,lookupControllerUpdate,lookupControllerActivate,accountControllerGetAll,accountControllerCreate,accountControllerGetDashboard,accountControllerValidate,accountControllerGetById,accountControllerEditAccount,accountControllerDelete,accountControllerLogin,accountControllerLogout,accountControllerResetPassword,accountControllerChangePassword,accountControllerEditRole,accountControllerDisable,accountControllerEnable,jobOffsetPrinterTaiyoControllerGetAll,jobOffsetPrinterTaiyoControllerCreate,jobOffsetPrinterTaiyoControllerGetDashboard,jobOffsetPrinterTaiyoControllerDownloadExcelTemplate,jobOffsetPrinterTaiyoControllerUploadExcelPreview,jobOffsetPrinterTaiyoControllerBatchCreate,jobOffsetPrinterTaiyoControllerGetById,jobOffsetPrinterTaiyoControllerUpdate,jobOffsetPrinterTaiyoControllerRemove,jobOffsetPrinterTaiyoControllerRelease,jobOffsetPrinterTaiyoControllerRun,jobOffsetPrinterTaiyoControllerSuspend,jobOffsetPrinterTaiyoControllerComplete,jobOffsetPrinterTaiyoControllerClose}};
+return {appControllerGetHealth,lookupControllerFindAll,lookupControllerCreate,lookupControllerFindOne,lookupControllerUpdate,lookupControllerRemove,lookupControllerActivate,accountControllerGetAll,accountControllerCreate,accountControllerGetDashboard,accountControllerValidate,accountControllerGetById,accountControllerEditAccount,accountControllerDelete,accountControllerLogin,accountControllerLogout,accountControllerResetPassword,accountControllerChangePassword,accountControllerEditRole,accountControllerDisable,accountControllerEnable,jobOffsetPrinterTaiyoControllerGetAll,jobOffsetPrinterTaiyoControllerCreate,jobOffsetPrinterTaiyoControllerGetDashboard,jobOffsetPrinterTaiyoControllerDownloadExcelTemplate,jobOffsetPrinterTaiyoControllerUploadExcelPreview,jobOffsetPrinterTaiyoControllerBatchCreate,jobOffsetPrinterTaiyoControllerGetById,jobOffsetPrinterTaiyoControllerUpdate,jobOffsetPrinterTaiyoControllerRemove,jobOffsetPrinterTaiyoControllerRelease,jobOffsetPrinterTaiyoControllerRun,jobOffsetPrinterTaiyoControllerSuspend,jobOffsetPrinterTaiyoControllerComplete,jobOffsetPrinterTaiyoControllerClose}};
 export type AppControllerGetHealthResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getOptimesNESTAPI>['appControllerGetHealth']>>>
 export type LookupControllerFindAllResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getOptimesNESTAPI>['lookupControllerFindAll']>>>
 export type LookupControllerCreateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getOptimesNESTAPI>['lookupControllerCreate']>>>
 export type LookupControllerFindOneResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getOptimesNESTAPI>['lookupControllerFindOne']>>>
 export type LookupControllerUpdateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getOptimesNESTAPI>['lookupControllerUpdate']>>>
+export type LookupControllerRemoveResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getOptimesNESTAPI>['lookupControllerRemove']>>>
 export type LookupControllerActivateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getOptimesNESTAPI>['lookupControllerActivate']>>>
 export type AccountControllerGetAllResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getOptimesNESTAPI>['accountControllerGetAll']>>>
 export type AccountControllerCreateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getOptimesNESTAPI>['accountControllerCreate']>>>

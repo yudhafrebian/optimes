@@ -1,12 +1,13 @@
-import * as React from 'react';
+"use client";
+import EventPalleteModule from "@/components/view/pages/operator/EventPalette";
+import * as React from "react";
 
-interface IEventPaletteManagerProps {
-}
+interface IEventPaletteManagerProps {}
 
-const EventPaletteManager: React.FunctionComponent<IEventPaletteManagerProps> = (props) => {
-  return (
-    <div>Event Palette Manager</div>
-  )
+const EventPaletteManager: React.FunctionComponent<
+  IEventPaletteManagerProps
+> = (props) => {
+  return <EventPalleteModule onRefresh={() => {}} />;
 };
 
 export default EventPaletteManager;
