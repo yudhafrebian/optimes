@@ -38,6 +38,9 @@ const CreatEventLookupForm = ({ onSuccess }: CreateEventLookupFormProps) => {
 
   const handleCreateEvent = async (values: CreateLookupDto) => {
     try {
+      if(typeof values.label.split(" ")[0] === "number"){
+       console.log(values.label = values.label.split(" ").slice(1).join(" ")) 
+      }
       const labelTrimer = values.label.trim().replace(/\s+/g, "");
       const codeBuilder = `${values.code}/${labelTrimer}`;
       const labelBuilder = `${values.code} - ${values.label}`;
@@ -49,7 +52,7 @@ const CreatEventLookupForm = ({ onSuccess }: CreateEventLookupFormProps) => {
         is_active: true,
       };
 
-      await commonApi.lookupControllerCreate(payload);
+      // await commonApi.lookupControllerCreate(payload);
 
       onSuccess();
 

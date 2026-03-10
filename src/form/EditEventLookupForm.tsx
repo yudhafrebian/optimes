@@ -31,6 +31,10 @@ const EditEventLookupForm = ({ onSuccess, data }: EditEventLookupFormProps) => {
 
   const handleEditEvent = async (values: CreateLookupDto) => {
     try {
+      console.log(typeof parseInt(values.label.split(" ")[0]))
+      if(typeof parseInt(values.label.split(" ")[0]) === "number"){
+       console.log(values.label = values.label.split(" ").slice(1).join(" ")) 
+      }
       const labelTrimer = values.label.trim().replace(/\s+/g, "");
       const codeBuilder = `${values.code}/${labelTrimer}`;
       const labelBuilder = `${values.code} - ${values.label}`;

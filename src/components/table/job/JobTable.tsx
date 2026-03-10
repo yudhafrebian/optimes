@@ -45,7 +45,7 @@ function createData(user: IJobOffsetPrinter): JobRowData {
     quantity_unit: user.quantity_unit,
     planned_start_time: user.planned_start_time,
     release_date: user.release_date,
-    completed_date: user.due_date,
+    completed_date: user.complete_date,
     due_date: user.due_date,
     notes: user.notes,
     job_priority: user.job_priority,
@@ -122,7 +122,7 @@ export default function JobTableManagement() {
     const filtered = jobsArray.filter((job) => {
       if (isJobManagement) {
         return (
-          job.job_lifecycle_state.label !== "Closed" &&
+          job.job_lifecycle_state.label !== "Cancelled" &&
           job.job_lifecycle_state.label !== "Completed"
         );
       } else {
@@ -201,8 +201,8 @@ export default function JobTableManagement() {
   const handleCancelJob = async (id: string) => {
     try {
       setLoading(true);
-      await commonApi.jobOffsetPrinterTaiyoControllerClose(id);
-      showSnackbar("Job closed successfully", "success");
+      await commonApi.jobOffsetPrinterTaiyoControllerCancel(id);
+      showSnackbar("Job cancelled successfully", "success");
       closeAll();
       mutate();
     } catch (error: any) {

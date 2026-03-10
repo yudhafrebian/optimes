@@ -245,9 +245,9 @@ const EventHistoryModule: React.FC<EventHistoryModuleProps> = ({
       </Paper>
 
       <GenericDialog
-        title="Close Event"
-        content="Are you sure you want to close this event?"
-        positiveText="Close"
+        title="Finish Event"
+        content="Are you sure you want to finish this event?"
+        positiveText="Finish"
         open={open}
         onClose={() => setOpen(false)}
         onConfirm={() => handleCloseEvent(selectedEvent)}

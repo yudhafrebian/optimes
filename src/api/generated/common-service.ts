@@ -399,7 +399,15 @@ export interface JobOffsetPrinterTaiyoListResponseDto {
   /** Populated lookup object for work_center */
   work_center: LookupResponseDto;
   planned_start_time: string;
+  scheduled_date?: string;
   release_date?: string;
+  run_date?: string;
+  suspend_date?: string;
+  complete_date?: string;
+  /** @nullable */
+  cancel_date?: string | null;
+  /** @nullable */
+  close_date?: string | null;
   due_date?: string;
   /** Populated lookup object for job_priority */
   job_priority: LookupResponseDto;
@@ -416,6 +424,8 @@ export interface JobOffsetPrinterTaiyoDashboardResponseDto {
   running: number;
   completed: number;
   suspended: number;
+  cancelled: number;
+  closed: number;
   other: number;
   generated_at: string;
 }
@@ -460,7 +470,15 @@ export interface JobOffsetPrinterTaiyoResponseDto {
   /** Populated lookup object for work_center */
   work_center: LookupResponseDto;
   planned_start_time: string;
+  scheduled_date?: string;
   release_date?: string;
+  run_date?: string;
+  suspend_date?: string;
+  complete_date?: string;
+  /** @nullable */
+  cancel_date?: string | null;
+  /** @nullable */
+  close_date?: string | null;
   due_date?: string;
   /** Populated lookup object for job_priority */
   job_priority: LookupResponseDto;
@@ -489,7 +507,15 @@ export interface JobOffsetPrinterTaiyoGetResponseDto {
   /** Populated lookup object for work_center */
   work_center: LookupResponseDto;
   planned_start_time: string;
+  scheduled_date?: string;
   release_date?: string;
+  run_date?: string;
+  suspend_date?: string;
+  complete_date?: string;
+  /** @nullable */
+  cancel_date?: string | null;
+  /** @nullable */
+  close_date?: string | null;
   due_date?: string;
   /** Populated lookup object for job_priority */
   job_priority: LookupResponseDto;
@@ -511,6 +537,7 @@ export interface CreateJobOffsetPrinterTaiyoDto {
   /** Lookup id for WORK_CENTER (MACHINE_A, MACHINE_B) */
   work_center: number;
   planned_start_time: string;
+  /** Optional backfill value. Normally set automatically by the release lifecycle action. */
   release_date?: string;
   due_date?: string;
   /** Lookup id for JOB_PRIORITY (HIGH, MEDIUM, LOW) */
@@ -531,7 +558,15 @@ export interface JobOffsetPrinterTaiyoCreateResponseDto {
   /** Populated lookup object for work_center */
   work_center: LookupResponseDto;
   planned_start_time: string;
+  scheduled_date?: string;
   release_date?: string;
+  run_date?: string;
+  suspend_date?: string;
+  complete_date?: string;
+  /** @nullable */
+  cancel_date?: string | null;
+  /** @nullable */
+  close_date?: string | null;
   due_date?: string;
   /** Populated lookup object for job_priority */
   job_priority: LookupResponseDto;
@@ -552,6 +587,7 @@ export interface UpdateJobOffsetPrinterTaiyoDto {
   /** Lookup id for WORK_CENTER (MACHINE_A, MACHINE_B) */
   work_center?: number;
   planned_start_time?: string;
+  /** Optional backfill value. Normally set automatically by the release lifecycle action. */
   release_date?: string;
   due_date?: string;
   /** Lookup id for JOB_PRIORITY (HIGH, MEDIUM, LOW) */
@@ -572,7 +608,15 @@ export interface JobOffsetPrinterTaiyoUpdateResponseDto {
   /** Populated lookup object for work_center */
   work_center: LookupResponseDto;
   planned_start_time: string;
+  scheduled_date?: string;
   release_date?: string;
+  run_date?: string;
+  suspend_date?: string;
+  complete_date?: string;
+  /** @nullable */
+  cancel_date?: string | null;
+  /** @nullable */
+  close_date?: string | null;
   due_date?: string;
   /** Populated lookup object for job_priority */
   job_priority: LookupResponseDto;
@@ -594,7 +638,15 @@ export interface JobOffsetPrinterTaiyoDeleteResponseDto {
   /** Populated lookup object for work_center */
   work_center: LookupResponseDto;
   planned_start_time: string;
+  scheduled_date?: string;
   release_date?: string;
+  run_date?: string;
+  suspend_date?: string;
+  complete_date?: string;
+  /** @nullable */
+  cancel_date?: string | null;
+  /** @nullable */
+  close_date?: string | null;
   due_date?: string;
   /** Populated lookup object for job_priority */
   job_priority: LookupResponseDto;
@@ -616,7 +668,15 @@ export interface JobOffsetPrinterTaiyoLifecycleResponseDto {
   /** Populated lookup object for work_center */
   work_center: LookupResponseDto;
   planned_start_time: string;
+  scheduled_date?: string;
   release_date?: string;
+  run_date?: string;
+  suspend_date?: string;
+  complete_date?: string;
+  /** @nullable */
+  cancel_date?: string | null;
+  /** @nullable */
+  close_date?: string | null;
   due_date?: string;
   /** Populated lookup object for job_priority */
   job_priority: LookupResponseDto;
@@ -1097,7 +1157,20 @@ const jobOffsetPrinterTaiyoControllerComplete = (
     }
   
 /**
- * Allowed transition: RELEASED/COMPLETED -> CLOSED
+ * Allowed transition: SCHEDULED/RELEASED/RUNNING/SUSPENDED -> CANCELLED
+ * @summary Cancel job
+ */
+const jobOffsetPrinterTaiyoControllerCancel = (
+    id: string,
+ ) => {
+      return customInstance1<JobOffsetPrinterTaiyoLifecycleResponseDto>(
+      {url: `/api/jobs/offset-printer-taiyo/${id}/cancel`, method: 'PATCH'
+    },
+      );
+    }
+  
+/**
+ * Allowed transition: RELEASED/COMPLETED/CANCELLED -> CLOSED
  * @summary Close job
  */
 const jobOffsetPrinterTaiyoControllerClose = (
@@ -1109,7 +1182,7 @@ const jobOffsetPrinterTaiyoControllerClose = (
       );
     }
   
-return {appControllerGetHealth,lookupControllerFindAll,lookupControllerCreate,lookupControllerFindOne,lookupControllerUpdate,lookupControllerRemove,lookupControllerActivate,accountControllerGetAll,accountControllerCreate,accountControllerGetDashboard,accountControllerValidate,accountControllerGetById,accountControllerEditAccount,accountControllerDelete,accountControllerLogin,accountControllerLogout,accountControllerResetPassword,accountControllerChangePassword,accountControllerEditRole,accountControllerDisable,accountControllerEnable,jobOffsetPrinterTaiyoControllerGetAll,jobOffsetPrinterTaiyoControllerCreate,jobOffsetPrinterTaiyoControllerGetDashboard,jobOffsetPrinterTaiyoControllerDownloadExcelTemplate,jobOffsetPrinterTaiyoControllerUploadExcelPreview,jobOffsetPrinterTaiyoControllerBatchCreate,jobOffsetPrinterTaiyoControllerGetById,jobOffsetPrinterTaiyoControllerUpdate,jobOffsetPrinterTaiyoControllerRemove,jobOffsetPrinterTaiyoControllerRelease,jobOffsetPrinterTaiyoControllerRun,jobOffsetPrinterTaiyoControllerSuspend,jobOffsetPrinterTaiyoControllerComplete,jobOffsetPrinterTaiyoControllerClose}};
+return {appControllerGetHealth,lookupControllerFindAll,lookupControllerCreate,lookupControllerFindOne,lookupControllerUpdate,lookupControllerRemove,lookupControllerActivate,accountControllerGetAll,accountControllerCreate,accountControllerGetDashboard,accountControllerValidate,accountControllerGetById,accountControllerEditAccount,accountControllerDelete,accountControllerLogin,accountControllerLogout,accountControllerResetPassword,accountControllerChangePassword,accountControllerEditRole,accountControllerDisable,accountControllerEnable,jobOffsetPrinterTaiyoControllerGetAll,jobOffsetPrinterTaiyoControllerCreate,jobOffsetPrinterTaiyoControllerGetDashboard,jobOffsetPrinterTaiyoControllerDownloadExcelTemplate,jobOffsetPrinterTaiyoControllerUploadExcelPreview,jobOffsetPrinterTaiyoControllerBatchCreate,jobOffsetPrinterTaiyoControllerGetById,jobOffsetPrinterTaiyoControllerUpdate,jobOffsetPrinterTaiyoControllerRemove,jobOffsetPrinterTaiyoControllerRelease,jobOffsetPrinterTaiyoControllerRun,jobOffsetPrinterTaiyoControllerSuspend,jobOffsetPrinterTaiyoControllerComplete,jobOffsetPrinterTaiyoControllerCancel,jobOffsetPrinterTaiyoControllerClose}};
 export type AppControllerGetHealthResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getOptimesNESTAPI>['appControllerGetHealth']>>>
 export type LookupControllerFindAllResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getOptimesNESTAPI>['lookupControllerFindAll']>>>
 export type LookupControllerCreateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getOptimesNESTAPI>['lookupControllerCreate']>>>
@@ -1144,4 +1217,5 @@ export type JobOffsetPrinterTaiyoControllerReleaseResult = NonNullable<Awaited<R
 export type JobOffsetPrinterTaiyoControllerRunResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getOptimesNESTAPI>['jobOffsetPrinterTaiyoControllerRun']>>>
 export type JobOffsetPrinterTaiyoControllerSuspendResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getOptimesNESTAPI>['jobOffsetPrinterTaiyoControllerSuspend']>>>
 export type JobOffsetPrinterTaiyoControllerCompleteResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getOptimesNESTAPI>['jobOffsetPrinterTaiyoControllerComplete']>>>
+export type JobOffsetPrinterTaiyoControllerCancelResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getOptimesNESTAPI>['jobOffsetPrinterTaiyoControllerCancel']>>>
 export type JobOffsetPrinterTaiyoControllerCloseResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getOptimesNESTAPI>['jobOffsetPrinterTaiyoControllerClose']>>>

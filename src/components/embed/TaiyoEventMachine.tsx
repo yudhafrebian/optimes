@@ -13,8 +13,7 @@ const TaiyoEventMachineEmbed: React.FunctionComponent<TaiyoEventMachineEmbedProp
 ) => {
   const [loaderData, setLoaderData] = useAtom(loadedDataAtom);
   return (
-    <Paper
-      variant="outlined"
+    <Box
       sx={{
         p: props.isExpanded ? 2 : 1,
         borderRadius: 2,
@@ -23,7 +22,7 @@ const TaiyoEventMachineEmbed: React.FunctionComponent<TaiyoEventMachineEmbedProp
     >
       <iframe
         // style="border:1px #FFFFFF none"
-        src={`http://192.168.68.9:3000/d/taiyooperatoreventdashboard/embed?wo=${loaderData.work_order}&wc=${loaderData.work_center.code}`}
+        src={`http://192.168.68.103:3000/d/taiyooperatorevent/embed?wo=${loaderData.work_order}&wc=${loaderData.work_center.code}`}
         title="iFrame"
         width="100%"
         height="250px"
@@ -31,7 +30,7 @@ const TaiyoEventMachineEmbed: React.FunctionComponent<TaiyoEventMachineEmbedProp
         frameBorder={0}
         allow="fullscreen"
       ></iframe>
-    </Paper>
+    </Box>
   );
 };
 

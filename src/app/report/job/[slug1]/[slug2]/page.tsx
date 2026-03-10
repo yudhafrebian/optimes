@@ -4,7 +4,7 @@ export default async function Page({
   params: Promise<{ slug1: string; slug2: string }>;
 }) {
   const { slug1, slug2 } = await params;
-  const url = `http://192.168.68.9:3000/d/dashboard-a/view?WO=${slug1}&WC=${slug2}`;
+  const url = `http://192.168.68.103:3000/d/taiyojobreport/embed?wo=${slug1}&wc=${slug2}&ev=Setup`;
   return (
     <iframe
       // style="border:1px #FFFFFF none"

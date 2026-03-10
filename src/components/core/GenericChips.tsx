@@ -47,6 +47,7 @@ const defaultColorMap: Record<string, ChipColor> = {
   "loaded": "secondary",
   "info": "primary",
   "open": "success",
+  "cancelled": "error",
 };
 
 const GenericChips: React.FC<StatusChipProps> = ({

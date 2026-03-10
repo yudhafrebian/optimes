@@ -1,8 +1,20 @@
+"use client"
 import * as React from "react";
 import { Typography } from "@mui/material";
+import { usePathname, useRouter } from "next/navigation";
+import PpicSkeletonPage from "@/components/skeleton/PpicSkeletonPage";
 
 const DashboardPage = () => {
-  return <Typography>Dashboard</Typography>;
+  const pathname = usePathname();
+  const navigate = useRouter();
+  React.useEffect(() => {
+    if (pathname !== '/') {
+      navigate.replace('/dashboard/head-of-production/work-center-manager');
+    }
+  }, [pathname, navigate]);
+  return (
+    <PpicSkeletonPage />
+  );
 };
 
 export default DashboardPage;

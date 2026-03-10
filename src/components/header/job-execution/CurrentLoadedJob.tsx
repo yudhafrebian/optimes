@@ -106,7 +106,7 @@ const CurrentLoadedJobCard = () => {
 
   const runningEventPattern =
     loader.isLoaded && loaderData.work_center.code && loaderData.work_order
-      ? `${loaderData.work_center.code}/Job/${loaderData.work_order}/Lifecycle/Running`
+      ? `${loaderData.work_center.code}/Job/${loaderData.work_order}/Lifecycle/Run`
       : null;
 
   React.useEffect(() => {
@@ -125,7 +125,7 @@ const CurrentLoadedJobCard = () => {
           pattern: runningEventPattern,
           status: "open",
         });
-        console.log(res)
+        console.log(res);
         setData(res);
       } catch (error) {
         console.log(error);
@@ -178,7 +178,6 @@ const CurrentLoadedJobCard = () => {
     );
   }
 
-
   return (
     <>
       <Paper
@@ -206,23 +205,15 @@ const CurrentLoadedJobCard = () => {
           />
         </Stack>
 
-        {/* <Typography
-          sx={{
-            fontWeight: "bold",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-          }}
-          variant="body2"
-        >
-          {data.rows[0]?.event_path}
+        {/* <Typography variant="body2">
+          <strong> Work Order: </strong>
+          {loaderData.work_order}
         </Typography> */}
         <Box
           sx={{
             display: "flex",
             flexDirection: "column",
-            gap: 2,
-            mt: 2,
+            gap: 1,
           }}
         >
           <Typography variant="caption">Note:</Typography>

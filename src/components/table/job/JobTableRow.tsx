@@ -36,7 +36,7 @@ const JobTableRow: React.FC<JobTableRowProps> = ({ row, onOpenMenu }) => {
       suspended: alpha(theme.palette.warning.light, opacity),
       completed: alpha(theme.palette.secondary.light, opacity),
       disabled: alpha(theme.palette.error.light, opacity),
-      closed: alpha(theme.palette.error.light, opacity),
+      cancelled: alpha(theme.palette.error.light, opacity),
     };
     return map[status] ?? "transparent";
   };
@@ -110,11 +110,11 @@ const JobTableRow: React.FC<JobTableRowProps> = ({ row, onOpenMenu }) => {
 
       {!isJobManagement ? (
         <TableCell align="left" padding="normal" sx={{ minWidth: 200 }}>
-          {dayjs(row.release_date).isValid()
-            ? dayjs(row.due_date).format("HH:mm:ss - DD/MM/YYYY")
+          {dayjs(row.completed_date).isValid()
+            ? dayjs(row.completed_date).format("HH:mm:ss - DD/MM/YYYY")
             : "-"}
         </TableCell>
-      ) : null}
+      ) : null} 
 
       <TableCell align="left" padding="normal" sx={{ minWidth: 200 }}>
         <GenericChips value={lifecycleLabel} variant="outlined" />

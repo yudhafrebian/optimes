@@ -16,23 +16,42 @@ import { useAtom } from "jotai";
 import { authAtom } from "@/atoms/auth.atom";
 import ProfileMenuSekeleton from "../skeleton/ProfileMenuSkeleton";
 import GenericDialog from "../dialog/GenericDialog";
-import { commonApi } from "@/lib/api";
-import { loadedDataAtom, loaderAtom } from "@/atoms/loader.atom";
+import { assetsApi, commonApi } from "@/lib/api";
+import {
+  INITIAL_LOADER_DATA,
+  loadedDataAtom,
+  loaderAtom,
+} from "@/atoms/loader.atom";
 import GenericChips from "./GenericChips";
 import { formatDateTime } from "@/utils/timeFormater";
+import useSWR from "swr";
 
 export function ProfileMenu() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const router = useRouter();
   const [auth, setAuth] = useAtom(authAtom);
-  const [loaderData] = useAtom(loadedDataAtom);
-  const [loader] = useAtom(loaderAtom);
-
+  const [loaderData, setLoaderData] = useAtom(loadedDataAtom);
+  const [loader, setLoader] = useAtom(loaderAtom);
+  const fetcher = () =>
+    assetsApi
+      .getAssetValuesByPath(`${loaderData.work_center.code}.Job Lifecycle`)
+      .then(
+        (res) =>
+          res.matches[0].value === "unload" || res.matches[0].value === "complete" &&
+          (setLoaderData(INITIAL_LOADER_DATA),
+          setLoader({ isLoaded: false, id: "" })),
+      );
 
   const isOperator = auth?.account_role?.label === "Operator";
 
   const open = Boolean(anchorEl);
+
+  const { data: jobLifecycleData } = useSWR(
+    `${loaderData.work_center.code}.Job Lifecycle`,
+    fetcher,
+    { refreshInterval: 2000, revalidateOnFocus: false },
+  );
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -69,7 +88,7 @@ export function ProfileMenu() {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              gap:1
+              gap: 1,
             }}
           >
             <Typography variant="body2">Current Job</Typography>

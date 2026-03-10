@@ -69,13 +69,13 @@ const OperatorPage = () => {
   }
 
   return (
-    <Paper>
+    <Paper variant="outlined">
       <iframe
         // style="border:1px #FFFFFF none"
-        src={`http://192.168.68.9:3000/d/taiyojobreport/embed?wo=${wo}&wc=${wc}&scale=1`}
+        src={`http://192.168.68.103:3000/d/taiyooperatormesdashboard-1/embed?wo=${wo}&wc=${wc}`}
         title="iFrame"
         width="100%"
-        height="1500px"
+        height="880px"
         scrolling="yes"
         frameBorder="no"
         allow="fullscreen"
