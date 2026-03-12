@@ -22,7 +22,7 @@ const TaiyoEventMachineEmbed: React.FunctionComponent<TaiyoEventMachineEmbedProp
     >
       <iframe
         // style="border:1px #FFFFFF none"
-        src={`http://192.168.68.103:3000/d/taiyooperatorevent/embed?wo=${loaderData.work_order}&wc=${loaderData.work_center.code}`}
+        src={`http://192.168.68.9:3000/d/taiyooperatorevent/embed?wo=${loaderData.work_order}&wc=${loaderData.work_center.code}`}
         title="iFrame"
         width="100%"
         height="250px"

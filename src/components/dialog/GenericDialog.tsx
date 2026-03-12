@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -6,6 +7,7 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
+import { SxProps, Theme } from "@mui/material/styles";
 import * as React from "react";
 
 interface IGenericDialogProps {
@@ -15,9 +17,13 @@ interface IGenericDialogProps {
   subContent?: string;
   negativeText?: string;
   positiveText?: string;
+  isTriggerDrawer?: boolean;
+  triggerLabel?: string;
+  onTriggerDrawer?: () => void;
   onConfirm: () => void;
   onClose: () => void;
   onRefresh: () => void;
+  sx?: SxProps<Theme>;
 }
 
 const GenericDialog: React.FunctionComponent<IGenericDialogProps> = (props) => {
@@ -27,11 +33,21 @@ const GenericDialog: React.FunctionComponent<IGenericDialogProps> = (props) => {
       onClose={props.onClose}
       aria-labelledby="generic-dialog-title"
       aria-describedby="generic-dialog-description"
+      sx={props.sx}
     >
       <DialogTitle id="generic-dialog-title">{props.title}</DialogTitle>
       <DialogContent>
         <Typography variant="body1">{props.content}</Typography>
-        {props.subContent && <Typography variant="body2" color="warning">{props.subContent}</Typography>}
+        {props.subContent && (
+          <Typography variant="body2" color="warning">
+            {props.subContent}
+          </Typography>
+        )}
+        {props.isTriggerDrawer && (
+          <Button sx={{mt:2}} variant="outlined" onClick={props.onTriggerDrawer}>
+            {props.triggerLabel}
+          </Button>
+        )}
       </DialogContent>
       <DialogActions>
         <Button

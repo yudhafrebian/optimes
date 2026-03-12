@@ -7,6 +7,7 @@ import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 import SettingsIcon from "@mui/icons-material/Settings";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import PauseCircleOutlineIcon from "@mui/icons-material/PauseCircleOutline";
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 
 import { commonApi } from "@/lib/api";
 import useSWR from "swr";
@@ -60,11 +61,11 @@ const SummaryAnalyticView = () => {
         </Grid>
         <Grid size={{ xs: 6, sm: 6, md: 4, lg: 2.4 }}>
           <AnalyticCard
-            title="Suspended"
-            value={isLoading ? "..." : data?.suspended || 0}
-            icon={<PauseCircleOutlineIcon fontSize="large" />}
-            iconColor="warning.main"
-            iconBackgroundColor="warning.light"
+            title="Cancelled"
+            value={isLoading ? "..." : data?.cancelled || 0}
+            icon={<HighlightOffIcon fontSize="large" />}
+            iconColor="error.main"
+            iconBackgroundColor="error.light"
           />
         </Grid>
       </Grid>

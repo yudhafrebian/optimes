@@ -37,6 +37,12 @@ interface HeadCell {
 
 export const headCells: readonly HeadCell[] = [
   {
+    id: "job_lifecycle_state",
+    numeric: false,
+    disablePadding: false,
+    label: "Job Lifecycle State",
+  },
+  {
     id: "work_order",
     numeric: false,
     disablePadding: false,
@@ -78,12 +84,7 @@ export const headCells: readonly HeadCell[] = [
     disablePadding: false,
     label: "Release Date",
   },
-  {
-    id: "job_lifecycle_state",
-    numeric: false,
-    disablePadding: false,
-    label: "Job Lifecycle State",
-  },
+
   {
     id: "job_priority",
     numeric: false,
@@ -110,6 +111,12 @@ export const reportHeadCells: readonly HeadCell[] = [
     numeric: false,
     disablePadding: false,
     label: "Actions",
+  },
+  {
+    id: "job_lifecycle_state",
+    numeric: false,
+    disablePadding: false,
+    label: "Job Lifecycle State",
   },
   {
     id: "work_order",
@@ -158,12 +165,6 @@ export const reportHeadCells: readonly HeadCell[] = [
     numeric: false,
     disablePadding: false,
     label: "Completed Date",
-  },
-  {
-    id: "job_lifecycle_state",
-    numeric: false,
-    disablePadding: false,
-    label: "Job Lifecycle State",
   },
   {
     id: "job_priority",

@@ -697,6 +697,13 @@ export type LookupControllerActivateBody = {
   is_active?: boolean;
 };
 
+export type JobOffsetPrinterTaiyoControllerGetAllParams = {
+/**
+ * Filter by related WORK_CENTER lookup code (e.g. Jasuindo.OffsetPrinter.Taiyo1)
+ */
+work_center?: string;
+};
+
 export type JobOffsetPrinterTaiyoControllerUploadExcelPreviewBody = {
   file: Blob;
 };
@@ -986,10 +993,11 @@ const accountControllerEnable = (
  * @summary Get all jobs
  */
 const jobOffsetPrinterTaiyoControllerGetAll = (
-    
+    params?: JobOffsetPrinterTaiyoControllerGetAllParams,
  ) => {
       return customInstance1<JobOffsetPrinterTaiyoListResponseDto[]>(
-      {url: `/api/jobs/offset-printer-taiyo`, method: 'GET'
+      {url: `/api/jobs/offset-printer-taiyo`, method: 'GET',
+        params
     },
       );
     }

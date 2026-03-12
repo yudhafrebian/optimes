@@ -87,19 +87,21 @@ export function AppShell({ children }: { children: ReactNode }) {
     pathname.startsWith("/dashboard/operator/job-list") ||
     pathname.startsWith("/dashboard/operator/job-activity");
 
+  const isJobDashboard = pathname.startsWith("/dashboard/operator");
+
   return (
     <NextAppProvider theme={theme} branding={branding} navigation={navigation}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DashboardLayout
-        defaultSidebarCollapsed
+          defaultSidebarCollapsed
           slots={{
             toolbarActions: ProfileMenu,
           }}
         >
-          {isJobExecution ? (
-            <Box sx={{ px: 0, mt:2 }}>
+          {isJobExecution || isJobDashboard ? (
+            <Box sx={{ px: 0, mt: 2 }}>
               <Box sx={{ px: { xs: 2, sm: 3 }, mb: 1 }}>{children}</Box>
-              <JobExecutionHeader />
+              {isJobExecution && <JobExecutionHeader />}
             </Box>
           ) : (
             <PageContainer title="">{children}</PageContainer>

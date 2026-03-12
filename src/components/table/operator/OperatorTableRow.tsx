@@ -7,15 +7,26 @@ import GenericChips from "@/components/core/GenericChips";
 import dayjs from "dayjs";
 import { OperatorRowData } from "@/interface/row-table.interface";
 import { useAtom } from "jotai";
-import {loadedDataAtom, loaderAtom} from "@/atoms/loader.atom";
+import { loadedDataAtom, loaderAtom } from "@/atoms/loader.atom";
 import { assetsApi, commonApi } from "@/lib/api";
 import GenericDialog from "@/components/dialog/GenericDialog";
 import { getExecutionDialogConfig } from "@/components/dialog/executionDialogConfig";
 import { useSnackbar } from "@/hooks/useSnackbar";
+import { LookupResponseDto } from "@/api/generated/common-service";
 
 interface OperatorTableRowProps {
   row: OperatorRowData;
 }
+
+const toLookupJson = (lookup: LookupResponseDto) => ({
+  id: lookup.id,
+  lookup_type: lookup.lookup_type,
+  code: lookup.code,
+  label: lookup.label,
+  description: lookup.description ?? null,
+  sort_order: lookup.sort_order ?? null,
+  is_active: lookup.is_active,
+});
 
 const OperatorTableRow: React.FC<OperatorTableRowProps> = ({ row }) => {
   const [dialogType, setDialogType] = React.useState<
@@ -28,7 +39,7 @@ const OperatorTableRow: React.FC<OperatorTableRowProps> = ({ row }) => {
   const quantityOrder = row.quantity_order ?? "-";
 
   const [loader, setLoader] = useAtom(loaderAtom);
-  const [loaderData, setLoaderData] = useAtom(loadedDataAtom);
+  const [, setLoaderData] = useAtom(loadedDataAtom);
   const showSnackbar = useSnackbar();
 
   const isDisabled = loader.isLoaded;
@@ -37,13 +48,13 @@ const OperatorTableRow: React.FC<OperatorTableRowProps> = ({ row }) => {
 
   const getRowBg = (opacity: number) => {
     const map: Record<string, string> = {
-      running: alpha(theme.palette.success.light, opacity),
+      running: alpha(theme.palette.secondary.light, opacity),
       released: alpha(theme.palette.primary.light, opacity),
       scheduled: alpha(theme.palette.grey[500], opacity),
       created: alpha(theme.palette.info.light, opacity),
       "on hold": alpha(theme.palette.warning.light, opacity),
       suspended: alpha(theme.palette.warning.light, opacity),
-      completed: alpha(theme.palette.secondary.light, opacity),
+      completed: alpha(theme.palette.success.light, opacity),
       disabled: alpha(theme.palette.error.light, opacity),
     };
     return map[status] ?? "transparent";
@@ -64,6 +75,20 @@ const OperatorTableRow: React.FC<OperatorTableRowProps> = ({ row }) => {
           path: `${row.work_center.code}.Job Lifecycle`,
           value: "load",
         },
+        {
+          path: `${row.work_center.code}.Job Loader`,
+          value: {
+            id: row.id,
+            work_center: toLookupJson(row.work_center),
+            work_order: row.work_order,
+            sales_order: row.sales_order,
+            quantity_order: row.quantity_order,
+            quantity_unit: toLookupJson(row.quantity_unit),
+            planned_start_time: row.planned_start_time,
+            job_lifecycle_state: "Running",
+            notes: row.notes,
+          }
+        }
       ],
     };
     try {
@@ -147,40 +172,6 @@ const OperatorTableRow: React.FC<OperatorTableRowProps> = ({ row }) => {
     }
   };
 
-  React.useEffect(() => {
-    const handleLoaded = async () => {
-      try {
-        const res = await assetsApi.queryEvents({
-          pattern: `${row.work_center.code}/Job/${row.work_order}/Lifecycle/Running`,
-          status: "open",
-        });
-
-        if (res.rows.length > 0) {
-          setLoader({
-            isLoaded: true,
-            id: row.id,
-          });
-
-          setLoaderData({
-            id: row.id,
-            work_center: row.work_center,
-            work_order: row.work_order,
-            sales_order: row.sales_order,
-            quantity_order: row.quantity_order,
-            quantity_unit: row.quantity_unit,
-            planned_start_time: row.planned_start_time,
-            job_lifecycle_state: row.job_lifecycle_state,
-            notes: row.notes
-          })
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    handleLoaded();
-  }, [row.id]);
-
   return (
     <>
       <TableRow
@@ -204,6 +195,10 @@ const OperatorTableRow: React.FC<OperatorTableRowProps> = ({ row }) => {
           >
             Load
           </Button>
+        </TableCell>
+
+        <TableCell align="left" padding="normal" sx={{ minWidth: 200 }}>
+          <GenericChips value={lifecycleLabel} variant="outlined" />
         </TableCell>
 
         <TableCell
@@ -232,9 +227,10 @@ const OperatorTableRow: React.FC<OperatorTableRowProps> = ({ row }) => {
             ? dayjs(row.planned_start_time).format("HH:mm:ss - DD/MM/YYYY")
             : "-"}
         </TableCell>
-
         <TableCell align="left" padding="normal" sx={{ minWidth: 200 }}>
-          <GenericChips value={lifecycleLabel} variant="outlined" />
+          {dayjs(row.release_date).isValid()
+            ? dayjs(row.release_date).format("HH:mm:ss - DD/MM/YYYY")
+            : "-"}
         </TableCell>
 
         <TableCell

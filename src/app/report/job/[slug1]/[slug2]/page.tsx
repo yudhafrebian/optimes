@@ -1,20 +1,20 @@
+import ReportFrame from "./ReportFrame";
+
 export default async function Page({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug1: string; slug2: string }>;
+  searchParams?: Promise<{ print?: string; source?: string }>;
 }) {
   const { slug1, slug2 } = await params;
-  const url = `http://192.168.68.103:3000/d/taiyojobreport/embed?wo=${slug1}&wc=${slug2}&ev=Setup`;
-  return (
-    <iframe
-      // style="border:1px #FFFFFF none"
-      src={url}
-      title="iFrame"
-      width="100%"
-      height="700px"
-      scrolling="yes"
-      // frameborder="no"
-      allow="fullscreen"
-    ></iframe>
-  );
+  const resolvedSearchParams = await searchParams;
+  const autoPrint = resolvedSearchParams?.print === "1";
+  const mode = resolvedSearchParams?.source === "image" ? "image" : "embed";
+  const url =
+    mode === "image"
+      ? `http://192.168.68.9:3000/api/render-image?wo=${slug1}&wc=${slug2}&ev=Setup&slug=taiyojobreport`
+      : `http://192.168.68.9:3000/d/taiyojobreport/embed?wo=${slug1}&wc=${slug2}&ev=Setup`;
+
+  return <ReportFrame url={url} autoPrint={autoPrint} mode={mode} />;
 }

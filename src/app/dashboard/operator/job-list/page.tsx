@@ -7,10 +7,10 @@ import * as React from "react";
 const JobPage = () => {
   return (
     <Box sx={{ display: "flex", gap: 1, width: "100%" }}>
-      <CurrentLoadedJobCard />
       <Box sx={{ flex: 1, minWidth: 0 }}>
         <OperatorTable />
       </Box>
+      <CurrentLoadedJobCard />
     </Box>
   );
 };

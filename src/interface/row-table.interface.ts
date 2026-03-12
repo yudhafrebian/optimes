@@ -38,6 +38,7 @@ export interface OperatorRowData {
   quantity_order: number;
   quantity_unit: LookupResponseDto;           // Isinya: { label: "BK", code: "BK", ... }
   planned_start_time: string;           // Isinya: { label: "High", code: "HIGH", ... }
+  release_date?: string;
   job_lifecycle_state: LookupResponseDto;     // Isinya: { label: "Created", code: "CREATED", ... }
   notes: string;
 }

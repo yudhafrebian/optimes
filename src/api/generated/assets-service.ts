@@ -165,6 +165,61 @@ export interface AssetFinderResponse {
   assets: AssetFinderResponseAssetsItem[];
 }
 
+export interface AssetPathMatch {
+  path: string;
+  assetId: string;
+  name: string;
+}
+
+export type FindAssetPathsFilterOperator = typeof FindAssetPathsFilterOperator[keyof typeof FindAssetPathsFilterOperator];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const FindAssetPathsFilterOperator = {
+  eq: 'eq',
+  neq: 'neq',
+  contains: 'contains',
+  contains_object: 'contains_object',
+} as const;
+
+export interface FindAssetPathsFilter {
+  attributeName: string;
+  operator: FindAssetPathsFilterOperator;
+  value: JsonValue;
+}
+
+export type FindAssetPathsRequestLogic = typeof FindAssetPathsRequestLogic[keyof typeof FindAssetPathsRequestLogic];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const FindAssetPathsRequestLogic = {
+  AND: 'AND',
+  OR: 'OR',
+} as const;
+
+export interface FindAssetPathsRequest {
+  scopePath: string;
+  logic?: FindAssetPathsRequestLogic;
+  /** @minItems 1 */
+  filters: FindAssetPathsFilter[];
+}
+
+export type FindAssetPathsResponseLogic = typeof FindAssetPathsResponseLogic[keyof typeof FindAssetPathsResponseLogic];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const FindAssetPathsResponseLogic = {
+  AND: 'AND',
+  OR: 'OR',
+} as const;
+
+export interface FindAssetPathsResponse {
+  scopePath: string;
+  logic: FindAssetPathsResponseLogic;
+  count: number;
+  matches: AssetPathMatch[];
+}
+
 export interface SetAttributeValueRequest {
   value: JsonValue;
 }
@@ -173,6 +228,15 @@ export interface AttributeMatchesResponse {
   path: string;
   count: number;
   matches: AttributeQueryMatch[];
+}
+
+export interface BatchGetRequest {
+  paths: string[];
+}
+
+export interface BatchGetResponse {
+  count: number;
+  results: AttributeMatchesResponse[];
 }
 
 export type BatchSetRequestItemsItem = {
@@ -427,6 +491,18 @@ export interface EventsQueryResponse {
   limit?: number;
   offset?: number;
   rows: EventRow[];
+}
+
+export interface EventRangeResponse {
+  pattern: string;
+  from: string;
+  to: string;
+  status: string;
+  /** @nullable */
+  start_ts: string | null;
+  /** @nullable */
+  end_ts: string | null;
+  count: number;
 }
 
 export interface HistorianPathMatch {
@@ -762,6 +838,35 @@ to?: EventToQueryParameter;
 severity?: EventSeverityQueryParameter;
 };
 
+export type GetEventRangeParams = {
+/**
+ * Event path filter with wildcard '*'. '*' means all.
+ */
+pattern?: EventPatternQueryParameter;
+/**
+ * Start bound for event overlap filter. Accepts ISO datetime or epoch number string.
+ */
+from?: EventFromQueryParameter;
+/**
+ * End bound for event overlap filter. Accepts ISO datetime or epoch number string.
+ */
+to?: EventToQueryParameter;
+/**
+ * Event status filter. Use '*' for all.
+ */
+status?: EventStatusQueryParameter;
+/**
+ * JSON string filter for context. Supports simple object equality, or advanced {op,conditions}. Operators: eq, neq, in, not_in, exists, not_exists.
+ */
+context?: EventContextQueryParameter;
+/**
+ * Page size. Runtime clamps to range 1..5000.
+ * @minimum 1
+ * @maximum 5000
+ */
+limit?: EventLimitQueryParameter;
+};
+
 export type DeleteEventByIdParams = {
 id: string;
 };
@@ -1028,6 +1133,21 @@ const queryAssets = (
     }
   
 /**
+ * Search assets inside `scopePath` and compare raw `asset.attributes[attributeName].value` using one or more filters.
+ * @summary Find asset paths by raw attribute value
+ */
+const findAssetPathsByAttributeValue = (
+    findAssetPathsRequest: FindAssetPathsRequest,
+ ) => {
+      return customInstance2<FindAssetPathsResponse>(
+      {url: `/api/assets/find-asset-paths`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: findAssetPathsRequest
+    },
+      );
+    }
+  
+/**
  * @summary Find attributes/assets by expected value
  */
 const findAssetsByValue = (
@@ -1076,6 +1196,21 @@ const setAssetValuesByPath = (
       {url: `/api/assets/value/${encodedPath}`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
       data: setAttributeValueRequest
+    },
+      );
+    }
+  
+/**
+ * Read multiple attribute paths in one request. Duplicate paths are resolved once per request and reused in the response.
+ * @summary Batch get attribute values
+ */
+const getAssetValuesBatch = (
+    batchGetRequest: BatchGetRequest,
+ ) => {
+      return customInstance2<BatchGetResponse>(
+      {url: `/api/assets/values:batch`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: batchGetRequest
     },
       );
     }
@@ -1131,6 +1266,20 @@ const deleteEventsByFilter = (
  ) => {
       return customInstance2<DeleteEventsResponse>(
       {url: `/api/events`, method: 'DELETE',
+        params
+    },
+      );
+    }
+  
+/**
+ * Returns earliest `start_ts` and latest `end_ts` for matched events. If the latest matched event has empty `end_ts`, response falls back to current server time.
+ * @summary Get event time range
+ */
+const getEventRange = (
+    params?: GetEventRangeParams,
+ ) => {
+      return customInstance2<EventRangeResponse>(
+      {url: `/api/events/range`, method: 'GET',
         params
     },
       );
@@ -1382,7 +1531,7 @@ const deleteGlobalValue = (
       );
     }
   
-return {getDocsPage,getOpenApiJson,getDocsPageAlias,getOpenApiJsonAlias,getAssetSystem,replaceAssetSystem,getAssetSystemAlias,replaceAssetSystemAlias,getAssetHierarchy,queryAssets,findAssetsByValue,findAssetsByValueAlias,getAssetValuesByPath,setAssetValuesByPath,setAssetValuesBatch,getHistorianTags,queryEvents,deleteEventsByFilter,openEvent,closeEvents,closeEventById,ackEventById,deleteEventById,historianRaw,historianRange,historianLast,historianFirst,historianTargets,historianTargetMetrics,historianTargetLogs,historianDeleteAttribute,historianDeleteTemplateAttribute,getGlobalEntries,getGlobalValue,setGlobalValue,deleteGlobalValue}};
+return {getDocsPage,getOpenApiJson,getDocsPageAlias,getOpenApiJsonAlias,getAssetSystem,replaceAssetSystem,getAssetSystemAlias,replaceAssetSystemAlias,getAssetHierarchy,queryAssets,findAssetPathsByAttributeValue,findAssetsByValue,findAssetsByValueAlias,getAssetValuesByPath,setAssetValuesByPath,getAssetValuesBatch,setAssetValuesBatch,getHistorianTags,queryEvents,deleteEventsByFilter,getEventRange,openEvent,closeEvents,closeEventById,ackEventById,deleteEventById,historianRaw,historianRange,historianLast,historianFirst,historianTargets,historianTargetMetrics,historianTargetLogs,historianDeleteAttribute,historianDeleteTemplateAttribute,getGlobalEntries,getGlobalValue,setGlobalValue,deleteGlobalValue}};
 export type GetDocsPageResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['getDocsPage']>>>
 export type GetOpenApiJsonResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['getOpenApiJson']>>>
 export type GetDocsPageAliasResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['getDocsPageAlias']>>>
@@ -1393,14 +1542,17 @@ export type GetAssetSystemAliasResult = NonNullable<Awaited<ReturnType<ReturnTyp
 export type ReplaceAssetSystemAliasResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['replaceAssetSystemAlias']>>>
 export type GetAssetHierarchyResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['getAssetHierarchy']>>>
 export type QueryAssetsResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['queryAssets']>>>
+export type FindAssetPathsByAttributeValueResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['findAssetPathsByAttributeValue']>>>
 export type FindAssetsByValueResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['findAssetsByValue']>>>
 export type FindAssetsByValueAliasResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['findAssetsByValueAlias']>>>
 export type GetAssetValuesByPathResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['getAssetValuesByPath']>>>
 export type SetAssetValuesByPathResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['setAssetValuesByPath']>>>
+export type GetAssetValuesBatchResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['getAssetValuesBatch']>>>
 export type SetAssetValuesBatchResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['setAssetValuesBatch']>>>
 export type GetHistorianTagsResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['getHistorianTags']>>>
 export type QueryEventsResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['queryEvents']>>>
 export type DeleteEventsByFilterResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['deleteEventsByFilter']>>>
+export type GetEventRangeResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['getEventRange']>>>
 export type OpenEventResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['openEvent']>>>
 export type CloseEventsResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['closeEvents']>>>
 export type CloseEventByIdResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getKufayekaRuntimeAPI>['closeEventById']>>>

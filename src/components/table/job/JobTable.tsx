@@ -31,7 +31,6 @@ import { usePathname } from "next/navigation";
 
 const fetcher = () =>
   commonApi.jobOffsetPrinterTaiyoControllerGetAll().then((res) => {
-    console.log(res)
     return res;
   });
 

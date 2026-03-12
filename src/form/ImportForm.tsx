@@ -58,17 +58,38 @@ const ImportForm = ({
     try {
       const res = await commonApi.jobOffsetPrinterTaiyoControllerDownloadExcelTemplate();
 
+      const disposition = res.headers?.["content-disposition"] as
+        | string
+        | undefined;
+      const headerContentType = res.headers?.["content-type"] as
+        | string
+        | undefined;
       const contentType =
-        res.headers["content-type"] ||
+        headerContentType ||
+        res.data?.type ||
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-      const blob = new Blob([res as unknown as BlobPart], {
-        type: contentType,
-      });
+
+      const filenameFromHeader = disposition
+        ?.split(";")
+        .map((part) => part.trim())
+        .find((part) => part.startsWith("filename="))
+        ?.replace("filename=", "")
+        .replaceAll('"', "");
+
+      const fallbackFilename = contentType.includes("application/vnd.ms-excel")
+        ? "job-import-template.xls"
+        : "job-import-template.xlsx";
+
+      const filename = filenameFromHeader || fallbackFilename;
+      const blob =
+        res.data instanceof Blob
+          ? new Blob([res.data], { type: contentType })
+          : new Blob([res.data as BlobPart], { type: contentType });
 
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = "job-import-template.xlsx";
+      link.download = filename;
       document.body.appendChild(link);
       link.click();
       link.remove();

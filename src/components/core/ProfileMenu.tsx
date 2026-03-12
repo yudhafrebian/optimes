@@ -7,12 +7,13 @@ import {
   ListItemIcon,
   Typography,
   Box,
+  Stack,
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { authAtom } from "@/atoms/auth.atom";
 import ProfileMenuSekeleton from "../skeleton/ProfileMenuSkeleton";
 import GenericDialog from "../dialog/GenericDialog";
@@ -21,34 +22,47 @@ import {
   INITIAL_LOADER_DATA,
   loadedDataAtom,
   loaderAtom,
+  normalizeLoaderData,
 } from "@/atoms/loader.atom";
 import GenericChips from "./GenericChips";
-import { formatDateTime } from "@/utils/timeFormater";
 import useSWR from "swr";
+import workCenterAtom from "@/atoms/wc.atom";
 
 export function ProfileMenu() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const router = useRouter();
   const [auth, setAuth] = useAtom(authAtom);
+  const workCenterPath = useAtom(workCenterAtom);
+  const setWorkCenterPath = useSetAtom(workCenterAtom);
   const [loaderData, setLoaderData] = useAtom(loadedDataAtom);
   const [loader, setLoader] = useAtom(loaderAtom);
+
   const fetcher = () =>
     assetsApi
-      .getAssetValuesByPath(`${loaderData.work_center.code}.Job Lifecycle`)
-      .then(
-        (res) =>
-          res.matches[0].value === "unload" || res.matches[0].value === "complete" &&
-          (setLoaderData(INITIAL_LOADER_DATA),
-          setLoader({ isLoaded: false, id: "" })),
-      );
+      .getAssetValuesByPath(`${workCenterPath[0]}.Job Loader`)
+      .then((res) => {
+        const normalizedLoaderData = normalizeLoaderData(res.matches[0]?.value);
+        const hasLoadedJob =
+          normalizedLoaderData.id !== "" &&
+          normalizedLoaderData.work_order !== "" &&
+          normalizedLoaderData.work_center.code !== "";
+
+        setLoaderData(normalizedLoaderData);
+        setLoader({
+          isLoaded: hasLoadedJob,
+          id: hasLoadedJob ? normalizedLoaderData.id : "",
+        });
+
+        return normalizedLoaderData;
+      });
 
   const isOperator = auth?.account_role?.label === "Operator";
 
   const open = Boolean(anchorEl);
 
-  const { data: jobLifecycleData } = useSWR(
-    `${loaderData.work_center.code}.Job Lifecycle`,
+  useSWR(
+    isOperator && workCenterPath[0] ? ["job-loader", workCenterPath[0]] : null,
     fetcher,
     { refreshInterval: 2000, revalidateOnFocus: false },
   );
@@ -64,6 +78,9 @@ export function ProfileMenu() {
   const handleLogout = async () => {
     await commonApi.accountControllerLogout();
     setAuth(null);
+    setLoaderData(INITIAL_LOADER_DATA);
+    setLoader({ isLoaded: false, id: "" });
+    setWorkCenterPath(undefined);
     handleClose();
     router.replace("/auth/login");
   };
@@ -73,35 +90,61 @@ export function ProfileMenu() {
   return (
     <>
       {isOperator && (
-        <Box
-          sx={{
-            bgcolor: "action.hover",
-            px: 1.5,
-            py: 0.5,
-            border: "1px solid",
-            borderColor: "gray",
-            borderRadius: 2,
-          }}
-        >
+        <Stack direction={"row"} gap={1} alignItems={"center"}>
           <Box
             sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              gap: 1,
+              bgcolor: "action.hover",
+              px: 1.5,
+              py: 0.5,
+              border: "1px solid",
+              borderColor: "gray",
+              borderRadius: 2,
             }}
           >
-            <Typography variant="body2">Current Job</Typography>
-            <GenericChips
-              size="small"
-              value={loaderData.job_lifecycle_state.label || "Offline"}
-            />
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <Typography variant="caption">Asset</Typography>
+              <GenericChips
+                value={workCenterPath[0] ? workCenterPath[0] : "Not Assigned"}
+              />
+            </Box>
           </Box>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <Typography variant="caption">{loaderData.work_order}</Typography>
-            <Typography variant="caption">{loaderData.sales_order}</Typography>
+          <Box
+            sx={{
+              bgcolor: "action.hover",
+              px: 1.5,
+              py: 0.5,
+              border: "1px solid",
+              borderColor: "gray",
+              borderRadius: 2,
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: 1,
+              }}
+            >
+              <Typography variant="caption">Current Job</Typography>
+            </Box>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              {loaderData.id === "" ? (
+                <GenericChips size="small" value={"Offline"} />
+              ) : (
+                <GenericChips size="small" value={loaderData.work_order} />
+              )}
+              {loaderData.id !== "" && (
+                <GenericChips size="small" value={loaderData.sales_order} />
+              )}
+            </Box>
           </Box>
-        </Box>
+        </Stack>
       )}
       <Box
         onClick={handleOpen}

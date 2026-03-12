@@ -1,4 +1,5 @@
 "use client";
+import { authAtom } from "@/atoms/auth.atom";
 import { loadedDataAtom, loaderAtom } from "@/atoms/loader.atom";
 import PendingActionsOutlinedIcon from "@mui/icons-material/PendingActionsOutlined";
 import { Box, Button, Grid, Paper, Stack, Typography } from "@mui/material";
@@ -9,8 +10,10 @@ import * as React from "react";
 const OperatorPage = () => {
   const [loaderData] = useAtom(loadedDataAtom);
   const [loaded] = useAtom(loaderAtom);
+  const [auth] = useAtom(authAtom);
   const wo = loaderData.work_order;
   const wc = loaderData.work_center.code;
+  const opName = auth?.full_name?.trim();
 
   if (!loaded.isLoaded) {
     return (
@@ -68,11 +71,26 @@ const OperatorPage = () => {
     );
   }
 
+  if (!opName) {
+    return (
+      <Grid
+        container
+        justifyContent="center"
+        alignItems="center"
+        sx={{ minHeight: "calc(100vh - 220px)", py: 2 }}
+      >
+        <Typography variant="body2" color="text.secondary">
+          Loading dashboard data...
+        </Typography>
+      </Grid>
+    );
+  }
+
   return (
     <Paper variant="outlined">
       <iframe
         // style="border:1px #FFFFFF none"
-        src={`http://192.168.68.103:3000/d/taiyooperatormesdashboard-1/embed?wo=${wo}&wc=${wc}`}
+        src={`http://192.168.68.9:3000/d/taiyooperatormesdashboard-1/embed?wo=${wo}&wc=${wc}&operator=${opName}`}
         title="iFrame"
         width="100%"
         height="880px"

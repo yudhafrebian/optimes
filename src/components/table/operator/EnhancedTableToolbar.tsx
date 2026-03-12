@@ -103,18 +103,20 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   return (
     <Toolbar
       sx={{
-        pl: { xs: 1, sm: 2 },
-        pr: { xs: 1, sm: 1 },
+        px: 0,
+        pt: 2,
+        pb: 1,
         alignItems: "flex-start",
       }}
     >
       <Box
         sx={{
           display: "flex",
-          flexDirection: "column",
+          flexDirection: { xs: "column", md: "row" },
           justifyContent: "space-between",
+          alignItems: { xs: "flex-start", md: "center" },
+          gap: 1.5,
           width: "100%",
-          marginTop: 2,
         }}
       >
         <Typography variant="h5" fontWeight={500}>
@@ -126,10 +128,8 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
             flexWrap: "nowrap",
             gap: 2,
             alignItems: "center",
-            width: "100%",
-            p: { xs: 0, sm: 2 },
-            pt: { xs: 1, sm: 2 },
-            pb: { xs: 1, sm: 2 },
+            ml: "auto",
+            py: 1,
             overflowX: "auto",
           }}
         >

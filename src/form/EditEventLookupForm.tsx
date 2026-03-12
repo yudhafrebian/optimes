@@ -27,17 +27,27 @@ interface EditEventLookupFormProps {
 const EditEventLookupForm = ({ onSuccess, data }: EditEventLookupFormProps) => {
   const showSnackbar = useSnackbar();
   const normalizeCode = data.code.split("/")[0];
-  const normalizeLabel = data.label.split(" - ").slice(-1)[0];
+  const normalizeLabel = data.label.includes(" - ")
+    ? data.label.split(" - ").slice(1).join(" - ")
+    : data.label;
 
   const handleEditEvent = async (values: CreateLookupDto) => {
     try {
-      console.log(typeof parseInt(values.label.split(" ")[0]))
-      if(typeof parseInt(values.label.split(" ")[0]) === "number"){
-       console.log(values.label = values.label.split(" ").slice(1).join(" ")) 
+      const normalizedLabel = values.label.trim().replace(/\s+/g, " ");
+      const labelPrefix = Number.parseInt(normalizedLabel.split(" ")[0], 10);
+      const normalLabel = normalizedLabel;
+
+      values.label = normalizedLabel;
+      if (!Number.isNaN(labelPrefix)) {
+        values.label = values.label.split(" ").slice(1).join(" ");
       }
-      const labelTrimer = values.label.trim().replace(/\s+/g, "");
+
+      const labelTrimer = values.label
+        .trim()
+        .replace(/[^a-zA-Z0-9]/g, "");
+
       const codeBuilder = `${values.code}/${labelTrimer}`;
-      const labelBuilder = `${values.code} - ${values.label}`;
+      const labelBuilder = `${values.code} - ${normalLabel}`;
       const payload = {
         lookup_type: values.lookup_type,
         code: codeBuilder,

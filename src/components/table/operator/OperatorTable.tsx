@@ -7,23 +7,20 @@ import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
 import TablePagination from "@mui/material/TablePagination";
 import Paper from "@mui/material/Paper";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Switch from "@mui/material/Switch";
 import { LinearProgress, useMediaQuery, useTheme } from "@mui/material";
 import { useMemo, useState } from "react";
 import EnhancedTableToolbar from "./EnhancedTableToolbar";
 import EnhancedTableHead from "./EnhancedTableHead";
 import TableRowSkeleton from "../../skeleton/TableRowSkeleton";
-import { useSnackbar } from "@/hooks/useSnackbar";
 import useSwr from "swr";
 import { OperatorRowData } from "@/interface/row-table.interface";
 import { IJobOffsetPrinter } from "@/interface/job.interface";
-import { commonApi } from "@/lib/api";
-import { getJobDialogConfig } from "@/components/dialog/jobDialogConfig";
+import { assetsApi, commonApi } from "@/lib/api";
 import { operatorFilter } from "@/utils/operatorFilter";
 import OperatorTableRow from "./OperatorTableRow";
-
-const fetcher = () => commonApi.jobOffsetPrinterTaiyoControllerGetAll();
+import { useAtom } from "jotai";
+import { authAtom } from "@/atoms/auth.atom";
+import workCenterAtom from "@/atoms/wc.atom";
 
 function createData(user: IJobOffsetPrinter): OperatorRowData {
   return {
@@ -33,6 +30,7 @@ function createData(user: IJobOffsetPrinter): OperatorRowData {
     quantity_order: user.quantity_order,
     quantity_unit: user.quantity_unit,
     planned_start_time: user.planned_start_time,
+    release_date: user.release_date ?? "",
     notes: user.notes,
     job_lifecycle_state: user.job_lifecycle_state,
     work_center: user.work_center,
@@ -66,7 +64,6 @@ export default function OperatorTable() {
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof OperatorRowData>("sales_order");
   const [page, setPage] = useState<number>(0);
-  const [dense, setDense] = useState<boolean>(false);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [loading, setLoading] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -77,6 +74,13 @@ export default function OperatorTable() {
   const [periodFilter, setPeriodFilter] = useState<string>("All");
   const [priorityFilter, setPriorityFilter] = useState<string>("All");
 
+  const [auth] = useAtom(authAtom);
+  const [workCenterPath] = useAtom(workCenterAtom);
+
+  const fetcher = () =>
+    commonApi
+      .jobOffsetPrinterTaiyoControllerGetAll({ work_center: workCenterPath ? workCenterPath : "-" })
+      .then((res) => res);
   const {
     data: jobs,
     mutate,
@@ -102,8 +106,6 @@ export default function OperatorTable() {
         return lifecycleLabel === "Released" || lifecycleLabel === "Running";
       });
   }, [jobs]);
-
-
 
   const filteredRows = useMemo(
     () =>
@@ -146,7 +148,7 @@ export default function OperatorTable() {
   return (
     <>
       <Box sx={{ width: "100%" }}>
-        <Paper sx={{ width: "100%", mb: 2, boxShadow: 3, overflow: "hidden" }}>
+        <Paper variant="outlined" sx={{ width: "100%", mb: 2, overflow: "hidden" }}>
           <EnhancedTableToolbar
             data={rows}
             onRefresh={mutate}

@@ -40,7 +40,6 @@ const CurrentLoadedJobCard = () => {
 
   const fetcher = async ([, jobId]: [string, string]) => {
     const res = await commonApi.jobOffsetPrinterTaiyoControllerGetById(jobId);
-    setLoaderData(res);
     return res;
   };
 
@@ -87,6 +86,11 @@ const CurrentLoadedJobCard = () => {
       );
 
       await commonApi.jobOffsetPrinterTaiyoControllerComplete(loaderData.id);
+
+      await assetsApi.setAssetValuesByPath(
+        `${loaderData.work_center.code}.Job Loader`,
+        { value: {} },
+      );
 
       setLoader({
         isLoaded: false,
@@ -276,7 +280,7 @@ const CurrentLoadedJobCard = () => {
         </Stack>
 
         <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
-          <Button
+          {/* <Button
             fullWidth
             variant="outlined"
             color="warning"
@@ -287,11 +291,11 @@ const CurrentLoadedJobCard = () => {
             }}
           >
             Unload
-          </Button>
+          </Button> */}
           <Button
             fullWidth
             variant="contained"
-            color="secondary"
+            color="success"
             startIcon={<VerifiedIcon sx={{ color: "common.white" }} />}
             onClick={() => setOpen(true)}
           >

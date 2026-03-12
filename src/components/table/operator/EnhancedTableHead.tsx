@@ -1,4 +1,3 @@
-import { LookupResponseDto } from "@/api/generated/common-service";
 import {
   Box,
   TableCell,
@@ -7,29 +6,18 @@ import {
   TableSortLabel,
 } from "@mui/material";
 import { visuallyHidden } from "@mui/utils";
-
-interface Data {
-  id: string;
-  work_center: LookupResponseDto;
-  work_order: string;
-  sales_order: string;             // Isinya: { label: "Offset Printer 1", code: "OFFSET_PRINTER_1", ... }
-  quantity_order: number;
-  quantity_unit: LookupResponseDto;           // Isinya: { label: "BK", code: "BK", ... }
-  planned_start_time: string;          // Isinya: { label: "High", code: "HIGH", ... }
-  job_lifecycle_state: LookupResponseDto;     // Isinya: { label: "Created", code: "CREATED", ... }
-  notes: string;
-}
+import { OperatorRowData } from "@/interface/row-table.interface";
 
 type Order = "asc" | "desc";
-type ColumnId = keyof Data | "actions";
+type ColumnId = keyof OperatorRowData | "actions";
 
 interface EnhancedTableProps {
   onRequestSort: (
     event: React.MouseEvent<unknown>,
-    property: keyof Data,
+    property: keyof OperatorRowData,
   ) => void;
   order: Order;
-  orderBy: keyof Data;
+  orderBy: keyof OperatorRowData;
 }
 
 interface HeadCell {
@@ -45,6 +33,12 @@ const headCells: readonly HeadCell[] = [
     numeric: false,
     disablePadding: false,
     label: "Actions",
+  },
+  {
+    id: "job_lifecycle_state",
+    numeric: false,
+    disablePadding: false,
+    label: "Job Lifecycle State",
   },
   {
     id: "work_order",
@@ -71,10 +65,10 @@ const headCells: readonly HeadCell[] = [
     label: "Planned Start Time",
   },
   {
-    id: "job_lifecycle_state",
+    id: "release_date",
     numeric: false,
     disablePadding: false,
-    label: "Job Lifecycle State",
+    label: "Release Date",
   },
   {
     id: "notes",
@@ -90,7 +84,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   const createSortHandler =
     (property: ColumnId) => (event: React.MouseEvent<unknown>) => {
       if (property !== "actions") {
-        onRequestSort(event, property as keyof Data);
+        onRequestSort(event, property as keyof OperatorRowData);
       }
     };
 

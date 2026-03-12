@@ -227,6 +227,7 @@ const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
                     ampm={false}
                     disabled={values.account_type === 6 || !values.account_type}
                     label="Account Expiration Date"
+                    minDateTime={dayjs(new Date())}
                     value={
                       values.account_expiry_date
                         ? dayjs(values.account_expiry_date)
@@ -255,6 +256,7 @@ const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
                   <DateTimePicker
                     ampm={false}
                     label="Password Expiration Time"
+                    minDateTime={dayjs(new Date())}
                     value={
                       values.password_expiry_time
                         ? dayjs(values.password_expiry_time)

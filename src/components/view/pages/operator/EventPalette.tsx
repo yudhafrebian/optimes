@@ -1,6 +1,6 @@
 "use client";
 import { LookupResponseDto } from "@/api-client";
-import { loadedDataAtom } from "@/atoms/loader.atom";
+import { loadedDataAtom, loaderAtom } from "@/atoms/loader.atom";
 import GenericChips from "@/components/core/GenericChips";
 import { eventDialogConfig } from "@/components/dialog/eventDialogConfig";
 import GenericDialog from "@/components/dialog/GenericDialog";
@@ -31,6 +31,7 @@ import { usePathname } from "next/navigation";
 import * as React from "react";
 import { useSnackbar } from "@/hooks/useSnackbar";
 import EditEventLookupForm from "@/form/EditEventLookupForm";
+import GenericDrawer from "@/components/drawer/GenericDrawer";
 
 type EventCardProps = {
   item: LookupResponseDto;
@@ -171,12 +172,14 @@ const EventPalleteModule: React.FC<EventPalleteProps> = ({ onRefresh }) => {
   const [searchFilter, setSearchFilter] = React.useState<string>("");
   const [data, setData] = React.useState<LookupResponseDto[]>([]);
   const [open, setOpen] = React.useState<boolean>(false);
+  const [openDrawer, setOpenDrawer] = React.useState<boolean>(false);
   const [editData, setEditData] = React.useState<any>(null);
   const [dialogType, setDialogType] = React.useState<
     "create" | "custom" | "start" | "delete" | null
   >(null);
   const [selectedEvent, setSelectedEvent] = React.useState<string>("");
   const [loaderData] = useAtom(loadedDataAtom);
+  const [loaded] = useAtom(loaderAtom);
 
   const showsnackbar = useSnackbar();
   const pathname = usePathname();
@@ -329,27 +332,48 @@ const EventPalleteModule: React.FC<EventPalleteProps> = ({ onRefresh }) => {
         <Box
           sx={{ maxHeight: isHeadProduction ? "100%" : 330, overflow: "auto" }}
         >
-          {EVENT_CATEGORIES.map((category) => (
-            <Box key={category} sx={{ mb: 2.5 }}>
-              <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>
-                {category}
-              </Typography>
+          {loaded.isLoaded || isHeadProduction ? (
+            EVENT_CATEGORIES.map((category) => (
+              <Box key={category} sx={{ mb: 2.5 }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>
+                  {category}
+                </Typography>
 
-              <Grid container spacing={2}>
-                {eventByCategory[category].map((item) => (
-                  <EventCard
-                    key={item.id}
-                    item={item}
-                    isHeadProduction={isHeadProduction}
-                    onEdit={handleDialogEdit}
-                    onDelete={handleDialogDelete}
-                    onStart={handleStartEvent}
-                    onChangeStatus={handleChangeStatus}
-                  />
-                ))}
-              </Grid>
+                <Grid container spacing={2}>
+                  {eventByCategory[category].map((item) => (
+                    <EventCard
+                      key={item.id}
+                      item={item}
+                      isHeadProduction={isHeadProduction}
+                      onEdit={handleDialogEdit}
+                      onDelete={handleDialogDelete}
+                      onStart={handleStartEvent}
+                      onChangeStatus={handleChangeStatus}
+                    />
+                  ))}
+                </Grid>
+              </Box>
+            ))
+          ) : (
+            <Box
+              sx={{
+                py: 4,
+                px: 2,
+                textAlign: "center",
+                border: "1px dashed",
+                borderColor: "divider",
+                borderRadius: 2,
+                bgcolor: "grey.50",
+              }}
+            >
+              <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5 }}>
+                No job loaded
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Please load a job from the Operator Table first.
+              </Typography>
             </Box>
-          ))}
+          )}
 
           {filteredEventPallete.length === 0 && (
             <Box>
@@ -372,6 +396,9 @@ const EventPalleteModule: React.FC<EventPalleteProps> = ({ onRefresh }) => {
           dialogType === "delete"
         }
         onClose={() => setDialogType(null)}
+        isTriggerDrawer
+        triggerLabel="Edit Material Data"
+        onTriggerDrawer={() => setOpenDrawer(true)}
         onConfirm={() => {
           if (dialogType === "delete") {
             void handleDeleteEvent(selectedEvent);
@@ -399,19 +426,47 @@ const EventPalleteModule: React.FC<EventPalleteProps> = ({ onRefresh }) => {
           isHeadProduction && !editData ? (
             <CreatEventLookupForm
               onSuccess={() => {
-                setOpen(false), getData();
+                setOpen(false), getData(), setEditData(null);
               }}
             />
           ) : isHeadProduction && editData ? (
             <EditEventLookupForm
               onSuccess={() => {
-                setOpen(false), getData();
+                setOpen(false), getData(), setEditData(null);
               }}
               data={editData}
             />
           ) : (
             <CustomEventForm onSuccess={() => setOpen(false)} />
           )
+        }
+      />
+
+      <GenericDrawer
+        anchor="right"
+        closeDrawer={() => setOpenDrawer(false)}
+        open={openDrawer}
+        sx={{
+          zIndex: (theme) => theme.zIndex.modal + 2,
+          "& .MuiDrawer-paper": {
+            zIndex: (theme) => theme.zIndex.modal + 2,
+            width: { xs: "40%", sm: "360px" },
+          },
+          "& .MuiBackdrop-root": {
+            zIndex: (theme) => theme.zIndex.modal + 1,
+          },
+        }}
+        children={
+          <iframe
+            // style="border:1px #FFFFFF none"
+            src={`http://192.168.68.9:3000/d/taiyooperatormeseventattributedialog/embed?operator=%7B"label"%3A"-"%2C"value"%3A"-"%7D&wc=${loaderData.work_center.code}`}
+            title="iFrame"
+            width="100%"
+            height="300px"
+            scrolling="yes"
+            frameBorder={0}
+            allow="fullscreen"
+          ></iframe>
         }
       />
     </>
