@@ -45,8 +45,8 @@ const SummaryAnalyticView = () => {
             title="Running"
             value={isLoading ? "..." : data?.running || 0}
             icon={<SettingsIcon fontSize="large" />}
-            iconColor="success.main"
-            iconBackgroundColor="success.light"
+            iconColor="secondary.main"
+            iconBackgroundColor="secondary.light"
           />
         </Grid>
         <Grid size={{ xs: 6, sm: 6, md: 4, lg: 2.4 }}>
@@ -54,8 +54,8 @@ const SummaryAnalyticView = () => {
             title="Completed"
             value={isLoading ? "..." : data?.completed || 0}
             icon={<VerifiedIcon fontSize="large" />}
-            iconColor="secondary.main"
-            iconBackgroundColor="secondary.light"
+            iconColor="success.main"
+            iconBackgroundColor="success.light"
           />
         </Grid>
         <Grid size={{ xs: 6, sm: 6, md: 4, lg: 2.4 }}>
