@@ -128,12 +128,12 @@ const ReportFrame: React.FC<ReportFrameProps> = ({
         height="4200px"
         scrolling="no"
         allow="fullscreen"
-        onLoad={handleLoad}
-        style={{
-          border: 0,
-          opacity: resourceLoaded ? 1 : 0,
-          transition: "opacity 0.2s ease",
-        }}
+        // onLoad={handleLoad}
+        // style={{
+        //   border: 0,
+        //   opacity: resourceLoaded ? 1 : 0,
+        //   transition: "opacity 0.2s ease",
+        // }}
       />
     </Box>
   );
