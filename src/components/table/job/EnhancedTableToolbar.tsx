@@ -783,7 +783,8 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
               <Alert sx={{ mt: 1 }} key={idx} severity="error">
                 <Box>{e.message}</Box>
                 <Box sx={{ mt: 0.5 }}>
-                  Field: {e.field} - {formatImportErrorValue(e.value)} | Row: {e.row}
+                  Field: {e.field} - {formatImportErrorValue(e.value)} | Row:{" "}
+                  {e.row}
                 </Box>
               </Alert>
             ))}
@@ -797,6 +798,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         maxWidth={1000}
       >
         <ImportPreviewTable
+          key={JSON.stringify(previewData)}
           data={previewData}
           onClose={() => setPreviewOpen(false)}
         />

@@ -90,7 +90,7 @@ const OperatorPage = () => {
     <Paper variant="outlined">
       <iframe
         // style="border:1px #FFFFFF none"
-        src={`http://192.168.68.9:3000/d/taiyooperatormesdashboard-1/embed?wo=${wo}&wc=${wc}&operator=${opName}`}
+        src={`http://192.168.68.99:3002/d/taiyooperatormesdashboard-1/embed?wo=${wo}&wc=${wc}&operator=${opName}`}
         title="iFrame"
         width="100%"
         height="600px"

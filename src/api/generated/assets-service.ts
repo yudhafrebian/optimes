@@ -23,7 +23,7 @@ export type JsonValue = string | number | boolean | JsonValue[] | JsonValueOneOf
 export type HistorianTargetTimestampUnit = typeof HistorianTargetTimestampUnit[keyof typeof HistorianTargetTimestampUnit];
 
 
- 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export const HistorianTargetTimestampUnit = {
   us: 'us',
   ns: 'ns',
@@ -39,7 +39,7 @@ export interface HistorianTarget {
 export type AssetTemplateAttributeValueType = typeof AssetTemplateAttributeValueType[keyof typeof AssetTemplateAttributeValueType];
 
 
- 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export const AssetTemplateAttributeValueType = {
   int8: 'int8',
   uint8: 'uint8',
@@ -98,7 +98,7 @@ export interface AssetSystemResponse {
 export type AttributeQueryMatchKind = typeof AttributeQueryMatchKind[keyof typeof AttributeQueryMatchKind];
 
 
- 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export const AttributeQueryMatchKind = {
   attribute: 'attribute',
 } as const;
@@ -122,7 +122,7 @@ export interface AttributeQueryMatch {
 export type AssetQueryMatchKind = typeof AssetQueryMatchKind[keyof typeof AssetQueryMatchKind];
 
 
- 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export const AssetQueryMatchKind = {
   asset: 'asset',
 } as const;
@@ -174,7 +174,7 @@ export interface AssetPathMatch {
 export type FindAssetPathsFilterOperator = typeof FindAssetPathsFilterOperator[keyof typeof FindAssetPathsFilterOperator];
 
 
- 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export const FindAssetPathsFilterOperator = {
   eq: 'eq',
   neq: 'neq',
@@ -191,7 +191,7 @@ export interface FindAssetPathsFilter {
 export type FindAssetPathsRequestLogic = typeof FindAssetPathsRequestLogic[keyof typeof FindAssetPathsRequestLogic];
 
 
- 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export const FindAssetPathsRequestLogic = {
   AND: 'AND',
   OR: 'OR',
@@ -207,7 +207,7 @@ export interface FindAssetPathsRequest {
 export type FindAssetPathsResponseLogic = typeof FindAssetPathsResponseLogic[keyof typeof FindAssetPathsResponseLogic];
 
 
- 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export const FindAssetPathsResponseLogic = {
   AND: 'AND',
   OR: 'OR',
@@ -262,7 +262,7 @@ export interface BatchSetResponse {
 export type EventRowStatus = typeof EventRowStatus[keyof typeof EventRowStatus];
 
 
- 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export const EventRowStatus = {
   open: 'open',
   closed: 'closed',
@@ -271,7 +271,7 @@ export const EventRowStatus = {
 export type EventRowSeverity = typeof EventRowSeverity[keyof typeof EventRowSeverity];
 
 
- 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export const EventRowSeverity = {
   other: 'other',
   info: 'info',
@@ -344,7 +344,7 @@ export type OpenEventRequestCapturedDataOnOpen = {[key: string]: JsonValue} | nu
 export type OpenEventRequestSeverity = typeof OpenEventRequestSeverity[keyof typeof OpenEventRequestSeverity];
 
 
- 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export const OpenEventRequestSeverity = {
   other: 'other',
   info: 'info',
@@ -642,7 +642,7 @@ export type EventOffsetQueryParameter = number;
 export type EventSortByQueryParameter = typeof EventSortByQueryParameter[keyof typeof EventSortByQueryParameter];
 
 
- 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export const EventSortByQueryParameter = {
   id: 'id',
   event_path: 'event_path',
@@ -657,7 +657,7 @@ export const EventSortByQueryParameter = {
 export type EventSortDirQueryParameter = typeof EventSortDirQueryParameter[keyof typeof EventSortDirQueryParameter];
 
 
- 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export const EventSortDirQueryParameter = {
   asc: 'asc',
   desc: 'desc',
@@ -676,7 +676,7 @@ export type HistorianToQueryParameter = string;
 export type HistorianOrderQueryParameter = typeof HistorianOrderQueryParameter[keyof typeof HistorianOrderQueryParameter];
 
 
- 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export const HistorianOrderQueryParameter = {
   asc: 'asc',
   desc: 'desc',
@@ -685,7 +685,7 @@ export const HistorianOrderQueryParameter = {
 export type HistorianTimeQueryParameter = typeof HistorianTimeQueryParameter[keyof typeof HistorianTimeQueryParameter];
 
 
- 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export const HistorianTimeQueryParameter = {
   iso: 'iso',
   epoch: 'epoch',
@@ -704,7 +704,7 @@ export type HistorianBucketMsQueryParameter = number;
 export type HistorianAggQueryParameter = typeof HistorianAggQueryParameter[keyof typeof HistorianAggQueryParameter];
 
 
- 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export const HistorianAggQueryParameter = {
   min: 'min',
   max: 'max',

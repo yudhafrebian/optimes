@@ -8,7 +8,7 @@ export const AXIOS_INSTANCE_1 = axios.create({
 
 // Instance untuk Service B (Baru)
 export const AXIOS_INSTANCE_2 = axios.create({
-  baseURL: 'http://192.168.68.9:4000',
+  baseURL: 'http://192.168.68.99:4000',
   withCredentials: true,
 });
 

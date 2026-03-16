@@ -1,4 +1,4 @@
-import { Fragment, FunctionComponent, useEffect, useState } from "react";
+import { Fragment, FunctionComponent, useState } from "react";
 import {
   Box,
   Button,
@@ -90,15 +90,13 @@ const ImportPreviewTable: FunctionComponent<ImportPreviewTableProps> = (
         due_date: (row.due_date as string | null | undefined) ?? null,
         job_priority: Number(row.job_priority ?? 0),
         notes: row.notes ? String(row.notes) : undefined,
-        attribute: (row.attribute as Record<string, unknown> | null | undefined) ?? null,
+        attribute:
+          (row.attribute as Record<string, unknown> | null | undefined) ?? null,
       }),
     );
 
   const showSnackbar = useSnackbar();
 
-  useEffect(() => {
-    setPage(0);
-  }, [props.data]);
 
   const formatLookup = (value?: number | LookupResponseDto): string => {
     if (typeof value === "number") return String(value);
@@ -171,45 +169,48 @@ const ImportPreviewTable: FunctionComponent<ImportPreviewTableProps> = (
               rows
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => (
-                <TableRow key={`${title}-${row.__row ?? index}`}>
-                  <TableCell sx={{ minWidth: 50 }}>
-                    {row.__row ?? "-"}
-                  </TableCell>
-                  <TableCell sx={{ minWidth: 150 }}>
-                    {row.work_order ?? "-"}
-                  </TableCell>
-                  <TableCell sx={{ minWidth: 150 }}>
-                    {row.sales_order ?? "-"}
-                  </TableCell>
-                  <TableCell sx={{ minWidth: 100 }}>
-                    {row.quantity_order ?? "-"}
-                  </TableCell>
-                  <TableCell sx={{ minWidth: 90 }}>
-                    {formatLookup(row.quantity_unit)}
-                  </TableCell>
-                  <TableCell sx={{ minWidth: 150 }}>
-                    {formatLookup(row.work_center)}
-                  </TableCell>
-                  <TableCell sx={{ minWidth: 150 }}>
-                    {formatDate(row.planned_start_time)}
-                  </TableCell>
-                  <TableCell sx={{ minWidth: 150 }}>
-                    {formatDate(row.release_date)}
-                  </TableCell>
-                  <TableCell sx={{ minWidth: 150 }}>
-                    {formatDate(row.due_date)}
-                  </TableCell>
-                  <TableCell sx={{ minWidth: 150 }}>
-                    <GenericChips value={formatLookup(row.job_priority)} variant="filled"/>
-                  </TableCell>
-                  <TableCell sx={{ minWidth: 150 }}>
-                    {row.notes ?? "-"}
-                  </TableCell>
-                  <TableCell sx={{ minWidth: 150 }}>
-                    {formatAttribute(row.attribute)}
-                  </TableCell>
-                </TableRow>
-              ))
+                  <TableRow key={`${title}-${row.__row ?? index}`}>
+                    <TableCell sx={{ minWidth: 50 }}>
+                      {row.__row ?? "-"}
+                    </TableCell>
+                    <TableCell sx={{ minWidth: 150 }}>
+                      {row.work_order ?? "-"}
+                    </TableCell>
+                    <TableCell sx={{ minWidth: 150 }}>
+                      {row.sales_order ?? "-"}
+                    </TableCell>
+                    <TableCell sx={{ minWidth: 100 }}>
+                      {row.quantity_order ?? "-"}
+                    </TableCell>
+                    <TableCell sx={{ minWidth: 90 }}>
+                      {formatLookup(row.quantity_unit)}
+                    </TableCell>
+                    <TableCell sx={{ minWidth: 150 }}>
+                      {formatLookup(row.work_center)}
+                    </TableCell>
+                    <TableCell sx={{ minWidth: 150 }}>
+                      {formatDate(row.planned_start_time)}
+                    </TableCell>
+                    <TableCell sx={{ minWidth: 150 }}>
+                      {formatDate(row.release_date)}
+                    </TableCell>
+                    <TableCell sx={{ minWidth: 150 }}>
+                      {formatDate(row.due_date)}
+                    </TableCell>
+                    <TableCell sx={{ minWidth: 150 }}>
+                      <GenericChips
+                        value={formatLookup(row.job_priority)}
+                        variant="filled"
+                      />
+                    </TableCell>
+                    <TableCell sx={{ minWidth: 150 }}>
+                      {row.notes ?? "-"}
+                    </TableCell>
+                    <TableCell sx={{ minWidth: 150 }}>
+                      {formatAttribute(row.attribute)}
+                    </TableCell>
+                  </TableRow>
+                ))
             )}
           </TableBody>
         </Table>

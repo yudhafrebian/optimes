@@ -20,6 +20,7 @@ const ReportFrame: React.FC<ReportFrameProps> = ({
   const [resourceLoaded, setResourceLoaded] = React.useState(false);
   const [progress, setProgress] = React.useState(0);
   const safeDelay = Number.isFinite(delay) && delay > 0 ? delay : 30000;
+  console.log("url", url)
 
   React.useEffect(() => {
     hasPrintedRef.current = false;
@@ -53,6 +54,9 @@ const ReportFrame: React.FC<ReportFrameProps> = ({
       window.print();
     }, 300);
   }, [autoPrint, resourceLoaded]);
+
+  console.log("resourceLoaded", resourceLoaded);
+  console.log("isLoading", !resourceLoaded);
 
   const estimatedSeconds = Math.max(
     0,
@@ -125,7 +129,7 @@ const ReportFrame: React.FC<ReportFrameProps> = ({
         src={url}
         title="Job Report"
         width="100%"
-        height="4200px"
+        height="4800px"
         scrolling="no"
         allow="fullscreen"
         // onLoad={handleLoad}

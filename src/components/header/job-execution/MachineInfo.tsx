@@ -23,7 +23,7 @@ const MachineInfoCard: React.FunctionComponent<IMachineInfoCardProps> = (
     >
       <iframe
         // style="border:1px #FFFFFF none"
-        src={`http://192.168.68.9:3000/d/taiyooperatormachinedashboard/embed?wo=${loaderData.work_order}&wc=${loaderData.work_center.code}`}
+        src={`http://192.168.68.99:3002/d/taiyooperatormachinedashboard/embed?wo=${loaderData.work_order}&wc=${loaderData.work_center.code}`}
         title="iFrame"
         width="100%"
         height="250px"

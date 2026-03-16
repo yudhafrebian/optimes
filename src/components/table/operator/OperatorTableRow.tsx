@@ -92,12 +92,13 @@ const OperatorTableRow: React.FC<OperatorTableRowProps> = ({ row }) => {
       ],
     };
     try {
-      await assetsApi.setAssetValuesBatch(values);
+      const res = await assetsApi.setAssetValuesBatch(values);
       let latestJob = row;
 
       if (row.job_lifecycle_state.label !== "Running") {
         latestJob = await commonApi.jobOffsetPrinterTaiyoControllerRun(row.id);
       }
+      console.log(res)
 
       setLoader({
         isLoaded: true,
@@ -188,7 +189,7 @@ const OperatorTableRow: React.FC<OperatorTableRowProps> = ({ row }) => {
         <TableCell align="center" sx={{ width: 50 }}>
           <Button
             size="small"
-            disabled={isDisabled}
+            disabled={isDisabled || row.job_lifecycle_state.label === "Running"}
             variant="contained"
             startIcon={<PlayArrowIcon />}
             onClick={() => handleOpenDialog("load")}

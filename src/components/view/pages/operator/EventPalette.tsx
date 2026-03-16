@@ -310,6 +310,7 @@ const EventPalleteModule: React.FC<EventPalleteProps> = ({ onRefresh }) => {
               variant="contained"
               onClick={() => setOpen(true)}
               sx={{ whiteSpace: "nowrap", flexShrink: 0 }}
+              disabled={!isHeadProduction && !loaderData.work_center.code}
             >
               {isHeadProduction ? "New Event" : "Custom Event"}
             </Button>
@@ -458,7 +459,7 @@ const EventPalleteModule: React.FC<EventPalleteProps> = ({ onRefresh }) => {
       >
         <iframe
           // style="border:1px #FFFFFF none"
-          src={`http://192.168.68.9:3000/d/taiyooperatormeseventattributedialog/embed?operator=%7B"label"%3A"-"%2C"value"%3A"-"%7D&wc=${loaderData.work_center.code}`}
+          src={`http://192.168.68.99:3002/d/taiyooperatormeseventattributedialog/embed?operator=%7B"label"%3A"-"%2C"value"%3A"-"%7D&wc=${loaderData.work_center.code}`}
           title="iFrame"
           width="100%"
           height="300px"

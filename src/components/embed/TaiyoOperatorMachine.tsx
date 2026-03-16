@@ -29,7 +29,7 @@ const TaiyoOperatorMachineEmbed: React.FunctionComponent<
     >
       <iframe
         // style="border:1px #FFFFFF none"
-        src={`http://192.168.68.9:3000/d/taiyooperatormesattributecontrol/embed?operator=${JSON.stringify(op)}&wc=${workCenterPath[0]}`}
+        src={`http://192.168.68.99:3002/d/taiyooperatormesattributecontrol/embed?operator=${JSON.stringify(op)}&wc=${workCenterPath[0]}`}
         title="iFrame"
         width="100%"
         height="250px"
