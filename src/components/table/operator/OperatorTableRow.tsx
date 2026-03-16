@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { TableRow, TableCell, Button, Box } from "@mui/material";
+import { TableRow, TableCell, Button } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import GenericChips from "@/components/core/GenericChips";

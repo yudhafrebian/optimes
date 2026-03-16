@@ -2,7 +2,6 @@
 
 import {
   Alert,
-  AlertTitle,
   alpha,
   Autocomplete,
   Box,
@@ -156,7 +155,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
       ? (filterData?.orders ?? []).filter(
           (state) =>
             state.job_lifecycle_state.label !== "Completed" &&
-            state.job_lifecycle_state.label !== "Closed",
+            state.job_lifecycle_state.label !== "Cancelled",
         )
       : (filterData?.orders ?? []).filter(
           (state) =>

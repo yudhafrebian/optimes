@@ -53,7 +53,7 @@ const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
       showSnackbar("Registration successful", "success");
     } catch (error: any) {
       setErrorMessage(
-        error.response?.data?.message || "An unexpected error occurred",
+        error.response?.data?.details[0].message || "An unexpected error occurred",
       );
     } finally {
       setLoading(false);

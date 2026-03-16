@@ -15,7 +15,7 @@ import TableRowSkeleton from "../../skeleton/TableRowSkeleton";
 import useSwr from "swr";
 import { OperatorRowData } from "@/interface/row-table.interface";
 import { IJobOffsetPrinter } from "@/interface/job.interface";
-import { assetsApi, commonApi } from "@/lib/api";
+import { commonApi } from "@/lib/api";
 import { operatorFilter } from "@/utils/operatorFilter";
 import OperatorTableRow from "./OperatorTableRow";
 import { useAtom } from "jotai";

@@ -7,8 +7,6 @@ import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
 import TablePagination from "@mui/material/TablePagination";
 import Paper from "@mui/material/Paper";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Switch from "@mui/material/Switch";
 import { LinearProgress, useMediaQuery, useTheme } from "@mui/material";
 import { useMemo, useState } from "react";
 import EnhancedTableToolbar from "./EnhancedTableToolbar";

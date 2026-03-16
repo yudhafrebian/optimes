@@ -13,7 +13,7 @@ const roboto = Roboto({
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={roboto.variable}>
+      <body className={roboto.variable} style={{ margin: 0 }}>
         <AppRouterCacheProvider>
            <ThemeProvider theme={theme}>
               {children}

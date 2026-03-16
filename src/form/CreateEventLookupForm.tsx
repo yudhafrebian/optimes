@@ -3,30 +3,15 @@ import {
   Button,
   FormControl,
   Grid,
-  IconButton,
-  InputAdornment,
   InputLabel,
   MenuItem,
-  OutlinedInput,
   Select,
   TextField,
-  Typography,
 } from "@mui/material";
 import { Form, Formik } from "formik";
-import LoginIcon from "@mui/icons-material/Login";
-import { loginValidationSchema } from "./validation/auth.validation";
-import { useState } from "react";
-import { useSetAtom } from "jotai";
-import { authAtom } from "@/atoms/auth.atom";
-import { useRouter } from "next/navigation";
 import { useSnackbar } from "@/hooks/useSnackbar";
-import PersonIcon from "@mui/icons-material/Person";
-import LockIcon from "@mui/icons-material/Lock";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { commonApi } from "@/lib/api";
 import { CreateLookupDto } from "@/api/generated/common-service";
-import { passwordAtom } from "@/atoms/password.atom";
 import { lookupValidationSchema } from "./validation/lookup.validation";
 
 interface CreateEventLookupFormProps {

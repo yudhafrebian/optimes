@@ -3,30 +3,15 @@ import {
   Button,
   FormControl,
   Grid,
-  IconButton,
-  InputAdornment,
   InputLabel,
   MenuItem,
-  OutlinedInput,
   Select,
   TextField,
-  Typography,
 } from "@mui/material";
 import { Form, Formik, FormikProps } from "formik";
-import LoginIcon from "@mui/icons-material/Login";
-import { loginValidationSchema } from "./validation/auth.validation";
-import { useState } from "react";
-import { useAtom, useSetAtom } from "jotai";
-import { authAtom } from "@/atoms/auth.atom";
-import { useRouter } from "next/navigation";
+import { useAtom } from "jotai";
 import { useSnackbar } from "@/hooks/useSnackbar";
-import PersonIcon from "@mui/icons-material/Person";
-import LockIcon from "@mui/icons-material/Lock";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { assetsApi, commonApi } from "@/lib/api";
-import { LoginDto } from "@/api/generated/common-service";
-import { passwordAtom } from "@/atoms/password.atom";
+import { assetsApi } from "@/lib/api";
 import { loadedDataAtom } from "@/atoms/loader.atom";
 
 interface IFormValue {

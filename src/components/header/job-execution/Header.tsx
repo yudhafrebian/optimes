@@ -13,8 +13,6 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import * as React from "react";
 
-import MachineInfoCard from "./MachineInfo";
-import CurrentLoadedJobCard from "./CurrentLoadedJob";
 import TaiyoOperatorMachineEmbed from "@/components/embed/TaiyoOperatorMachine";
 import { usePathname } from "next/navigation";
 import TaiyoEventMachineEmbed from "@/components/embed/TaiyoEventMachine";

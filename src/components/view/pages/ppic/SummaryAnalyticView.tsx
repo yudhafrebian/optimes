@@ -6,7 +6,6 @@ import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 import SettingsIcon from "@mui/icons-material/Settings";
 import VerifiedIcon from "@mui/icons-material/Verified";
-import PauseCircleOutlineIcon from "@mui/icons-material/PauseCircleOutline";
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 
 import { commonApi } from "@/lib/api";

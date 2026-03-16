@@ -1,4 +1,4 @@
-import { Fragment, FunctionComponent } from "react";
+import { Fragment, FunctionComponent, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -8,6 +8,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   Typography,
 } from "@mui/material";
@@ -73,6 +74,8 @@ const ImportPreviewTable: FunctionComponent<ImportPreviewTableProps> = (
   props,
 ) => {
   const populatedRows = (props.data?.data?.populated ?? []) as PreviewRow[];
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const unPopulatedRows = (props.data?.data?.unpopulated ?? [])
     .map((row) => row as Record<string, unknown>)
     .map(
@@ -92,6 +95,10 @@ const ImportPreviewTable: FunctionComponent<ImportPreviewTableProps> = (
     );
 
   const showSnackbar = useSnackbar();
+
+  useEffect(() => {
+    setPage(0);
+  }, [props.data]);
 
   const formatLookup = (value?: number | LookupResponseDto): string => {
     if (typeof value === "number") return String(value);
@@ -124,6 +131,17 @@ const ImportPreviewTable: FunctionComponent<ImportPreviewTableProps> = (
     }
   };
 
+  const handleChangePage = (_event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   const renderSection = (title: string, rows: PreviewRow[]) => (
     <Box sx={{ mb: 2 }}>
       <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 600 }}>
@@ -150,7 +168,9 @@ const ImportPreviewTable: FunctionComponent<ImportPreviewTableProps> = (
                 </TableCell>
               </TableRow>
             ) : (
-              rows.map((row, index) => (
+              rows
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row, index) => (
                 <TableRow key={`${title}-${row.__row ?? index}`}>
                   <TableCell sx={{ minWidth: 50 }}>
                     {row.__row ?? "-"}
@@ -194,6 +214,25 @@ const ImportPreviewTable: FunctionComponent<ImportPreviewTableProps> = (
           </TableBody>
         </Table>
       </TableContainer>
+      {rows.length > 0 && (
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={rows.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          sx={{
+            "& .MuiTablePagination-toolbar": {
+              flexWrap: { xs: "wrap", sm: "nowrap" },
+              justifyContent: { xs: "center", sm: "flex-end" },
+              rowGap: 1,
+              px: { xs: 1, sm: 2 },
+            },
+          }}
+        />
+      )}
     </Box>
   );
 

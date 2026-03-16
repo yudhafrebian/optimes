@@ -4,7 +4,6 @@ import {
   loaderAtom,
 } from "@/atoms/loader.atom";
 import AssignmentIcon from "@mui/icons-material/Assignment";
-import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import GenericChips from "../../core/GenericChips";
 import { useSnackbar } from "@/hooks/useSnackbar";
@@ -80,14 +79,19 @@ const CurrentLoadedJobCard = () => {
 
   const handleCompletedJob = async () => {
     try {
-      await assetsApi.setAssetValuesByPath(
-        `${loaderData.work_center.code}.Job Lifecycle`,
-        { value: "complete" },
+     const res =  await assetsApi.setAssetValuesBatch({
+        items:[
+          {
+            path: `${loaderData.work_center.code}.Job Lifecycle`,
+            value: "complete",
+          }
+        ]
+      }
       );
 
-      await commonApi.jobOffsetPrinterTaiyoControllerComplete(loaderData.id);
+      const complete = await commonApi.jobOffsetPrinterTaiyoControllerComplete(loaderData.id);
 
-      await assetsApi.setAssetValuesByPath(
+      const unload = await assetsApi.setAssetValuesByPath(
         `${loaderData.work_center.code}.Job Loader`,
         { value: {} },
       );
@@ -98,7 +102,9 @@ const CurrentLoadedJobCard = () => {
       });
       setLoaderData(INITIAL_LOADER_DATA);
       mutate();
-
+      console.log("res", res);
+      console.log("complete", complete);
+      console.log("unload", unload);
       setOpen(false);
 
       showSnackbar("Job completed successfully", "success");

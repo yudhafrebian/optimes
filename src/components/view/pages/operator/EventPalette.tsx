@@ -396,7 +396,7 @@ const EventPalleteModule: React.FC<EventPalleteProps> = ({ onRefresh }) => {
           dialogType === "delete"
         }
         onClose={() => setDialogType(null)}
-        isTriggerDrawer
+        isTriggerDrawer={!isHeadProduction}
         triggerLabel="Edit Material Data"
         onTriggerDrawer={() => setOpenDrawer(true)}
         onConfirm={() => {
@@ -422,25 +422,24 @@ const EventPalleteModule: React.FC<EventPalleteProps> = ({ onRefresh }) => {
               ? "Edit Event"
               : "Create Custom Event"
         }
-        children={
-          isHeadProduction && !editData ? (
-            <CreatEventLookupForm
-              onSuccess={() => {
-                setOpen(false), getData(), setEditData(null);
-              }}
-            />
-          ) : isHeadProduction && editData ? (
-            <EditEventLookupForm
-              onSuccess={() => {
-                setOpen(false), getData(), setEditData(null);
-              }}
-              data={editData}
-            />
-          ) : (
-            <CustomEventForm onSuccess={() => setOpen(false)} />
-          )
-        }
-      />
+      >
+        {isHeadProduction && !editData ? (
+          <CreatEventLookupForm
+            onSuccess={() => {
+              setOpen(false), getData(), setEditData(null);
+            }}
+          />
+        ) : isHeadProduction && editData ? (
+          <EditEventLookupForm
+            onSuccess={() => {
+              setOpen(false), getData(), setEditData(null);
+            }}
+            data={editData}
+          />
+        ) : (
+          <CustomEventForm onSuccess={() => setOpen(false)} />
+        )}
+      </GenericModal>
 
       <GenericDrawer
         anchor="right"
@@ -456,19 +455,18 @@ const EventPalleteModule: React.FC<EventPalleteProps> = ({ onRefresh }) => {
             zIndex: (theme) => theme.zIndex.modal + 1,
           },
         }}
-        children={
-          <iframe
-            // style="border:1px #FFFFFF none"
-            src={`http://192.168.68.9:3000/d/taiyooperatormeseventattributedialog/embed?operator=%7B"label"%3A"-"%2C"value"%3A"-"%7D&wc=${loaderData.work_center.code}`}
-            title="iFrame"
-            width="100%"
-            height="300px"
-            scrolling="yes"
-            frameBorder={0}
-            allow="fullscreen"
-          ></iframe>
-        }
-      />
+      >
+        <iframe
+          // style="border:1px #FFFFFF none"
+          src={`http://192.168.68.9:3000/d/taiyooperatormeseventattributedialog/embed?operator=%7B"label"%3A"-"%2C"value"%3A"-"%7D&wc=${loaderData.work_center.code}`}
+          title="iFrame"
+          width="100%"
+          height="300px"
+          scrolling="yes"
+          frameBorder={0}
+          allow="fullscreen"
+        ></iframe>
+      </GenericDrawer>
     </>
   );
 };

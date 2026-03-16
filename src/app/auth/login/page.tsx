@@ -1,5 +1,5 @@
 import LoginForm from "@/form/LoginForm";
-import { Box, Card, CardContent, Grid, Paper } from "@mui/material";
+import { Card, CardContent, Grid } from "@mui/material";
 
 const LoginPage = () => {
   return (

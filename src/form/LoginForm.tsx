@@ -47,7 +47,6 @@ const LoginForm = () => {
       setLoading(true);
       setErrorMessage(null);
       const res = await commonApi.accountControllerLogin(values);
-
       setAuth({
         id: res.id,
         username: res.username,
@@ -115,6 +114,7 @@ const LoginForm = () => {
           },
         ],
       });
+
 
       if (wc.matches.length === 0) {
         setWorkCenterPath(undefined);

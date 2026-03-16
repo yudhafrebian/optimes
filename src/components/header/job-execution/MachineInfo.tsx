@@ -1,6 +1,6 @@
 "use client";
 import { loadedDataAtom } from "@/atoms/loader.atom";
-import { Avatar, Box, Grid, Paper, Stack, Typography } from "@mui/material";
+import { Paper } from "@mui/material";
 import { useAtom } from "jotai";
 import * as React from "react";
 

@@ -86,8 +86,9 @@ export function AppShell({ children }: { children: ReactNode }) {
   const isJobExecution =
     pathname.startsWith("/dashboard/operator/job-list") ||
     pathname.startsWith("/dashboard/operator/job-activity");
-
+  const isHeadProduction = pathname.startsWith("/dashboard/head-of-production");
   const isJobDashboard = pathname.startsWith("/dashboard/operator");
+  const isJobReport = pathname.startsWith("/report/job");
 
   return (
     <NextAppProvider theme={theme} branding={branding} navigation={navigation}>
@@ -98,12 +99,12 @@ export function AppShell({ children }: { children: ReactNode }) {
             toolbarActions: ProfileMenu,
           }}
         >
-          {isJobExecution || isJobDashboard ? (
-            <Box sx={{ px: 0, mt: 2 }}>
+          {isJobExecution || isJobDashboard || isHeadProduction ? (
+            <Box sx={{ px: 2, mt: 2 }}>
               <Box sx={{ px: { xs: 2, sm: 3 }, mb: 1 }}>{children}</Box>
               {isJobExecution && <JobExecutionHeader />}
             </Box>
-          ) : (
+          ) :  (
             <PageContainer title="">{children}</PageContainer>
           )}
         </DashboardLayout>

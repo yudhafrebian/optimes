@@ -1,6 +1,5 @@
 "use client"
 import * as React from "react";
-import { Typography } from "@mui/material";
 import { usePathname, useRouter } from "next/navigation";
 import PpicSkeletonPage from "@/components/skeleton/PpicSkeletonPage";
 

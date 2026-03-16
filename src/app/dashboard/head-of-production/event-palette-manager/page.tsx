@@ -2,11 +2,7 @@
 import EventPalleteModule from "@/components/view/pages/operator/EventPalette";
 import * as React from "react";
 
-interface IEventPaletteManagerProps {}
-
-const EventPaletteManager: React.FunctionComponent<
-  IEventPaletteManagerProps
-> = (props) => {
+const EventPaletteManager = () => {
   return <EventPalleteModule onRefresh={() => {}} />;
 };
 
