@@ -780,7 +780,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         <Box sx={{ maxHeight: 200, overflowY: "auto", mt: 2 }}>
           {errMessage.length > 0 &&
             errMessage.map((e, idx) => (
-              <Alert sx={{ mt: 1 }} key={idx} severity="error">
+              <Alert sx={{ mt: 1 }} key={idx} severity="error" variant="filled">
                 <Box>{e.message}</Box>
                 <Box sx={{ mt: 0.5 }}>
                   Field: {e.field} - {formatImportErrorValue(e.value)} | Row:{" "}

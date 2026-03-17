@@ -76,6 +76,10 @@ const OperatorTableRow: React.FC<OperatorTableRowProps> = ({ row }) => {
           value: "load",
         },
         {
+          path: `${row.work_center.code}.Product Count Target`,
+          value: `${row.quantity_order} ${row.quantity_unit.code}`,
+        },
+        {
           path: `${row.work_center.code}.Job Loader`,
           value: {
             id: row.id,

@@ -20,10 +20,14 @@ import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { useState } from "react";
 import { ExecutionHistoryRowData } from "@/interface/row-table.interface";
+import { commonApi } from "@/lib/api";
+import { useAtom } from "jotai";
+import workCenterAtom from "@/atoms/wc.atom";
+import useSWR from "swr";
 
 interface EnhancedTableToolbarProps {
   data: ExecutionHistoryRowData[];
-  activityFilter: string;
+  workOrderFilter: string;
   statusFilter: string;
   periodFilter: string;
   onFilterActivity: (value: string) => void;
@@ -42,7 +46,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const {
     data,
     onRefresh,
-    activityFilter,
+    workOrderFilter,
     statusFilter,
     periodFilter,
     onFilterActivity,
@@ -51,28 +55,25 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   } = props;
   const [filterDrawerOpen, setFilterDrawerOpen] = useState<boolean>(false);
 
-  const activityOptions: { label: string; value: string }[] = [
-    { label: "All Activity", value: "All" },
-    ...Array.from(
-      new Set(data.map((row) => row.event_path.split("/").slice(-1)[0] || "-")),
-    ).map((activity: string) => ({
-      label: activity,
-      value: activity,
-    })),
-  ];
+  const [workCenter] = useAtom(workCenterAtom);
+
+  const fetcher = () =>
+    commonApi
+      .jobOffsetPrinterTaiyoControllerGetAll({ work_center: workCenter })
+      .then((res) => res);
+
+  const { data: workOrder } = useSWR("workOrder", fetcher);
 
   const statusOptions: { label: string; value: string }[] = [
     { label: "All Status", value: "All" },
-    ...Array.from(new Set(data.map((row) => row.status))).map(
-      (status: string) => ({
-        label: status,
-        value: status,
-      }),
-    ),
+    { label: "Open", value: "open" },
+    { label: "Closed", value: "closed" },
   ];
 
   const isFiltered =
-    activityFilter !== "All" || statusFilter !== "All" || periodFilter !== "All";
+    workOrderFilter !== "All" ||
+    statusFilter !== "All" ||
+    periodFilter !== "All";
 
   const handleReset = () => {
     onFilterActivity("All");
@@ -117,11 +118,17 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
             disablePortal
             size="small"
             value={
-              activityOptions.find((option) => option.value === activityFilter) ??
-              null
+              workOrder?.find(
+                (option) => option.work_order === workOrderFilter,
+              ) ?? null
             }
-            onChange={(_, newValue) => onFilterActivity(newValue?.value ?? "All")}
-            options={activityOptions}
+            onChange={(_, newValue) =>
+              onFilterActivity(newValue?.value ?? "All")
+            }
+            options={workOrder?.map((option) => ({
+              label: option.work_order,
+              value: option.work_order,
+            }))}
             getOptionLabel={(option) => option.label}
             isOptionEqualToValue={(option, value) =>
               option.value === value.value
@@ -130,11 +137,12 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
             renderInput={(params) => <TextField {...params} label="Activity" />}
           /> */}
 
-          <Autocomplete<{ label: string; value: string }, false, false, false>
+          {/* <Autocomplete<{ label: string; value: string }, false, false, false>
             disablePortal
             size="small"
             value={
-              statusOptions.find((option) => option.value === statusFilter) ?? null
+              statusOptions.find((option) => option.value === statusFilter) ??
+              null
             }
             onChange={(_, newValue) => onFilterStatus(newValue?.value ?? "All")}
             options={statusOptions}
@@ -144,7 +152,23 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
             }
             sx={{ minWidth: 220 }}
             renderInput={(params) => <TextField {...params} label="Status" />}
-          />
+          /> */}
+
+          <FormControl size="small" sx={{ minWidth: 220 }}>
+            <InputLabel id="filter-status-label">Status</InputLabel>
+            <Select
+              labelId="filter-status-label"
+              label="Period"
+              value={periodFilter}
+              onChange={(e) => onFilterStatus(e.target.value)}
+            >
+              {statusOptions.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
           <FormControl size="small" sx={{ minWidth: 220 }}>
             <InputLabel id="filter-period-label">Period</InputLabel>
@@ -188,7 +212,9 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
             </IconButton>
           </Tooltip>
         </Box>
-        <Box sx={{ gap: 1.5, mt: 1, mb: 1, display: { xs: "flex", md: "none" } }}>
+        <Box
+          sx={{ gap: 1.5, mt: 1, mb: 1, display: { xs: "flex", md: "none" } }}
+        >
           <Tooltip title="Filter">
             <IconButton
               onClick={() => setFilterDrawerOpen(true)}
@@ -240,7 +266,10 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           <Box
             sx={{
               display: "grid",
-              gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0, 1fr))" },
+              gridTemplateColumns: {
+                xs: "1fr",
+                sm: "repeat(2, minmax(0, 1fr))",
+              },
               gap: 1.5,
             }}
           >
@@ -251,7 +280,9 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
                 statusOptions.find((option) => option.value === statusFilter) ??
                 null
               }
-              onChange={(_, newValue) => onFilterStatus(newValue?.value ?? "All")}
+              onChange={(_, newValue) =>
+                onFilterStatus(newValue?.value ?? "All")
+              }
               options={statusOptions}
               getOptionLabel={(option) => option.label}
               isOptionEqualToValue={(option, value) =>

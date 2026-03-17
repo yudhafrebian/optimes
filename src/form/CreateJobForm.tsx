@@ -11,8 +11,10 @@ import {
   Divider,
   FormControl,
   Grid,
+  InputAdornment,
   InputLabel,
   MenuItem,
+  OutlinedInput,
   Select,
   TextField,
   Typography,
@@ -35,7 +37,7 @@ export const defaultJobFormValues: CreateJobOffsetPrinterTaiyoDto = {
   work_order: "",
   work_center: 0,
   quantity_order: 1,
-  quantity_unit: 0,
+  quantity_unit: 23,
   planned_start_time: "",
   due_date: "",
   job_priority: 0,
@@ -190,27 +192,37 @@ const CreateJobForm: React.FunctionComponent<ICreateJobFormProps> = ({
 
                 <Grid size={12}>
                   <Grid container spacing={2}>
-                    <Grid size={{ xs: 12, sm: 8 }}>
-                      <TextField
+                    <Grid size={{ xs: 12, sm: 12 }}>
+                      <FormControl
                         fullWidth
-                        id="quantity_order"
-                        name="quantity_order"
-                        label="Quantity Order"
-                        type="number"
-                        inputProps={{ min: 1, style: { textAlign: "right" } }}
-                        value={values.quantity_order}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
                         error={
                           touched.quantity_order &&
                           Boolean(errors.quantity_order)
                         }
-                        helperText={
-                          touched.quantity_order && errors.quantity_order
-                        }
-                      />
+                      >
+                        <InputLabel htmlFor="quantity_order">
+                          Quantity Order
+                        </InputLabel>
+                        <OutlinedInput
+                          fullWidth
+                          id="quantity_order"
+                          name="quantity_order"
+                          label="Quantity Order"
+                          type="number"
+                          inputProps={{ min: 1, style: { textAlign: "right" } }}
+                          value={values.quantity_order}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          endAdornment={
+                            <InputAdornment position="end">EA</InputAdornment>
+                          }
+                        />
+                        <Typography variant="caption" color="error">
+                          {touched.quantity_order && errors.quantity_order}
+                        </Typography>
+                      </FormControl>
                     </Grid>
-                    <Grid size={{ xs: 12, sm: 4 }}>
+                    {/* <Grid size={{ xs: 12, sm: 4 }}>
                       <FormControl fullWidth>
                         <InputLabel id="quantity_unit">
                           Quantity Unit
@@ -245,7 +257,7 @@ const CreateJobForm: React.FunctionComponent<ICreateJobFormProps> = ({
                           {touched.quantity_unit && errors.quantity_unit}
                         </Typography>
                       </FormControl>
-                    </Grid>
+                    </Grid> */}
                   </Grid>
                 </Grid>
 

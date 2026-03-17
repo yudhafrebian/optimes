@@ -20,6 +20,7 @@ import { loadedDataAtom } from "@/atoms/loader.atom";
 import { ExecutionHistoryRowData } from "@/interface/row-table.interface";
 import { assetsApi } from "@/lib/api";
 import { EventRow } from "@/api/generated/assets-service";
+import workCenterAtom from "@/atoms/wc.atom";
 
 function createData(event: EventRow): ExecutionHistoryRowData {
   return {
@@ -60,34 +61,36 @@ export default function JobHistoryTable() {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [order, setOrder] = useState<Order>("desc");
-  const [orderBy, setOrderBy] = useState<keyof ExecutionHistoryRowData>("start_ts");
+  const [orderBy, setOrderBy] =
+    useState<keyof ExecutionHistoryRowData>("start_ts");
   const [page, setPage] = useState<number>(0);
   const [dense, setDense] = useState<boolean>(false);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [loading] = useState<boolean>(false);
 
-  const [activityFilter, setActivityFilter] = useState<string>("All");
+  const [workOrderFilter, setWorkOrderFilter] = useState<string>("All");
   const [statusFilter, setStatusFilter] = useState<string>("All");
   const [periodFilter, setPeriodFilter] = useState<string>("All");
 
   const [loaderData] = useAtom(loadedDataAtom);
+  const [workCenter] = useAtom(workCenterAtom);
 
-  const pattern =
-    loaderData.work_center.code && loaderData.work_order
-      ? `${loaderData.work_center.code}/Job/${loaderData.work_order}/Lifecycle/*`
-      : null;
+  const pattern =`${workCenter}/Job/*/Lifecycle/*`;
 
   const { data, mutate, isLoading } = useSWR(
-    pattern ? ["event-history-table", pattern] : null,
-    async ([, eventPattern]) =>
-      assetsApi.queryEvents({
-        pattern: eventPattern,
-      }),
-    {
-      refreshInterval: 5000,
-      revalidateOnFocus: false,
-    },
-  );
+  pattern ? ["event-history-table", pattern] : null,
+  async ([, eventPattern]) => {
+    const response = await assetsApi.queryEvents({
+      pattern: eventPattern,
+    });
+    
+    return response;
+  },
+  {
+    refreshInterval: 5000,
+    revalidateOnFocus: false,
+  },
+);
 
   const rows = useMemo(() => {
     if (!data?.rows) return [];
@@ -97,9 +100,9 @@ export default function JobHistoryTable() {
   const filteredRows = useMemo(
     () =>
       rows.filter((row) => {
-        const activity = row.event_path.split("/").slice(-1)[0] ?? "-";
-        const matchesActivity =
-          activityFilter === "All" || activity === activityFilter;
+        const workOrder = row.event_path.split("/")[2] ?? "";
+        const matchesworkOrder =
+          workOrderFilter === "All" || workOrder === workOrderFilter;
         const matchesStatus =
           statusFilter === "All" || row.status === statusFilter;
 
@@ -109,11 +112,12 @@ export default function JobHistoryTable() {
           (start &&
             ((periodFilter === "Today" && start.isSame(dayjs(), "day")) ||
               (periodFilter === "This Week" && start.isSame(dayjs(), "week")) ||
-              (periodFilter === "This Month" && start.isSame(dayjs(), "month"))));
+              (periodFilter === "This Month" &&
+                start.isSame(dayjs(), "month"))));
 
-        return Boolean(matchesActivity && matchesStatus && matchesPeriod);
+        return Boolean(matchesworkOrder && matchesStatus && matchesPeriod);
       }),
-    [rows, activityFilter, statusFilter, periodFilter],
+    [rows, workOrderFilter, statusFilter, periodFilter],
   );
 
   const handleRequestSort = (
@@ -156,11 +160,11 @@ export default function JobHistoryTable() {
           onRefresh={() => {
             void mutate();
           }}
-          activityFilter={activityFilter}
+          workOrderFilter={workOrderFilter}
           statusFilter={statusFilter}
           periodFilter={periodFilter}
           onFilterActivity={(value) => {
-            setActivityFilter(value);
+            setWorkOrderFilter(value);
             setPage(0);
           }}
           onFilterStatus={(value) => {
@@ -192,7 +196,9 @@ export default function JobHistoryTable() {
               {(isLoading && rows.length === 0) || loading ? (
                 <TableRowSkeleton rows={rowsPerPage} />
               ) : (
-                visibleRows.map((row) => <JobHistoryTableRow key={row.id} row={row} />)
+                visibleRows.map((row) => (
+                  <JobHistoryTableRow key={row.id} row={row} />
+                ))
               )}
             </TableBody>
           </Table>

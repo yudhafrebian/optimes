@@ -8,10 +8,13 @@ import {
   Divider,
   FormControl,
   Grid,
+  InputAdornment,
   InputLabel,
   MenuItem,
+  OutlinedInput,
   Select,
   TextField,
+  Typography,
 } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs";
@@ -201,27 +204,37 @@ React.useEffect(() => {
 
                 <Grid size={12}>
                   <Grid container spacing={2}>
-                    <Grid size={{ xs: 12, sm: 8 }}>
-                      <TextField
+                    <Grid size={{ xs: 12, sm: 12 }}>
+                      <FormControl
                         fullWidth
-                        id="quantity_order"
-                        name="quantity_order"
-                        label="Quantity Order"
-                        type="number"
-                        inputProps={{ min: 1, style: { textAlign: "right" } }}
-                        value={values.quantity_order}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
                         error={
                           touched.quantity_order &&
                           Boolean(errors.quantity_order)
                         }
-                        helperText={
-                          touched.quantity_order && errors.quantity_order
-                        }
-                      />
+                      >
+                        <InputLabel htmlFor="quantity_order">
+                          Quantity Order
+                        </InputLabel>
+                        <OutlinedInput
+                          fullWidth
+                          id="quantity_order"
+                          name="quantity_order"
+                          label="Quantity Order"
+                          type="number"
+                          inputProps={{ min: 1, style: { textAlign: "right" } }}
+                          value={values.quantity_order}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          endAdornment={
+                            <InputAdornment position="end">EA</InputAdornment>
+                          }
+                        />
+                        <Typography variant="caption" color="error">
+                          {touched.quantity_order && errors.quantity_order}
+                        </Typography>
+                      </FormControl>
                     </Grid>
-                    <Grid size={{ xs: 12, sm: 4 }}>
+                    {/* <Grid size={{ xs: 12, sm: 4 }}>
                       <FormControl fullWidth>
                         <InputLabel id="quantity_unit">
                           Quantity Unit
@@ -245,7 +258,7 @@ React.useEffect(() => {
                           ))}
                         </Select>
                       </FormControl>
-                    </Grid>
+                    </Grid> */}
                   </Grid>
                 </Grid>
 

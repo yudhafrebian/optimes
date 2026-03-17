@@ -8,8 +8,10 @@ import VerifiedIcon from "@mui/icons-material/Verified";
 import GenericChips from "../../core/GenericChips";
 import { useSnackbar } from "@/hooks/useSnackbar";
 import {
+  Alert,
   Box,
   Button,
+  Collapse,
   Paper,
   Stack,
   TextField,
@@ -26,6 +28,9 @@ import useSWR from "swr";
 const CurrentLoadedJobCard = () => {
   const [loader, setLoader] = useAtom(loaderAtom);
   const [loaderData, setLoaderData] = useAtom(loadedDataAtom);
+  const [openAlert, setOpenAlert] = React.useState<boolean>(false);
+  const [progress, setProgress] = React.useState(0);
+
   const [data, setData] = React.useState<EventsQueryResponse>({
     count: 0,
     total: 0,
@@ -79,17 +84,34 @@ const CurrentLoadedJobCard = () => {
 
   const handleCompletedJob = async () => {
     try {
-     const res =  await assetsApi.setAssetValuesBatch({
-        items:[
+      const isCompleted = await assetsApi.getAssetValuesByPath(
+        `${loaderData.work_center.code}.Job Progress`,
+      );
+      const progressValue = isCompleted.matches[0]?.value;
+      const nextProgress =
+        typeof progressValue === "number" ? progressValue : 0;
+
+      setProgress(nextProgress);
+      const isReached = nextProgress <= 100;
+
+      if (isReached) {
+        setOpenAlert(true);
+        setOpen(false);
+        return;
+      }
+
+      const res = await assetsApi.setAssetValuesBatch({
+        items: [
           {
             path: `${loaderData.work_center.code}.Job Lifecycle`,
             value: "complete",
-          }
-        ]
-      }
-      );
+          },
+        ],
+      });
 
-      const complete = await commonApi.jobOffsetPrinterTaiyoControllerComplete(loaderData.id);
+      const complete = await commonApi.jobOffsetPrinterTaiyoControllerComplete(
+        loaderData.id,
+      );
 
       const unload = await assetsApi.setAssetValuesByPath(
         `${loaderData.work_center.code}.Job Loader`,
@@ -102,9 +124,6 @@ const CurrentLoadedJobCard = () => {
       });
       setLoaderData(INITIAL_LOADER_DATA);
       mutate();
-      console.log("res", res);
-      console.log("complete", complete);
-      console.log("unload", unload);
       setOpen(false);
 
       showSnackbar("Job completed successfully", "success");
@@ -135,7 +154,6 @@ const CurrentLoadedJobCard = () => {
           pattern: runningEventPattern,
           status: "open",
         });
-        console.log(res);
         setData(res);
       } catch (error) {
         console.log(error);
@@ -254,11 +272,12 @@ const CurrentLoadedJobCard = () => {
 
           <TextField
             size="small"
-            label="On Finish"
+            label="Quantity Order"
             fullWidth
-            multiline
-            rows={2}
-            value={data.rows[0]?.notes_on_close || "-"}
+            value={
+              `${loaderData.quantity_order} ${loaderData.quantity_unit.label}` ||
+              "-"
+            }
             sx={{
               "& textarea": {
                 overflow: "auto",
@@ -278,14 +297,17 @@ const CurrentLoadedJobCard = () => {
           />
         </Box>
 
-        <Stack direction="column" sx={{ my: 2 }}>
-          <Typography>
-            <strong>Start Time:</strong>{" "}
-            {formatDateTime(data.rows[0]?.start_ts)}
-          </Typography>
+        
+        <Stack direction="column" sx={{my:2}} >
+          <Typography variant="subtitle2" sx={{color: "grey", lineHeight:1}}>Quantity Order:</Typography>
+          <Typography  fontWeight="700">{`${loaderData.quantity_order} ${loaderData.quantity_unit.label}`}</Typography>
+        </Stack>
+        <Stack direction="column"  >
+          <Typography variant="subtitle2" sx={{color: "grey", lineHeight:1}}>Start Time:</Typography>
+          <Typography  fontWeight="700">{formatDateTime(data.rows[0]?.start_ts)}</Typography>
         </Stack>
 
-        <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
+        <Stack direction="column" spacing={1} sx={{ mt: 2 }}>
           {/* <Button
             fullWidth
             variant="outlined"
@@ -307,6 +329,29 @@ const CurrentLoadedJobCard = () => {
           >
             Complete
           </Button>
+          <Collapse in={openAlert}>
+            <Alert
+              severity="error"
+              variant="filled"
+              sx={{ maxWidth: "270px" }}
+              onClose={() => {
+                setOpenAlert(false);
+              }}
+            >
+              <Typography
+                variant="caption"
+                sx={{
+                  display: "block",
+                  whiteSpace: "normal",
+                  wordBreak: "break-word",
+                  lineHeight: 1.5,
+                }}
+              >
+                Your targer production is not reached. Current progress:{" "}
+                {progress}%
+              </Typography>
+            </Alert>
+          </Collapse>
         </Stack>
       </Paper>
 
