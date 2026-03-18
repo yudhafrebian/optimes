@@ -113,7 +113,6 @@ export default function AccountTableManagement() {
   });
 
   const rows = useMemo(() => {
-    // Cek apakah users ada DAN merupakan sebuah Array
     if (!users || !Array.isArray(users)) {
       return [];
     }

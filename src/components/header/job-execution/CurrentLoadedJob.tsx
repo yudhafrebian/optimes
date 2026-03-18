@@ -125,6 +125,7 @@ const CurrentLoadedJobCard = () => {
       setLoaderData(INITIAL_LOADER_DATA);
       mutate();
       setOpen(false);
+      setOpenAlert(false);
 
       showSnackbar("Job completed successfully", "success");
     } catch (error: any) {
@@ -297,14 +298,19 @@ const CurrentLoadedJobCard = () => {
           />
         </Box>
 
-        
-        <Stack direction="column" sx={{my:2}} >
-          <Typography variant="subtitle2" sx={{color: "grey", lineHeight:1}}>Quantity Order:</Typography>
-          <Typography  fontWeight="700">{`${loaderData.quantity_order} ${loaderData.quantity_unit.label}`}</Typography>
+        <Stack direction="column" sx={{ my: 2 }}>
+          <Typography variant="subtitle2" sx={{ color: "grey", lineHeight: 1 }}>
+            Quantity Order:
+          </Typography>
+          <Typography fontWeight="700">{`${loaderData.quantity_order} ${loaderData.quantity_unit.label}`}</Typography>
         </Stack>
-        <Stack direction="column"  >
-          <Typography variant="subtitle2" sx={{color: "grey", lineHeight:1}}>Start Time:</Typography>
-          <Typography  fontWeight="700">{formatDateTime(data.rows[0]?.start_ts)}</Typography>
+        <Stack direction="column">
+          <Typography variant="subtitle2" sx={{ color: "grey", lineHeight: 1 }}>
+            Start Time:
+          </Typography>
+          <Typography fontWeight="700">
+            {formatDateTime(data.rows[0]?.start_ts)}
+          </Typography>
         </Stack>
 
         <Stack direction="column" spacing={1} sx={{ mt: 2 }}>

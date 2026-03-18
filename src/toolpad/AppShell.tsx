@@ -93,6 +93,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <NextAppProvider theme={theme} branding={branding} navigation={navigation}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
+        
         <DashboardLayout
           defaultSidebarCollapsed
           slots={{

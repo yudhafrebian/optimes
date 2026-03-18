@@ -17,5 +17,13 @@ export default async function Page({
       ? `http://192.168.68.99:3002/api/render-image?wo=${slug1}&wc=${slug2}&ev=Setup&slug=taiyojobreport&delayMs=${delay}`
       : `http://192.168.68.99:3002/d/taiyojobreport/embed?wo=${slug1}&wc=${slug2}&ev=Setup`;
 
-  return <ReportFrame url={url} autoPrint={autoPrint} mode={mode} delay={delay} />;
+  return (
+    <ReportFrame
+      url={url}
+      autoPrint={autoPrint}
+      mode={mode}
+      delay={delay}
+      pageTitle={`Job Report ${slug2}-${slug1}`}
+    />
+  );
 }

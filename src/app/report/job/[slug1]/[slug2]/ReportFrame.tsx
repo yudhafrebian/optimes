@@ -8,6 +8,7 @@ interface ReportFrameProps {
   autoPrint?: boolean;
   mode?: "embed" | "image";
   delay?: number;
+  pageTitle?: string;
 }
 
 const ReportFrame: React.FC<ReportFrameProps> = ({
@@ -15,12 +16,21 @@ const ReportFrame: React.FC<ReportFrameProps> = ({
   autoPrint = false,
   mode = "embed",
   delay = 30000,
+  pageTitle = "ReportFrame Title Test",
 }) => {
   const hasPrintedRef = React.useRef(false);
   const [resourceLoaded, setResourceLoaded] = React.useState(false);
   const [progress, setProgress] = React.useState(0);
   const safeDelay = Number.isFinite(delay) && delay > 0 ? delay : 30000;
-  console.log("url", url)
+
+  React.useEffect(() => {
+    const previousTitle = document.title;
+    document.title = pageTitle;
+
+    return () => {
+      document.title = previousTitle;
+    };
+  }, [pageTitle]);
 
   React.useEffect(() => {
     hasPrintedRef.current = false;
@@ -55,8 +65,6 @@ const ReportFrame: React.FC<ReportFrameProps> = ({
     }, 300);
   }, [autoPrint, resourceLoaded]);
 
-  console.log("resourceLoaded", resourceLoaded);
-  console.log("isLoading", !resourceLoaded);
 
   const estimatedSeconds = Math.max(
     0,

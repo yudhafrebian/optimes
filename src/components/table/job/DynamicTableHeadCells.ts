@@ -37,6 +37,12 @@ interface HeadCell {
 
 export const headCells: readonly HeadCell[] = [
   {
+    id: "actions",
+    numeric: false,
+    disablePadding: false,
+    label: "Actions",
+  },
+  {
     id: "job_lifecycle_state",
     numeric: false,
     disablePadding: false,
@@ -97,12 +103,7 @@ export const headCells: readonly HeadCell[] = [
     disablePadding: false,
     label: "Notes",
   },
-  {
-    id: "actions",
-    numeric: false,
-    disablePadding: false,
-    label: "Actions",
-  },
+  
 ];
 
 export const reportHeadCells: readonly HeadCell[] = [

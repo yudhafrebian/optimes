@@ -1,12 +1,6 @@
 "use client";
 import * as React from "react";
-import {
-  TableRow,
-  TableCell,
-  IconButton,
-  Box,
-  Tooltip,
-} from "@mui/material";
+import { TableRow, TableCell, IconButton, Box, Tooltip } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import GenericChips from "@/components/core/GenericChips";
@@ -67,7 +61,19 @@ const JobTableRow: React.FC<JobTableRowProps> = ({ row, onOpenMenu }) => {
         "&.MuiTableRow-hover:hover": { backgroundColor: getRowBg(0.24) },
       }}
     >
-      {!isJobManagement && (
+      {isJobManagement ? (
+        <TableCell align="center" sx={{ width: 50 }}>
+          <IconButton
+            size="small"
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenMenu(e, row);
+            }}
+          >
+            <MoreVertIcon fontSize="small" />
+          </IconButton>
+        </TableCell>
+      ) : (
         <TableCell>
           <Box>
             <Tooltip title="View Job Report" placement="top">
@@ -165,7 +171,7 @@ const JobTableRow: React.FC<JobTableRowProps> = ({ row, onOpenMenu }) => {
         {row.notes}
       </TableCell>
 
-      {isJobManagement && (
+      {/* {isJobManagement && (
         <TableCell align="center" sx={{ width: 50 }}>
           <IconButton
             size="small"
@@ -177,7 +183,7 @@ const JobTableRow: React.FC<JobTableRowProps> = ({ row, onOpenMenu }) => {
             <MoreVertIcon fontSize="small" />
           </IconButton>
         </TableCell>
-      )}
+      )} */}
     </TableRow>
   );
 };

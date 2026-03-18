@@ -72,10 +72,12 @@ function getComparator<T>(
 }
 
 export default function JobTableManagement() {
+    const pathname = usePathname();
+  const isJobManagement = pathname.startsWith("/dashboard/ppic/job-management");
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const [order, setOrder] = useState<Order>("asc");
-  const [orderBy, setOrderBy] = useState<keyof JobRowData>("sales_order");
+  const [order, setOrder] = useState<Order>(isJobManagement ? "asc" : "desc");
+  const [orderBy, setOrderBy] = useState<keyof JobRowData>(isJobManagement ? "work_order" : "completed_date");
   const [page, setPage] = useState<number>(0);
   const [dense, setDense] = useState<boolean>(false);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
@@ -95,8 +97,6 @@ export default function JobTableManagement() {
   const [priorityFilter, setPriorityFilter] = useState<string>("All");
   const [jobData, setJobData] = useState<any>(null);
 
-  const pathname = usePathname();
-  const isJobManagement = pathname.startsWith("/dashboard/ppic/job-management");
 
   const {
     data: jobs,
