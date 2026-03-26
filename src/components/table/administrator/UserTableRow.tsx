@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { TableRow, TableCell, IconButton } from "@mui/material";
+import { TableRow, TableCell, IconButton, alpha, useTheme } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import GenericChips from "@/components/core/GenericChips";
 import dayjs from "dayjs";
@@ -19,6 +19,17 @@ const UserTableRow: React.FC<UserTableRowProps> = ({
   row,
   onOpenMenu,
 }) => {
+  const theme = useTheme();
+  const role = row.role.toLowerCase();
+  const getRowBg = (opacity: number) => {
+      const map: Record<string, string> = {
+        "head of production": alpha(theme.palette.success.light, opacity),
+        administrator: alpha(theme.palette.primary.light, opacity),
+        ppic: alpha(theme.palette.warning.light, opacity),
+        operator: alpha(theme.palette.secondary.light, opacity),
+      };
+      return map[role] ?? "transparent";
+    };
   return (
     <TableRow
       hover
@@ -26,7 +37,9 @@ const UserTableRow: React.FC<UserTableRowProps> = ({
       key={row.id}
       sx={{ 
         cursor: "default", // Diubah ke default karena klik row tidak lagi memilih checkbox
-        "&:last-child td, &:last-child th": { border: 0 } 
+        "&:last-child td, &:last-child th": { border: 0 },
+         backgroundColor: getRowBg(0.14),
+        "&.MuiTableRow-hover:hover": { backgroundColor: getRowBg(0.24) },
       }}
     >
       {/* TableCell padding="checkbox" dan Checkbox dihapus dari sini */}

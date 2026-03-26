@@ -60,6 +60,8 @@ const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
     }
   };
 
+  const filteredRole = role.filter((item) => item.code !== "ADMINISTRATOR")
+
   useEffect(() => {
     fetchSelector();
   }, []);
@@ -164,7 +166,7 @@ const RegisterForm = ({ onSuccess, onCancel }: IRegisterFormProps) => {
                     label="Role"
                     onChange={handleChange}
                   >
-                    {role.map((item) => (
+                    {filteredRole.map((item) => (
                       <MenuItem key={item.id} value={item.id}>
                         {item.label}
                       </MenuItem>

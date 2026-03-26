@@ -54,7 +54,7 @@ const AnalyticCard: React.FunctionComponent<IAnalyticCardProps> = (props) => {
   const baseBgColor = resolveColor(iconBackgroundColor ?? iconColor, defaultBgColor);
 
   return (
-    <Card sx={{ borderRadius: 1 }}>
+    <Card sx={{ borderRadius: 1, bgcolor: baseBgColor }}>
       <CardContent>
         <Grid container spacing={2} alignItems="center">
           <Grid size={4}>
@@ -66,9 +66,8 @@ const AnalyticCard: React.FunctionComponent<IAnalyticCardProps> = (props) => {
                 width: { xs: 38, sm: 48 },
                 height: { xs: 38, sm: 48 },
                 borderRadius: 2,
-                // Sekarang alpha() menerima warna HEX murni dari tema
-                bgcolor: alpha(baseBgColor, 0.15),
-                border: `1px solid ${alpha(baseBgColor, 0.2)}`,
+                bgcolor: "white",
+                border: `1px solid ${alpha(baseBgColor, 0.1)}`,
               }}
             >
               {React.isValidElement(icon)
@@ -84,10 +83,10 @@ const AnalyticCard: React.FunctionComponent<IAnalyticCardProps> = (props) => {
           </Grid>
           <Grid size={8}>
             <Box>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" color="white">
                 {title}
               </Typography>
-              <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+              <Typography variant="h4" sx={{ fontWeight: "bold", color: "white" }}>
                 {value}
               </Typography>
             </Box>

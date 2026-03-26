@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
-import BlockIcon from "@mui/icons-material/Block";
+
 import DeleteIcon from "@mui/icons-material/Delete";
 
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -23,6 +23,7 @@ interface TableActionMenuProps {
   onClose: () => void;
   onEdit: (row: JobRowData) => void;
   onCancel: (row: JobRowData) => void;
+  onForceCancel: (row: JobRowData) => void;
   onRelease: (row: JobRowData) => void;
   onComplete: (row: JobRowData) => void;
   onDelete: (row: JobRowData) => void;
@@ -36,6 +37,7 @@ const TableActionMenu: React.FC<TableActionMenuProps> = ({
   onCancel,
   onRelease,
   onComplete,
+  onForceCancel,
   onDelete,
 }) => {
   const open = Boolean(anchorEl);
@@ -45,7 +47,7 @@ const TableActionMenu: React.FC<TableActionMenuProps> = ({
   const isRunning = status === "running";
   const isReleased = status === "released";
   const canEditOrDelete = isScheduled;
-  const canCancel = isReleased;
+  const canCancel = isReleased || isRunning ;
 
   return (
     <Menu
@@ -88,24 +90,24 @@ const TableActionMenu: React.FC<TableActionMenuProps> = ({
         <MenuItem
           sx={{ color: "error.main" }}
           onClick={() => {
-            if (activeRow) onCancel(activeRow);
+            if (activeRow) isRunning ? onForceCancel(activeRow) : onCancel(activeRow);
             onClose();
           }}
         >
           <ListItemIcon>
             <CancelIcon fontSize="small" color="error" />
           </ListItemIcon>
-          <ListItemText>Cancel Job</ListItemText>
+          <ListItemText>{isRunning ? "Force Cancel Job" : "Cancel Job"}</ListItemText>
         </MenuItem>
       )}
-      {isRunning && (
+      {/* {isRunning && (
         <MenuItem disabled>
           <ListItemIcon>
             <BlockIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>No Action</ListItemText>
         </MenuItem>
-      )}
+      )} */}
 
       {canEditOrDelete && (
         <MenuItem

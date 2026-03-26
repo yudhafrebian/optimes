@@ -1,7 +1,7 @@
 "use client";
 import { authAtom } from "@/atoms/auth.atom";
 import workCenterAtom from "@/atoms/wc.atom";
-import { Paper } from "@mui/material";
+import { Paper, Typography } from "@mui/material";
 import { useAtom } from "jotai";
 import * as React from "react";
 
@@ -22,11 +22,12 @@ const TaiyoOperatorMachineEmbed: React.FunctionComponent<
     <Paper
       variant="outlined"
       sx={{
-        p: props.isExpanded ? 2 : 1,
         borderRadius: 2,
         height: "100%",
+        border: "none"
       }}
     >
+      <Typography variant="h6" sx={{ mb: 1 }}>MES Settings</Typography>
       <iframe
         // style="border:1px #FFFFFF none"
         src={`http://192.168.68.99:3002/d/taiyooperatormesattributecontrol/embed?operator=${JSON.stringify(op)}&wc=${workCenterPath[0]}`}

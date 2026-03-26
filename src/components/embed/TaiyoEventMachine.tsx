@@ -15,7 +15,7 @@ const TaiyoEventMachineEmbed: React.FunctionComponent<TaiyoEventMachineEmbedProp
   return (
     <Box
       sx={{
-        p: props.isExpanded ? 2 : 1,
+        
         borderRadius: 2,
         height: "100%",
       }}

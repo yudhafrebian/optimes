@@ -22,10 +22,9 @@ import PersonIcon from "@mui/icons-material/Person";
 import LockIcon from "@mui/icons-material/Lock";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { assetsApi, commonApi } from "@/lib/api";
+import {  commonApi } from "@/lib/api";
 import { LoginDto } from "@/api/generated/common-service";
 import { passwordAtom } from "@/atoms/password.atom";
-import workCenterAtom from "@/atoms/wc.atom";
 
 const LoginForm = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -33,7 +32,6 @@ const LoginForm = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const setAuth = useSetAtom(authAtom);
-  const setWorkCenterPath = useSetAtom(workCenterAtom);
   const setPassword = useSetAtom(passwordAtom);
   const router = useRouter();
   const showSnackbar = useSnackbar();
@@ -86,41 +84,6 @@ const LoginForm = () => {
         must_change_password: res.must_change_password,
         last_login_time: res.last_login_time,
       });
-
-      const wc = await assetsApi.findAssetPathsByAttributeValue({
-        scopePath: "Jasuindo.OffsetPrinter.*",
-        logic: "OR",
-        filters: [
-          {
-            attributeName: "Assigned Operator Shift 1",
-            operator: "contains_object",
-            value: {
-              value: res.id,
-            },
-          },
-          {
-            attributeName: "Assigned Operator Shift 2",
-            operator: "contains_object",
-            value: {
-              value: res.id,
-            },
-          },
-          {
-            attributeName: "Assigned Operator Shift 3",
-            operator: "contains_object",
-            value: {
-              value: res.id,
-            },
-          },
-        ],
-      });
-
-
-      if (wc.matches.length === 0) {
-        setWorkCenterPath(undefined);
-      } else {
-        setWorkCenterPath(wc.matches[0].path);
-      }
 
       setPassword(values.password);
 

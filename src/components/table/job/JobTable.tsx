@@ -24,7 +24,7 @@ import EditJobForm from "@/form/EditJobForm";
 import JobConfirmationView from "@/components/view/JobConfirmationView";
 import { filterJobs } from "@/utils/jobFilters";
 import { getJobDialogConfig } from "@/components/dialog/jobDialogConfig";
-import { commonApi } from "@/lib/api";
+import { assetsApi, commonApi } from "@/lib/api";
 import { usePathname } from "next/navigation";
 
 const fetcher = () =>
@@ -72,19 +72,27 @@ function getComparator<T>(
 }
 
 export default function JobTableManagement() {
-    const pathname = usePathname();
+  const pathname = usePathname();
   const isJobManagement = pathname.startsWith("/dashboard/ppic/job-management");
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [order, setOrder] = useState<Order>(isJobManagement ? "asc" : "desc");
-  const [orderBy, setOrderBy] = useState<keyof JobRowData>(isJobManagement ? "work_order" : "completed_date");
+  const [orderBy, setOrderBy] = useState<keyof JobRowData>(
+    isJobManagement ? "work_order" : "completed_date",
+  );
   const [page, setPage] = useState<number>(0);
   const [dense, setDense] = useState<boolean>(false);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [activeRow, setActiveRow] = useState<JobRowData | null>(null);
   const [modalType, setModalType] = useState<
-    "edit" | "delete" | "cancel" | "release" | "completed" | null
+    | "edit"
+    | "delete"
+    | "cancel"
+    | "release"
+    | "completed"
+    | "force_cancel"
+    | null
   >(null);
   const [step, setStep] = useState<"form" | "success">("form");
   const [loading, setLoading] = useState<boolean>(false);
@@ -96,7 +104,6 @@ export default function JobTableManagement() {
   const [lifecycleFilter, setLifecycleFilter] = useState<string>("All");
   const [priorityFilter, setPriorityFilter] = useState<string>("All");
   const [jobData, setJobData] = useState<any>(null);
-
 
   const {
     data: jobs,
@@ -164,7 +171,13 @@ export default function JobTableManagement() {
   };
 
   const handleAction = (
-    type: "edit" | "delete" | "cancel" | "release" | "completed",
+    type:
+      | "edit"
+      | "delete"
+      | "cancel"
+      | "release"
+      | "completed"
+      | "force_cancel",
     row: JobRowData,
   ) => {
     setAnchorEl(null);
@@ -195,10 +208,15 @@ export default function JobTableManagement() {
     ],
   );
 
-  const handleCancelJob = async (id: string) => {
+  const handleCancelJob = async (row: JobRowData) => {
     try {
       setLoading(true);
-      await commonApi.jobOffsetPrinterTaiyoControllerCancel(id);
+      await commonApi.jobOffsetPrinterTaiyoControllerCancel(row.id);
+
+      if(modalType === "force_cancel") {
+        await assetsApi.setAssetValuesByPath(`${row.work_center.code}.Job Lifecycle`, { value: "cancel" });
+      }
+
       showSnackbar("Job cancelled successfully", "success");
       closeAll();
       mutate();
@@ -209,6 +227,7 @@ export default function JobTableManagement() {
       setLoading(false);
     }
   };
+
 
   const handleReleaseJob = async (id: string) => {
     try {
@@ -232,11 +251,11 @@ export default function JobTableManagement() {
       showSnackbar("Job completed successfully", "success");
       closeAll();
       mutate();
-    } catch (error:any) {
-      console.log(error)
-      showSnackbar(error.response.data.message, "error")
+    } catch (error: any) {
+      console.log(error);
+      showSnackbar(error.response.data.message, "error");
     }
-  }
+  };
 
   const handleDeleteJob = async (id: string) => {
     try {
@@ -387,6 +406,7 @@ export default function JobTableManagement() {
         onRelease={(row) => handleAction("release", row)}
         onDelete={(row) => handleAction("delete", row)}
         onComplete={(row) => handleAction("completed", row)}
+        onForceCancel={(row) => handleAction("force_cancel", row)}
       />
 
       <GenericDialog
@@ -394,7 +414,8 @@ export default function JobTableManagement() {
           modalType === "cancel" ||
           modalType === "delete" ||
           modalType === "release" ||
-          modalType === "completed"
+          modalType === "completed" ||
+          modalType === "force_cancel"
         }
         onClose={closeAll}
         title={dialogConfig.title}
@@ -404,7 +425,7 @@ export default function JobTableManagement() {
         positiveText={dialogConfig.positiveText}
         onConfirm={() => {
           if (!activeRow) return;
-          if (modalType === "cancel") handleCancelJob(activeRow.id);
+          if (modalType === "cancel" || modalType === "force_cancel") handleCancelJob(activeRow);
           if (modalType === "release") handleReleaseJob(activeRow.id);
           if (modalType === "delete") handleDeleteJob(activeRow.id);
           if (modalType === "completed") handleCompletedJob(activeRow.id);

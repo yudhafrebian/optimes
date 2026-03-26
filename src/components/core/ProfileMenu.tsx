@@ -11,9 +11,9 @@ import {
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAtom, useSetAtom } from "jotai";
+import { useAtom } from "jotai";
 import { authAtom } from "@/atoms/auth.atom";
 import ProfileMenuSekeleton from "../skeleton/ProfileMenuSkeleton";
 import GenericDialog from "../dialog/GenericDialog";
@@ -33,14 +33,13 @@ export function ProfileMenu() {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const router = useRouter();
   const [auth, setAuth] = useAtom(authAtom);
-  const workCenterPath = useAtom(workCenterAtom);
-  const setWorkCenterPath = useSetAtom(workCenterAtom);
+  const [workCenterPath, setWorkCenterPath] = useAtom(workCenterAtom);
   const [loaderData, setLoaderData] = useAtom(loadedDataAtom);
   const [loader, setLoader] = useAtom(loaderAtom);
 
   const fetcher = () =>
     assetsApi
-      .getAssetValuesByPath(`${workCenterPath[0]}.Job Loader`)
+      .getAssetValuesByPath(`${workCenterPath}.Job Loader`)
       .then((res) => {
         const normalizedLoaderData = normalizeLoaderData(res.matches[0]?.value);
         const hasLoadedJob =
@@ -58,11 +57,12 @@ export function ProfileMenu() {
       });
 
   const isOperator = auth?.account_role?.label === "Operator";
+  const isAdmin = auth?.account_role?.label === "Administrator";
 
   const open = Boolean(anchorEl);
 
   useSWR(
-    isOperator && workCenterPath[0] ? ["job-loader", workCenterPath[0]] : null,
+    isOperator && workCenterPath ? ["job-loader", workCenterPath] : null,
     fetcher,
     { refreshInterval: 2000, revalidateOnFocus: false },
   );
@@ -85,10 +85,50 @@ export function ProfileMenu() {
     router.replace("/auth/login");
   };
 
+  useEffect(() => {
+    const getWorkCenter = async () => {
+      if (!auth) return;
+      const wc = await assetsApi.findAssetPathsByAttributeValue({
+        scopePath: "Jasuindo.OffsetPrinter.*",
+        logic: "OR",
+        filters: [
+          {
+            attributeName: "Assigned Operator Shift 1",
+            operator: "contains_object",
+            value: {
+              value: auth.id,
+            },
+          },
+          {
+            attributeName: "Assigned Operator Shift 2",
+            operator: "contains_object",
+            value: {
+              value: auth.id,
+            },
+          },
+          {
+            attributeName: "Assigned Operator Shift 3",
+            operator: "contains_object",
+            value: {
+              value: auth.id,
+            },
+          },
+        ],
+      });
+
+      if (wc.matches.length === 0) {
+        setWorkCenterPath(undefined);
+      } else {
+        setWorkCenterPath(wc.matches[0].path);
+      }
+    };
+    getWorkCenter();
+  }, [auth]);
+
   if (!auth) return <ProfileMenuSekeleton />;
 
   return (
-    <>
+    <Box sx={{ display: "flex", alignItems: "center" , py: 0.5}}>
       {isOperator && (
         <Stack direction={"row"} gap={1} alignItems={"center"}>
           <Box
@@ -107,9 +147,16 @@ export function ProfileMenu() {
                 flexDirection: "column",
               }}
             >
-              <Typography variant="caption">Asset</Typography>
+              <Typography variant="caption">Work Center</Typography>
               <GenericChips
-                value={workCenterPath[0] ? workCenterPath[0] : "Not Assigned"}
+                size="medium"
+                variant="filled"
+                colorMap={
+                  workCenterPath
+                    ? { [workCenterPath.toLowerCase()]: "primary" }
+                    : {}
+                }
+                value={workCenterPath || "Not Assigned"}
               />
             </Box>
           </Box>
@@ -135,12 +182,26 @@ export function ProfileMenu() {
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
               {loaderData.id === "" ? (
-                <GenericChips size="small" value={"Offline"} />
+                <GenericChips size="medium" value={"Offline"} />
               ) : (
-                <GenericChips size="small" value={loaderData.work_order} />
+                <GenericChips
+                  size="medium"
+                  variant="filled"
+                  colorMap={{
+                    [loaderData.work_order.toLowerCase()]: "success",
+                  }}
+                  value={loaderData.work_order}
+                />
               )}
               {loaderData.id !== "" && (
-                <GenericChips size="small" value={loaderData.sales_order} />
+                <GenericChips
+                  size="medium"
+                  variant="filled"
+                  colorMap={{
+                    [loaderData.sales_order.toLowerCase()]: "success",
+                  }}
+                  value={loaderData.sales_order}
+                />
               )}
             </Box>
           </Box>
@@ -200,19 +261,21 @@ export function ProfileMenu() {
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <MenuItem
-          onClick={() => {
-            handleClose();
-            router.push(
-              `/dashboard/${auth?.account_role?.label.toLowerCase().split(" ").join("-")}/profile`,
-            );
-          }}
-        >
-          <ListItemIcon>
-            <PersonIcon fontSize="small" />
-          </ListItemIcon>
-          Profile
-        </MenuItem>
+        {!isAdmin && (
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              router.push(
+                `/dashboard/${auth?.account_role?.label.toLowerCase().split(" ").join("-")}/profile`,
+              );
+            }}
+          >
+            <ListItemIcon>
+              <PersonIcon fontSize="small" />
+            </ListItemIcon>
+            Profile
+          </MenuItem>
+        )}
 
         <MenuItem
           onClick={() => setOpenDialog(true)}
@@ -234,6 +297,6 @@ export function ProfileMenu() {
         onConfirm={handleLogout}
         onRefresh={() => {}}
       />
-    </>
+    </Box>
   );
 }

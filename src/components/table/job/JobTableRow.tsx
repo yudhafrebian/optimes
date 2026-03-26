@@ -80,7 +80,6 @@ const JobTableRow: React.FC<JobTableRowProps> = ({ row, onOpenMenu }) => {
               <IconButton
                 color="primary"
                 size="small"
-                disabled={status === "cancelled"}
                 onClick={() =>
                   window.open(
                     `/report/job/${row.work_order}/${row.work_center.code}`,
@@ -94,7 +93,6 @@ const JobTableRow: React.FC<JobTableRowProps> = ({ row, onOpenMenu }) => {
               <IconButton
                 color="secondary"
                 size="small"
-                disabled={status === "cancelled"}
                 onClick={handleDownloadDirect}
               >
                 <DownloadIcon />

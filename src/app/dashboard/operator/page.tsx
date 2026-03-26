@@ -53,8 +53,8 @@ const OperatorPage = () => {
               </Typography>
 
               <Typography variant="body2" color="text.secondary">
-                Belum ada job yang aktif. Pilih job terlebih dulu dari Job List
-                untuk mulai melihat dashboard operator.
+                There are no active jobs. Select a job from the Job List first
+                to view the operator dashboard.
               </Typography>
 
               <Button

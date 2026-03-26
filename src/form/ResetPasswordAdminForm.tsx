@@ -54,6 +54,7 @@ const ResetPasswordAdminForm = ({ onSuccess, onCancel, data }: ISuspendFormProps
       initialValues={{
         password_expiry_time:"",
       }}
+      validateOnMount={false}
       validationSchema={resetPasswordAdminValidationSchema}
       onSubmit={onSubmit}
     >
@@ -67,6 +68,8 @@ const ResetPasswordAdminForm = ({ onSuccess, onCancel, data }: ISuspendFormProps
           setFieldValue,
         } = props;
 
+        console.log(errors)
+
         return (
           <Form>
             <Grid container spacing={2} mt={1}>
@@ -75,6 +78,7 @@ const ResetPasswordAdminForm = ({ onSuccess, onCancel, data }: ISuspendFormProps
                   ampm={false}
                   label="Password Expiration Time"
                   value={dayjs(values.password_expiry_time)}
+                  minDateTime={dayjs(new Date())}
                   onChange={(value) =>
                     setFieldValue(
                       "password_expiry_time",

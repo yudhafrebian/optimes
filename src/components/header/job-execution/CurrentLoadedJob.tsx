@@ -113,7 +113,7 @@ const CurrentLoadedJobCard = () => {
         loaderData.id,
       );
 
-      const unload = await assetsApi.setAssetValuesByPath(
+      await assetsApi.setAssetValuesByPath(
         `${loaderData.work_center.code}.Job Loader`,
         { value: {} },
       );
@@ -124,7 +124,7 @@ const CurrentLoadedJobCard = () => {
       });
       setLoaderData(INITIAL_LOADER_DATA);
       mutate();
-      setOpen(false);
+      setOpen(false); 
       setOpenAlert(false);
 
       showSnackbar("Job completed successfully", "success");

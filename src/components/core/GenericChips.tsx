@@ -23,8 +23,15 @@ interface StatusChipProps {
 
 const defaultColorMap: Record<string, ChipColor> = {
   "active": "success",
+  "expired": "warning",
   "running": "secondary",
   "released": "primary",
+  // "jasuindo.offsetprinter.taiyo1": "primary",
+  // "jasuindo.offsetprinter.taiyo2": "primary",
+  // "jasuindo.offsetprinter.taiyo3": "primary",
+  // "jasuindo.offsetprinter.taiyo4": "primary",
+  // "jasuindo.offsetprinter.taiyo5": "primary",
+  // "jasuindo.offsetprinter.taiyo6": "primary",
   "closed": "error",
   "on hold": "warning", 
   "completed": "success",  
@@ -34,6 +41,7 @@ const defaultColorMap: Record<string, ChipColor> = {
   "suspended": "warning",
   "disabled": "error",
   "administrator": "primary",
+  "head of production": "success",
   "operator": "secondary",
   "ppic": "warning",
   "maintenance administrator": "success",

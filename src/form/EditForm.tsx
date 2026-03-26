@@ -70,11 +70,10 @@ const EditForm = ({ data, onSuccess, onCancel }: IEditFormProps) => {
         return;
       }
 
-      const response = await commonApi.accountControllerEditRole(data.id, {
+       await commonApi.accountControllerEditRole(data.id, {
         roleLookupId: values.roleLookupId,
       });
 
-      console.log(response);
 
       onSuccess();
       showSnackbar("User updated successfully", "success");
@@ -89,6 +88,8 @@ const EditForm = ({ data, onSuccess, onCancel }: IEditFormProps) => {
       }, 2000);
     }
   };
+
+  const filteredRole = roles.filter((role) => role.code !== "ADMINISTRATOR")
 
   useEffect(() => {
     fetchRoles();
@@ -126,7 +127,7 @@ const EditForm = ({ data, onSuccess, onCancel }: IEditFormProps) => {
                     onBlur={handleBlur}
                     disabled={!roleId && roles.length === 0}
                   >
-                    {roles.map((role) => (
+                    {filteredRole .map((role) => (
                       <MenuItem key={role.id} value={role.id}>
                         {role.label}
                       </MenuItem>

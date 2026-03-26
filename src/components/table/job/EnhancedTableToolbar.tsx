@@ -217,14 +217,18 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 
   const filteredLifecycleOptions = isJobManagement
     ? lifeCycleOptions.filter(
-        (item) => item.value !== "Closed" && item.value !== "Completed",
+        (item) =>
+          item.value !== "Closed" &&
+          item.value !== "Completed" &&
+          item.value !== "Cancelled",
       )
     : lifeCycleOptions.filter(
         (item) =>
           item.value !== "Scheduled" &&
           item.value !== "Released" &&
           item.value !== "Running" &&
-          item.value !== "Suspended",
+          item.value !== "Suspended" &&
+          item.value !== "Closed",
       );
 
   const priorityOptions = (filterData?.priorities ?? []).map((item) => ({

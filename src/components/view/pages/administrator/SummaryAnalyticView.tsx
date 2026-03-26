@@ -79,7 +79,7 @@ const SummaryAnalyticView = () => {
           value={isLoading ? "..." : data?.deleted || 0}
           icon={<PersonRemoveIcon fontSize="large" />}
           iconColor="#607d8b"
-          iconBackgroundColor="#eceff1"
+          iconBackgroundColor="#607d8b"
         />
       </Grid>
     </Grid>
