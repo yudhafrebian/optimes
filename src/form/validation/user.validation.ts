@@ -4,6 +4,10 @@ export const editValidationSchema = Yup.object().shape({
   roleLookupId: Yup.string().required("Role is required"),
 });
 
+export const assignValidationSchema = Yup.object().shape({
+  workCenterCode: Yup.string().required("Work Center is required"),
+});
+
 export const editProfileValidationSchema = Yup.object().shape({
   full_name: Yup.string()
     .min(2, "Full name must be at least 2 characters")

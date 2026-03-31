@@ -16,6 +16,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 import CancelIcon from '@mui/icons-material/Cancel';
 import { JobRowData } from "@/interface/row-table.interface";
+import { usePathname } from "next/navigation";
 
 interface TableActionMenuProps {
   anchorEl: HTMLElement | null;
@@ -40,6 +41,7 @@ const TableActionMenu: React.FC<TableActionMenuProps> = ({
   onForceCancel,
   onDelete,
 }) => {
+  const pathname = usePathname();
   const open = Boolean(anchorEl);
   const status = activeRow?.job_lifecycle_state.label?.toLowerCase();
   const isScheduled = status === "scheduled";
@@ -48,6 +50,7 @@ const TableActionMenu: React.FC<TableActionMenuProps> = ({
   const isReleased = status === "released";
   const canEditOrDelete = isScheduled;
   const canCancel = isReleased || isRunning ;
+  const isHeadOfProduction = pathname.startsWith("/dashboard/head-of-production/job-management");
 
   return (
     <Menu
@@ -70,7 +73,7 @@ const TableActionMenu: React.FC<TableActionMenuProps> = ({
           <ListItemText>Release Job</ListItemText>
         </MenuItem>
       )}
-      {canEditOrDelete && (
+      {canEditOrDelete  && !isHeadOfProduction && (
         <Box>
           <MenuItem
             onClick={() => {
@@ -109,7 +112,7 @@ const TableActionMenu: React.FC<TableActionMenuProps> = ({
         </MenuItem>
       )} */}
 
-      {canEditOrDelete && (
+      {canEditOrDelete && !isHeadOfProduction  && (
         <MenuItem
           sx={{ color: "error.main" }}
           onClick={() => {

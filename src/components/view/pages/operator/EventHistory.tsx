@@ -88,14 +88,13 @@ const EventHistoryModule: React.FC<EventHistoryModuleProps> = ({
               <Grid key={event.id} size={12}>
                 <Card
                   sx={{
-                    border: "1px solid",
+                    border: "2px solid",
                     borderColor: isClosed
                       ? "gray"
                       : isLifecycle
                         ? "secondary.main"
-                        : severityColor(chipValue),
-                    borderRight: "10px solid",
-                    borderRightColor: isClosed
+                        : severityColor(chipValue, true),
+                    bgcolor: isClosed
                       ? "gray"
                       : isLifecycle
                         ? "secondary.main"

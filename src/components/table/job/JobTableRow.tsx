@@ -21,6 +21,7 @@ interface JobTableRowProps {
 const JobTableRow: React.FC<JobTableRowProps> = ({ row, onOpenMenu }) => {
   const pathname = usePathname();
   const isJobManagement = pathname.startsWith("/dashboard/ppic/job-management");
+   const isHeadOfProduction = pathname.startsWith("/dashboard/head-of-production/job-management");
   const theme = useTheme();
   const status = row.job_lifecycle_state?.label?.toLowerCase() ?? "";
   const machineLabel = row.work_center?.label ?? "-";
@@ -61,7 +62,7 @@ const JobTableRow: React.FC<JobTableRowProps> = ({ row, onOpenMenu }) => {
         "&.MuiTableRow-hover:hover": { backgroundColor: getRowBg(0.24) },
       }}
     >
-      {isJobManagement ? (
+      {isJobManagement || isHeadOfProduction ? (
         <TableCell align="center" sx={{ width: 50 }}>
           <IconButton
             size="small"

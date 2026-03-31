@@ -84,8 +84,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   const navigation =
     navigationByRole[role as keyof typeof navigationByRole] ?? [];
   const isJobExecution =
-    pathname.startsWith("/dashboard/operator/job-list") ||
-    pathname.startsWith("/dashboard/operator/job-activity");
+    pathname.startsWith("/dashboard/operator/job-list") 
+    const isJobActivity = pathname.startsWith("/dashboard/operator/job-activity");
   const isHeadProduction = pathname.startsWith("/dashboard/head-of-production");
   const isJobDashboard = pathname.startsWith("/dashboard/operator");
   const isJobReport = pathname.startsWith("/report/job");
@@ -100,9 +100,10 @@ export function AppShell({ children }: { children: ReactNode }) {
             toolbarActions: ProfileMenu,
           }}
         >
-          {isJobExecution || isJobDashboard || isHeadProduction ? (
+          {isJobExecution || isJobActivity || isJobDashboard || isHeadProduction ? (
             <Box sx={{ px: 2, mt: 2 }}>
-              <Box sx={{ px: { xs: 2, sm: 3 }, mb: 1 }}>{children}</Box>
+              {isJobActivity && <JobExecutionHeader />}
+              <Box sx={{ px: { xs: 2, sm: 3 }, mb: 1, mt: 1 }}>{children}</Box>
               {isJobExecution && <JobExecutionHeader />}
             </Box>
           ) :  (

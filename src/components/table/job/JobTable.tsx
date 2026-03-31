@@ -74,6 +74,7 @@ function getComparator<T>(
 export default function JobTableManagement() {
   const pathname = usePathname();
   const isJobManagement = pathname.startsWith("/dashboard/ppic/job-management");
+  const isHeadOfProduction = pathname.startsWith("/dashboard/head-of-production/job-management");
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [order, setOrder] = useState<Order>(isJobManagement ? "asc" : "desc");
@@ -124,7 +125,7 @@ export default function JobTableManagement() {
     const jobsArray = Array.isArray(jobs) ? jobs : [];
 
     const filtered = jobsArray.filter((job) => {
-      if (isJobManagement) {
+      if (isJobManagement || isHeadOfProduction) {
         return (
           job.job_lifecycle_state.label !== "Cancelled" &&
           job.job_lifecycle_state.label !== "Completed"
@@ -140,7 +141,7 @@ export default function JobTableManagement() {
     });
 
     return filtered.map((job) => createData(job));
-  }, [jobs, isJobManagement]);
+  }, [jobs, isJobManagement, isHeadOfProduction]);
 
   const showSnackbar = useSnackbar();
 

@@ -20,8 +20,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 
   const pathname = usePathname();
   const isJobManagement = pathname.startsWith("/dashboard/ppic/job-management");
-
-  const filteredHeadcell = isJobManagement
+ const isHeadOfProduction = pathname.startsWith("/dashboard/head-of-production/job-management");
+  const filteredHeadcell = isJobManagement || isHeadOfProduction
     ? headCells
     : reportHeadCells;
 

@@ -3,7 +3,7 @@ import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import HistoryIcon from "@mui/icons-material/History";
-import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
+import EventNoteIcon from '@mui/icons-material/EventNote';
 
 export const navigationByRole = {
   administrator: [
@@ -55,14 +55,14 @@ export const navigationByRole = {
     //   icon: <DashboardIcon />,
     // },
     {
-      segment: "dashboard/head-of-production/work-center-manager",
-      title: "Work Center Manager",
-      icon: <PrecisionManufacturingIcon />,
+      segment: "dashboard/head-of-production/job-management",
+      title: "Job Management",
+      icon: <AssignmentIcon />,
     },
     {
       segment: "dashboard/head-of-production/event-palette-manager",
       title: "Event Palette Manager",
-      icon: <AssignmentIcon />,
+      icon: <EventNoteIcon />,
     },
   ],
 };

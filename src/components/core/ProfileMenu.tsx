@@ -12,6 +12,7 @@ import {
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
 import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
 import { authAtom } from "@/atoms/auth.atom";
@@ -81,54 +82,72 @@ export function ProfileMenu() {
     setLoaderData(INITIAL_LOADER_DATA);
     setLoader({ isLoaded: false, id: "" });
     setWorkCenterPath(undefined);
+    Cookies.remove("work-center-selected");
     handleClose();
     router.replace("/auth/login");
   };
 
-  useEffect(() => {
-    const getWorkCenter = async () => {
-      if (!auth) return;
-      const wc = await assetsApi.findAssetPathsByAttributeValue({
-        scopePath: "Jasuindo.OffsetPrinter.*",
-        logic: "OR",
-        filters: [
-          {
-            attributeName: "Assigned Operator Shift 1",
-            operator: "contains_object",
-            value: {
-              value: auth.id,
-            },
-          },
-          {
-            attributeName: "Assigned Operator Shift 2",
-            operator: "contains_object",
-            value: {
-              value: auth.id,
-            },
-          },
-          {
-            attributeName: "Assigned Operator Shift 3",
-            operator: "contains_object",
-            value: {
-              value: auth.id,
-            },
-          },
-        ],
-      });
+  // useEffect(() => {
+  //   if (auth?.account_role?.label === "Operator") {
+  //     const getWorkCenter = async () => {
+  //       if (!auth) return;
+  //       const wc = await assetsApi.findAssetPathsByAttributeValue({
+  //         scopePath: "Jasuindo.OffsetPrinter.*",
+  //         logic: "OR",
+  //         filters: [
+  //           {
+  //             attributeName: "Machine Operator",
+  //             "operator": "contains_object",
+  //             value:{
+  //               value: auth.id
+  //             }
+  //           }
+  //         ]
+  //       })
+  //       console.log(wc);
+  //       // const wc = await assetsApi.findAssetPathsByAttributeValue({
+  //       //   scopePath: "Jasuindo.OffsetPrinter.*",
+  //       //   logic: "OR",
+  //       //   filters: [
+  //       //     {
+  //       //       attributeName: "Assigned Operator Shift 1",
+  //       //       operator: "contains_object",
+  //       //       value: {
+  //       //         value: auth.id,
+  //       //       },
+  //       //     },
+  //       //     {
+  //       //       attributeName: "Assigned Operator Shift 2",
+  //       //       operator: "contains_object",
+  //       //       value: {
+  //       //         value: auth.id,
+  //       //       },
+  //       //     },
+  //       //     {
+  //       //       attributeName: "Assigned Operator Shift 3",
+  //       //       operator: "contains_object",
+  //       //       value: {
+  //       //         value: auth.id,
+  //       //       },
+  //       //     },
+  //       //   ],
+  //       // });
 
-      if (wc.matches.length === 0) {
-        setWorkCenterPath(undefined);
-      } else {
-        setWorkCenterPath(wc.matches[0].path);
-      }
-    };
-    getWorkCenter();
-  }, [auth]);
+  //       // if (wc.matches.length === 0) {
+  //       //   setWorkCenterPath(undefined);
+  //       // } else {
+  //       //   setWorkCenterPath(wc.matches[0].path);
+  //       // }
+  //       setWorkCenterPath("Jasuindo.OffsetPrinter.Taiyo1");
+  //     };
+  //     getWorkCenter();
+  //   }
+  // }, [auth]);
 
   if (!auth) return <ProfileMenuSekeleton />;
 
   return (
-    <Box sx={{ display: "flex", alignItems: "center" , py: 0.5}}>
+    <Box sx={{ display: "flex", alignItems: "center", py: 0.5 }}>
       {isOperator && (
         <Stack direction={"row"} gap={1} alignItems={"center"}>
           <Box

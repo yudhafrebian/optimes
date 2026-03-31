@@ -135,6 +135,9 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 
   const pathname = usePathname();
   const isJobManagement = pathname.startsWith("/dashboard/ppic/job-management");
+  const isHeadOfProduction = pathname.startsWith(
+    "/dashboard/head-of-production/job-management",
+  );
   const showSnackbar = useSnackbar();
 
   const { data: filterData } = useSwr<FilterData>(
@@ -151,19 +154,20 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 
   const workOrderList = useMemo(() => {
     const seen = new Set<string>();
-    const filtered = isJobManagement
-      ? (filterData?.orders ?? []).filter(
-          (state) =>
-            state.job_lifecycle_state.label !== "Completed" &&
-            state.job_lifecycle_state.label !== "Cancelled",
-        )
-      : (filterData?.orders ?? []).filter(
-          (state) =>
-            state.job_lifecycle_state.label !== "Scheduled" &&
-            state.job_lifecycle_state.label !== "Released" &&
-            state.job_lifecycle_state.label !== "Running" &&
-            state.job_lifecycle_state.label !== "Suspended",
-        );
+    const filtered =
+      isJobManagement || isHeadOfProduction
+        ? (filterData?.orders ?? []).filter(
+            (state) =>
+              state.job_lifecycle_state.label !== "Completed" &&
+              state.job_lifecycle_state.label !== "Cancelled",
+          )
+        : (filterData?.orders ?? []).filter(
+            (state) =>
+              state.job_lifecycle_state.label !== "Scheduled" &&
+              state.job_lifecycle_state.label !== "Released" &&
+              state.job_lifecycle_state.label !== "Running" &&
+              state.job_lifecycle_state.label !== "Suspended",
+          );
 
     return filtered
       .map((item) => item.work_order)
@@ -177,24 +181,25 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         label: workOrder,
         value: workOrder,
       }));
-  }, [filterData?.orders, isJobManagement]);
+  }, [filterData?.orders, isJobManagement, isHeadOfProduction]);
 
   const salesOrderList = useMemo(() => {
     const seen = new Set<string>();
 
-    const filtered = isJobManagement
-      ? (filterData?.orders ?? []).filter(
-          (state) =>
-            state.job_lifecycle_state.label !== "Completed" &&
-            state.job_lifecycle_state.label !== "Closed",
-        )
-      : (filterData?.orders ?? []).filter(
-          (state) =>
-            state.job_lifecycle_state.label !== "Scheduled" &&
-            state.job_lifecycle_state.label !== "Released" &&
-            state.job_lifecycle_state.label !== "Running" &&
-            state.job_lifecycle_state.label !== "Suspended",
-        );
+    const filtered =
+      isJobManagement || isHeadOfProduction
+        ? (filterData?.orders ?? []).filter(
+            (state) =>
+              state.job_lifecycle_state.label !== "Completed" &&
+              state.job_lifecycle_state.label !== "Closed",
+          )
+        : (filterData?.orders ?? []).filter(
+            (state) =>
+              state.job_lifecycle_state.label !== "Scheduled" &&
+              state.job_lifecycle_state.label !== "Released" &&
+              state.job_lifecycle_state.label !== "Running" &&
+              state.job_lifecycle_state.label !== "Suspended",
+          );
 
     return filtered
       .map((item) => item.sales_order)
@@ -208,28 +213,29 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         label: salesOrder,
         value: salesOrder,
       }));
-  }, [filterData?.orders, isJobManagement]);
+  }, [filterData?.orders, isJobManagement, isHeadOfProduction]);
 
   const lifeCycleOptions = (filterData?.lifecycles ?? []).map((item) => ({
     label: item.label,
     value: item.label,
   }));
 
-  const filteredLifecycleOptions = isJobManagement
-    ? lifeCycleOptions.filter(
-        (item) =>
-          item.value !== "Closed" &&
-          item.value !== "Completed" &&
-          item.value !== "Cancelled",
-      )
-    : lifeCycleOptions.filter(
-        (item) =>
-          item.value !== "Scheduled" &&
-          item.value !== "Released" &&
-          item.value !== "Running" &&
-          item.value !== "Suspended" &&
-          item.value !== "Closed",
-      );
+  const filteredLifecycleOptions =
+    isJobManagement || isHeadOfProduction
+      ? lifeCycleOptions.filter(
+          (item) =>
+            item.value !== "Closed" &&
+            item.value !== "Completed" &&
+            item.value !== "Cancelled",
+        )
+      : lifeCycleOptions.filter(
+          (item) =>
+            item.value !== "Scheduled" &&
+            item.value !== "Released" &&
+            item.value !== "Running" &&
+            item.value !== "Suspended" &&
+            item.value !== "Closed",
+        );
 
   const priorityOptions = (filterData?.priorities ?? []).map((item) => ({
     label: item.label,
@@ -347,7 +353,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           }}
         >
           <Typography variant="h5" fontWeight={500}>
-            {isJobManagement ? "Job List" : "Job Report List"}
+            {isJobManagement || isHeadOfProduction ? "Job List" : "Job Report List"}
           </Typography>
           <Box
             sx={{

@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import path from "path";
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const userId = req.cookies.get("accountId")?.value;
+  const workCenter = req.cookies.get("work-center-selected")?.value;
 
   // 1. Bypass untuk file statis dan api internal (jika ada)
   if (pathname.startsWith("/_next") || pathname.includes("/api/")) {
@@ -12,7 +14,8 @@ export async function middleware(req: NextRequest) {
   // 2. Proteksi Dasar: Jika ke dashboard/change-password tapi tidak ada cookie userId
   if (
     (pathname.startsWith("/dashboard") ||
-      pathname.startsWith("/change-password")) &&
+      pathname.startsWith("/change-password") ||
+      pathname.startsWith("/work-center")) &&
     !userId
   ) {
     return NextResponse.redirect(new URL("/auth/login", req.url));
@@ -55,16 +58,32 @@ export async function middleware(req: NextRequest) {
         }
       }
 
+      if (role === "operator") {
+        // Jika BELUM pilih work center dan mencoba akses selain /work-center, lempar ke /work-center
+        if (!workCenter && pathname !== "/work-center") {
+          return NextResponse.redirect(new URL("/work-center", req.url));
+        }
+
+        // Jika SUDAH pilih work center dan mencoba akses /work-center lagi, lempar ke dashboard
+        if (workCenter && pathname === "/work-center") {
+          return NextResponse.redirect(new URL(`/dashboard/${role}`, req.url));
+        }
+      }
+
       // 5. Jika sudah login tapi buka halaman login
       if (pathname.startsWith("/auth/login")) {
-        return NextResponse.redirect(new URL(`/dashboard/${role}`, req.url));
+        const target =
+          role === "operator" ? "/work-center" : `/dashboard/${role}`;
+        return NextResponse.redirect(new URL(target, req.url));
       }
 
       // 6. Proteksi Role (RBAC)
       if (pathname.startsWith("/dashboard/")) {
         const pathRole = pathname.split("/")[2];
         if (role && pathRole !== role) {
-          return NextResponse.redirect(new URL(`/dashboard/${role}`, req.url));
+          const target =
+            role === "operator" ? "/work-center" : `/dashboard/${role}`;
+          return NextResponse.redirect(new URL(target, req.url));
         }
       }
     } catch (error) {
@@ -79,5 +98,10 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/auth/:path*", "/change-password"],
+  matcher: [
+    "/dashboard/:path*",
+    "/auth/:path*",
+    "/change-password",
+    "/work-center",
+  ],
 };

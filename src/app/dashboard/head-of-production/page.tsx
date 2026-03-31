@@ -8,7 +8,7 @@ const DashboardPage = () => {
   const navigate = useRouter();
   React.useEffect(() => {
     if (pathname !== '/') {
-      navigate.replace('/dashboard/head-of-production/work-center-manager');
+      navigate.replace('/dashboard/head-of-production/job-management');
     }
   }, [pathname, navigate]);
   return (

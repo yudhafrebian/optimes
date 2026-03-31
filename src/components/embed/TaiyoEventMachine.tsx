@@ -25,7 +25,7 @@ const TaiyoEventMachineEmbed: React.FunctionComponent<TaiyoEventMachineEmbedProp
         src={`http://192.168.68.99:3002/d/taiyooperatorevent/embed?wo=${loaderData.work_order}&wc=${loaderData.work_center.code}`}
         title="iFrame"
         width="100%"
-        height="250px"
+        height="260px"
         scrolling="yes"
         frameBorder={0}
         allow="fullscreen"
