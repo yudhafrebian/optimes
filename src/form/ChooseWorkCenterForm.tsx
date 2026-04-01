@@ -13,12 +13,11 @@ import { Form, Formik, FormikProps } from "formik";
 import { useEffect, useState } from "react";
 import {
   assignValidationSchema,
-  editValidationSchema,
 } from "./validation/user.validation";
 import { useSnackbar } from "@/hooks/useSnackbar";
 import { assetsApi, commonApi } from "@/lib/api";
-import { EditRoleDto, LookupResponseDto } from "@/api/generated/common-service";
-import { useAtom, useSetAtom } from "jotai";
+import {  LookupResponseDto } from "@/api/generated/common-service";
+import { useAtom } from "jotai";
 import { authAtom, loggingOutAtom } from "@/atoms/auth.atom";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
@@ -79,7 +78,7 @@ const ChooseWorkCenterForm = () =>
           {
             value: {
               value: auth.id,
-              lable: auth.full_name,
+              label: auth.full_name,
             },
           },
         );

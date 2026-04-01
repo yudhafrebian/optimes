@@ -2,10 +2,9 @@ import ChooseWorkCenterForm from "@/form/ChooseWorkCenterForm";
 import { Box, Paper, Typography } from "@mui/material";
 import * as React from "react";
 
-interface IChooseWorkCenterProps {}
 
-const ChooseWorkCenter: React.FunctionComponent<IChooseWorkCenterProps> = (
-  props,
+const ChooseWorkCenter = (
+  
 ) => {
   return (
     <Box

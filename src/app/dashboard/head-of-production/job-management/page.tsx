@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Box, CircularProgress, Typography } from "@mui/material";
+import { Box} from "@mui/material";
 import SummaryAnalyticView from "@/components/view/pages/administrator/SummaryAnalyticView";
 import JobTableManagement from "@/components/table/job/JobTable";
 
