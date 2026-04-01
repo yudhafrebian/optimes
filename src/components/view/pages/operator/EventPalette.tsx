@@ -32,6 +32,7 @@ import * as React from "react";
 import { useSnackbar } from "@/hooks/useSnackbar";
 import EditEventLookupForm from "@/form/EditEventLookupForm";
 import GenericDrawer from "@/components/drawer/GenericDrawer";
+import { authAtom } from "@/atoms/auth.atom";
 
 type EventCardProps = {
   item: LookupResponseDto;
@@ -180,6 +181,7 @@ const EventPalleteModule: React.FC<EventPalleteProps> = ({ onRefresh }) => {
   const [selectedEvent, setSelectedEvent] = React.useState<string>("");
   const [loaderData] = useAtom(loadedDataAtom);
   const [loaded] = useAtom(loaderAtom);
+  const [auth] = useAtom(authAtom);
 
   const showsnackbar = useSnackbar();
   const pathname = usePathname();
@@ -277,10 +279,48 @@ const EventPalleteModule: React.FC<EventPalleteProps> = ({ onRefresh }) => {
 
   const handleCreateEvent = async () => {
     try {
+      if (!auth) {
+        throw new Error("User ID is required");
+      }
       const path = `${loaderData.work_center.code}.Job Activity`;
+
+      // const res = await assetsApi.setAssetValuesBatch({
+      //   items: [
+      //     {
+      //       path: `${loaderData.work_center.code}.Machine Operator`,
+      //       value: {
+      //         value: auth.id,
+      //         label: auth.full_name,
+      //       },
+      //     },
+      //     {
+      //       path: path,
+      //       value: selectedEvent,
+      //     },
+      //   ],
+      // });
+
+      await assetsApi.setAssetValuesByPath(
+        `${loaderData.work_center.code}.Machine Operator`,
+        {
+          value: {
+          },
+        },
+      );
+      const res = await assetsApi.setAssetValuesByPath(
+        `${loaderData.work_center.code}.Machine Operator`,
+        {
+          value: {
+            value: auth.id,
+            label: auth.full_name,
+          },
+        },
+      );
+
       await assetsApi.setAssetValuesByPath(path, {
         value: selectedEvent,
       });
+
       onRefresh();
       setDialogType(null);
     } catch (error) {
