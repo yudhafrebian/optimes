@@ -71,13 +71,13 @@ const CreateJobForm: React.FunctionComponent<ICreateJobFormProps> = ({
   const onSubmit = async (values: CreateJobOffsetPrinterTaiyoDto) => {
     try {
       setLoading(true);
-      console.log(values);
+      console.log({...values, quantity_unit: quantityUnit[0].id});
 
-      onSuccess(values);
+      onSuccess({...values, quantity_unit: quantityUnit[0].id});
     } catch (error: any) {
       console.log(error);
       showSnackbar(error.response.data.message, "error");
-    } finally {
+    } finally { 
       setLoading(false);
     }
   };
@@ -90,6 +90,8 @@ const CreateJobForm: React.FunctionComponent<ICreateJobFormProps> = ({
           commonApi.lookupControllerFindAll({ type: "QUANTITY_UNIT" }),
           commonApi.lookupControllerFindAll({ type: "JOB_PRIORITY" }),
         ]);
+
+        console.log(workCenter, quantityUnit, priority);
         setWorkCenter(workCenter);
         setQuantityUnit(quantityUnit);
         setPriority(priority);

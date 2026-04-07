@@ -38,14 +38,27 @@ type IJobConfirmationViewProps =
       onSuccess: () => void;
     };
 
-const JobConfirmationView: React.FunctionComponent<IJobConfirmationViewProps> = (
-  props,
-) => {
+const JobConfirmationView: React.FunctionComponent<
+  IJobConfirmationViewProps
+> = (props) => {
   const [loading, setLoading] = React.useState<boolean>(false);
   const [workCenter, setWorkCenter] = React.useState<LookupResponseDto>();
   const [quantityUnit, setQuantityUnit] = React.useState<LookupResponseDto>();
   const [jobPriority, setJobPriority] = React.useState<LookupResponseDto>();
   const showSnackbar = useSnackbar();
+
+  const getErrorMessage = (error: any): string => {
+    if (error?.response?.data?.message) {
+      return error.response.data.message;
+    }
+    if (error?.response?.status === 502) {
+      return "Bad Gateway - Server error. Please try again later.";
+    }
+    if (error?.message === "Network Error") {
+      return "Network error - Please check your connection.";
+    }
+    return error?.message || "An unexpected error occurred";
+  };
 
   const onSubmit = async () => {
     try {
@@ -59,15 +72,15 @@ const JobConfirmationView: React.FunctionComponent<IJobConfirmationViewProps> = 
         );
       }
 
-      props.onSuccess();
       if (props.type === "create") {
         showSnackbar("Job created successfully", "success");
       } else {
         showSnackbar("Job updated successfully", "success");
       }
+      props.onSuccess();
     } catch (error: any) {
       console.log(error);
-      showSnackbar(error.response.data.message, "error");
+      showSnackbar(getErrorMessage(error), "error");
     } finally {
       setLoading(false);
     }
@@ -78,16 +91,22 @@ const JobConfirmationView: React.FunctionComponent<IJobConfirmationViewProps> = 
       try {
         const [workCenterRes, quantityUnitRes, jobPriorityRes] =
           await Promise.all([
-            commonApi.lookupControllerFindOne(props.data.work_center.toString()),
-            commonApi.lookupControllerFindOne(props.data.quantity_unit.toString()),
-            commonApi.lookupControllerFindOne(props.data.job_priority.toString()),
+            commonApi.lookupControllerFindOne(
+              props.data.work_center.toString(),
+            ),
+            commonApi.lookupControllerFindOne(
+              props.data.quantity_unit.toString(),
+            ),
+            commonApi.lookupControllerFindOne(
+              props.data.job_priority.toString(),
+            ),
           ]);
         setWorkCenter(workCenterRes);
         setQuantityUnit(quantityUnitRes);
         setJobPriority(jobPriorityRes);
       } catch (error: any) {
         console.log(error);
-        showSnackbar(error.response.data.message, "error");
+        showSnackbar(getErrorMessage(error), "error");
       }
     };
     getMachineId();
@@ -95,7 +114,6 @@ const JobConfirmationView: React.FunctionComponent<IJobConfirmationViewProps> = 
     props.data.job_priority,
     props.data.quantity_unit,
     props.data.work_center,
-    showSnackbar,
   ]);
 
   return (

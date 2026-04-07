@@ -10,13 +10,11 @@ import {
   Typography,
 } from "@mui/material";
 import { Form, Formik, FormikProps } from "formik";
-import { useEffect, useState } from "react";
-import {
-  assignValidationSchema,
-} from "./validation/user.validation";
+import { useEffect, useState, useRef } from "react";
+import { assignValidationSchema } from "./validation/user.validation";
 import { useSnackbar } from "@/hooks/useSnackbar";
 import { assetsApi, commonApi } from "@/lib/api";
-import {  LookupResponseDto } from "@/api/generated/common-service";
+import { LookupResponseDto } from "@/api/generated/common-service";
 import { useAtom } from "jotai";
 import { authAtom, loggingOutAtom } from "@/atoms/auth.atom";
 import { useRouter } from "next/navigation";
@@ -42,9 +40,10 @@ const ChooseWorkCenterForm = () =>
 
     const [auth, setAuth] = useAtom(authAtom);
     const [isLoggingOut, setIsLoggingOut] = useAtom(loggingOutAtom);
-    const [assignWorkCenter, setAssignWorkCenter] = useAtom(workCenterAtom)
+    const [assignWorkCenter, setAssignWorkCenter] = useAtom(workCenterAtom);
     const router = useRouter();
-    console.log(auth)
+    const isMountedRef = useRef(true);
+    console.log(auth);
 
     const showSnackbar = useSnackbar();
 
@@ -84,25 +83,34 @@ const ChooseWorkCenterForm = () =>
         );
 
         Cookies.set("work-center-selected", values.workCenterCode);
-        setAssignWorkCenter(values.workCenterCode)
-        
+        setAssignWorkCenter(values.workCenterCode);
+
         showSnackbar("Work Center assigned successfully", "success");
-        router.replace(`/dashboard/${auth.account_role?.label.toLocaleLowerCase()}`);
+        // Router.replace akan unmount component, jadi set loading false dulu
+        if (isMountedRef.current) {
+          setLoading(false);
+        }
+        router.replace(
+          `/dashboard/${auth.account_role?.label.toLocaleLowerCase()}`,
+        );
         console.log("login success");
       } catch (error: any) {
         console.log(error);
         setErrorMessage(
           error.response?.data?.message || "An unexpected error occurred",
         );
-      } finally {
-        setTimeout(() => {
+        if (isMountedRef.current) {
           setLoading(false);
-        }, 2000);
+        }
       }
     };
 
     useEffect(() => {
       fetchWorkCenter();
+
+      return () => {
+        isMountedRef.current = false;
+      };
     }, []);
 
     return (
