@@ -90,9 +90,10 @@ const ChooseWorkCenterForm = () =>
         if (isMountedRef.current) {
           setLoading(false);
         }
-        router.replace(
+        router.push(
           `/dashboard/${auth.account_role?.label.toLocaleLowerCase()}`,
         );
+        router.refresh();
         console.log("login success");
       } catch (error: any) {
         console.log(error);

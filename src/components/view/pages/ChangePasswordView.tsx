@@ -14,17 +14,22 @@ import { useAtom } from "jotai";
 import { useEffect } from "react";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
+import workCenterAtom from "@/atoms/wc.atom";
 
 const ChangePasswordView = () => {
   const [auth, setAuth] = useAtom(authAtom);
 
   const [isLoggingOut, setIsLoggingOut] = useAtom(loggingOutAtom);
+  const [, setWorkCenterPath] = useAtom(workCenterAtom);
   const router = useRouter();
 
   const handleGoBack = async () => {
     setIsLoggingOut(true);
     await commonApi.accountControllerLogout();
     setAuth(null);
+    setWorkCenterPath(undefined);
+    Cookies.remove("work-center-selected");
 
     router.replace("/auth/login");
   };

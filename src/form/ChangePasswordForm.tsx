@@ -27,6 +27,8 @@ import { commonApi } from "@/lib/api";
 import { ChangePasswordDto } from "@/api/generated/common-service";
 import { getCriteria } from "@/lib/criteria";
 import { passwordAtom } from "@/atoms/password.atom";
+import Cookies from "js-cookie";
+import workCenterAtom from "@/atoms/wc.atom";
 
 const ResetPassword = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -41,6 +43,7 @@ const ResetPassword = () => {
   const router = useRouter();
 
   const password = useAtom(passwordAtom);
+  const [, setWorkCenterPath] = useAtom(workCenterAtom);
 
   const isForceChange = pathname === "/change-password";
 
@@ -87,7 +90,12 @@ const ResetPassword = () => {
       actions.resetForm();
 
       if (isForceChange) {
-        router.replace(`/dashboard/${auth?.account_role?.label.toLowerCase()}`);
+        const role = auth?.account_role?.label?.toLowerCase();
+        Cookies.remove("work-center-selected");
+        setWorkCenterPath(undefined);
+        router.replace(
+          role === "operator" ? "/work-center" : `/dashboard/${role}`,
+        );
       }
     } catch (error: any) {
       setErrorMessage(error.response.data.message);

@@ -53,10 +53,15 @@ export async function middleware(req: NextRequest) {
       } else {
         // Jika SUDAH ganti password tapi mencoba balik ke /change-password
         if (pathname.startsWith("/change-password")) {
+          // PENTING: Jika operator, pastikan sudah pilih work center
+          if (role === "operator" && !workCenter) {
+            return NextResponse.redirect(new URL("/work-center", req.url));
+          }
           return NextResponse.redirect(new URL(`/dashboard/${role}`, req.url));
         }
       }
 
+      // 5. Validasi Work Center untuk Operator (PRIORITAS TINGGI)
       if (role === "operator") {
         // Jika BELUM pilih work center dan mencoba akses selain /work-center, lempar ke /work-center
         if (!workCenter && pathname !== "/work-center") {
@@ -69,20 +74,26 @@ export async function middleware(req: NextRequest) {
         }
       }
 
-      // 5. Jika sudah login tapi buka halaman login
+      // 6. Jika sudah login tapi buka halaman login
       if (pathname.startsWith("/auth/login")) {
         const target =
-          role === "operator" ? "/work-center" : `/dashboard/${role}`;
+          role === "operator" && !workCenter
+            ? "/work-center"
+            : `/dashboard/${role}`;
         return NextResponse.redirect(new URL(target, req.url));
       }
 
-      // 6. Proteksi Role (RBAC)
+      // 7. Proteksi Role (RBAC) - dengan work-center validation
       if (pathname.startsWith("/dashboard/")) {
         const pathRole = pathname.split("/")[2];
         if (role && pathRole !== role) {
           const target =
             role === "operator" ? "/work-center" : `/dashboard/${role}`;
           return NextResponse.redirect(new URL(target, req.url));
+        }
+        // Extra check: operator tidak boleh akses dashboard tanpa work-center
+        if (role === "operator" && !workCenter) {
+          return NextResponse.redirect(new URL("/work-center", req.url));
         }
       }
     } catch (error) {

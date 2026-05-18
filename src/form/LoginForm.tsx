@@ -25,6 +25,8 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import {  commonApi } from "@/lib/api";
 import { LoginDto } from "@/api/generated/common-service";
 import { passwordAtom } from "@/atoms/password.atom";
+import Cookies from "js-cookie";
+import workCenterAtom from "@/atoms/wc.atom";
 
 const LoginForm = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -33,6 +35,7 @@ const LoginForm = () => {
 
   const setAuth = useSetAtom(authAtom);
   const setPassword = useSetAtom(passwordAtom);
+  const setWorkCenterPath = useSetAtom(workCenterAtom);
   const router = useRouter();
   const showSnackbar = useSnackbar();
 
@@ -86,13 +89,15 @@ const LoginForm = () => {
       });
 
       setPassword(values.password);
+      Cookies.remove("work-center-selected");
+      setWorkCenterPath(undefined);
 
       if (res.must_change_password) {
         router.replace("/change-password");
       } else {
-        router.replace(
-          `/dashboard/${res.account_role?.label.toLocaleLowerCase()}`,
-        );
+        const role = res.account_role?.label?.toLocaleLowerCase();
+        const target = role === "operator" ? "/work-center" : `/dashboard/${role}`;
+        router.replace(target);
         showSnackbar(`Login successful, welcome ${res.full_name}`, "success");
       }
     } catch (error: any) {
