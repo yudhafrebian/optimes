@@ -98,9 +98,9 @@ const TableActionMenu: React.FC<TableActionMenuProps> = ({
           }}
         >
           <ListItemIcon>
-            <CancelIcon fontSize="small" color="error" />
+            <CancelIcon fontSize="small" color={isRunning ? "success" : "error"} />
           </ListItemIcon>
-          <ListItemText>{isRunning ? "Force Cancel Job" : "Cancel Job"}</ListItemText>
+          <ListItemText>{isRunning ? "Force Complete" : "Cancel Job"}</ListItemText>
         </MenuItem>
       )}
       {/* {isRunning && (
